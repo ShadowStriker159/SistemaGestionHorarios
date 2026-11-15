@@ -23,6 +23,16 @@ public class EstudianteController {
         return ResponseEntity.ok(estudianteService.listarTodos());
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<EstudianteDTO> obtener(@PathVariable String id) {
+        return ResponseEntity.ok(estudianteService.obtener(id));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<EstudianteDTO> actualizar(@PathVariable String id, @RequestBody EstudianteDTO dto) {
+        return ResponseEntity.ok(estudianteService.actualizar(id, dto));
+    }
+
     @PostMapping
     public ResponseEntity<EstudianteDTO> crear(@RequestBody EstudianteDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(estudianteService.crear(dto));

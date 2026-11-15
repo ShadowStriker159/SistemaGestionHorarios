@@ -1,14 +1,7 @@
 package co.edu.unbosque.SistemaHorario.model;
 
-import jakarta.persistence.*;
-
-@Entity
-@Table(name = "administrador")
-@PrimaryKeyJoinColumn(name = "id")
 public class Administrador extends Persona {
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "tipo_administrador")
     private TipoAdministrador tipoAdministrador;
 
     public Administrador() {

@@ -42,7 +42,7 @@ public class HorarioService {
     public List<HorarioDTO> generarHorario(Integer idFacultad)
             throws FacultadNoEncontradaException, HorarioInalcanzableException {
 
-        Facultad facultad = facultadRepository.findById(idFacultad)
+        Facultad facultad = facultadRepository.findByIdCompleta(idFacultad)
                 .orElseThrow(() -> new FacultadNoEncontradaException("Facultad no encontrada."));
 
         List<Seccion> seccionesGeneradas = algoritmoHorario.generarHorario(facultad);
@@ -52,7 +52,6 @@ public class HorarioService {
         }
 
         seccionRepository.deleteAll();
-        seccionRepository.flush();
 
         for (Seccion s : seccionesGeneradas) {
             s.setIdSeccion(null);

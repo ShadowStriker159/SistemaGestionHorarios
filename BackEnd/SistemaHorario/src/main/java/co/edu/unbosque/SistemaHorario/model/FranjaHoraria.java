@@ -1,39 +1,19 @@
 package co.edu.unbosque.SistemaHorario.model;
 
-import jakarta.persistence.*;
-
 import java.time.LocalTime;
 
-@Entity
-@Table(
-        name = "franja_horaria",
-        uniqueConstraints = {
-                @UniqueConstraint(columnNames = {"dia_semana", "hora_inicio", "hora_fin"})
-        }
-)
 public class FranjaHoraria {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_franja")
     private Integer idFranja;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "dia_semana", nullable = false)
     private DiaSemana diaSemana;
 
-    @Column(name = "hora_inicio", nullable = false)
     private LocalTime horaInicio;
 
-    @Column(name = "hora_fin", nullable = false)
     private LocalTime horaFin;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "estado_franja", nullable = false)
     private EstadoFranja estadoFranja;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "categoria", nullable = false)
     private Categoria categoria;
 
     public FranjaHoraria() {

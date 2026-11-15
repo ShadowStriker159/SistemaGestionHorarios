@@ -5,6 +5,7 @@ import co.edu.unbosque.SistemaHorario.model.dto.*;
 import co.edu.unbosque.SistemaHorario.model.exception.*;
 import co.edu.unbosque.SistemaHorario.respository.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
@@ -16,15 +17,15 @@ public class GrupoService {
     private final GrupoRepository grupoRepository;
     private final CursoRepository cursoRepository;
     private final DocenteRepository docenteRepository;
-    private final EstudianteRepository estudianteRepository;
     private final MapeadorDTO mapeador;
+    private final PlanEstudiosRepository planEstudiosRepository;
 
     public GrupoService(GrupoRepository grupoRepository, CursoRepository cursoRepository, DocenteRepository docenteRepository,
-                        EstudianteRepository estudianteRepository, MapeadorDTO mapeador) {
+                        MapeadorDTO mapeador, PlanEstudiosRepository planEstudiosRepository) {
+        this.planEstudiosRepository = planEstudiosRepository;
         this.grupoRepository = grupoRepository;
         this.cursoRepository = cursoRepository;
         this.docenteRepository = docenteRepository;
-        this.estudianteRepository = estudianteRepository;
         this.mapeador = mapeador;
     }
 
@@ -33,6 +34,14 @@ public class GrupoService {
         Curso curso = cursoRepository.findById(idCurso)
                 .orElseThrow(() -> new CursoNoEncontradoException("No existe el curso con id: " + idCurso));
         return grupoRepository.findByCurso(curso).stream().map(mapeador::grupo).toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<GrupoDTO> listarPorPlan(Integer idPlan) throws PlanEstudiosNoEncontradoException {
+        if (!planEstudiosRepository.existsById(idPlan)) {
+            throw new PlanEstudiosNoEncontradoException("No existe el plan con id: " + idPlan);
+        }
+        return grupoRepository.findByPlan(idPlan).stream().map(mapeador::grupo).toList();
     }
 
     @Transactional(readOnly = true)
@@ -76,57 +85,27 @@ public class GrupoService {
                         "No existe el grupo con id: " + id + ", no se puede eliminar"));
         GrupoDTO resultado = mapeador.grupo(grupo);
         grupoRepository.delete(grupo);
-        grupoRepository.flush();
         return resultado;
     }
 
-    @Transactional
+    /**
+     * La inscripción la valida y la ejecuta el procedimiento almacenado sp_inscribir_estudiante, que maneja
+     * su propia transacción. Por eso este método no abre una transacción de Spring: así la lectura posterior
+     * ya ve la inscripción confirmada.
+     */
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
     public GrupoDTO inscribirEstudiante(Integer idGrupo, String idEstudiante)
             throws GrupoNoEncontradoException, EstudianteNoEncontradoException, GrupoRepetidoException {
-        Grupo grupo = buscarGrupo(idGrupo);
-        Estudiante estudiante = buscarEstudiante(idEstudiante);
-
-        if (estudiante.getEstadoEstudiante() == EstadoEstudiante.INACTIVO) {
-            throw new IllegalArgumentException("El estudiante está inactivo y no puede inscribirse");
-        }
-        if (grupo.getEstadoGrupo() == EstadoGrupo.CERRADO) {
-            throw new IllegalArgumentException("El grupo está cerrado");
-        }
-
-        PlanEstudios plan = estudiante.getPlanEstudios();
-        if (plan == null) {
-            throw new IllegalArgumentException("El estudiante no tiene un plan de estudios asignado");
-        }
-        Integer idCurso = grupo.getCurso().getIdCurso();
-        if (plan.getCursos() == null || plan.getCursos().stream().noneMatch(c -> c.getIdCurso().equals(idCurso))) {
-            throw new IllegalArgumentException("El curso " + grupo.getCurso().getNombreCurso()
-                    + " no pertenece al plan de estudios del estudiante");
-        }
-
-        if (grupo.getEstudiantes() == null) {
-            grupo.setEstudiantes(new ArrayList<>());
-        }
-        if (grupo.getEstudiantes().stream().anyMatch(e -> e.getId().equals(idEstudiante))) {
-            throw new GrupoRepetidoException("El estudiante ya está inscrito en el grupo");
-        }
-        if (grupo.getEstudiantes().size() >= grupo.getCupoMaximo()) {
-            throw new IllegalArgumentException("El grupo no tiene cupos disponibles");
-        }
-
-        grupo.getEstudiantes().add(estudiante);
-        return mapeador.grupo(grupoRepository.save(grupo));
+        grupoRepository.inscribirEstudiante(idGrupo, idEstudiante);
+        return mapeador.grupo(buscarGrupo(idGrupo));
     }
 
-    @Transactional
+    /** Igual que la inscripción: lo hace el procedimiento almacenado sp_retirar_estudiante. */
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
     public GrupoDTO retirarEstudiante(Integer idGrupo, String idEstudiante)
             throws GrupoNoEncontradoException, EstudianteNoEncontradoException {
-        Grupo grupo = buscarGrupo(idGrupo);
-        buscarEstudiante(idEstudiante);
-
-        if (grupo.getEstudiantes() == null || !grupo.getEstudiantes().removeIf(e -> e.getId().equals(idEstudiante))) {
-            throw new EstudianteNoEncontradoException("El estudiante no está inscrito en el grupo");
-        }
-        return mapeador.grupo(grupoRepository.save(grupo));
+        grupoRepository.retirarEstudiante(idGrupo, idEstudiante);
+        return mapeador.grupo(buscarGrupo(idGrupo));
     }
 
     private Grupo buscarGrupo(Integer idGrupo) throws GrupoNoEncontradoException {
@@ -134,9 +113,4 @@ public class GrupoService {
                 .orElseThrow(() -> new GrupoNoEncontradoException("No existe el grupo con id: " + idGrupo));
     }
 
-    private Estudiante buscarEstudiante(String idEstudiante) throws EstudianteNoEncontradoException {
-        return estudianteRepository.findById(idEstudiante)
-                .orElseThrow(() -> new EstudianteNoEncontradoException(
-                        "No existe el estudiante con id: " + idEstudiante));
-    }
 }

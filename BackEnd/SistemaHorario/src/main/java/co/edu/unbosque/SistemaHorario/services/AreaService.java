@@ -49,7 +49,6 @@ public class AreaService {
                 .orElseThrow(() -> new AreaNoEncontradaException(
                         "No existe el área con id: " + id + ", no se puede eliminar"));
         areaRepository.delete(area);
-        areaRepository.flush();
         return mapeador.area(area);
     }
 

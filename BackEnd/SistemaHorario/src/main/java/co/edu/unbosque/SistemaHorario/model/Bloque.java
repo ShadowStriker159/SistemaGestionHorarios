@@ -1,23 +1,13 @@
 package co.edu.unbosque.SistemaHorario.model;
 
-import jakarta.persistence.*;
-
-@Entity
-@Table(name = "bloque")
 public class Bloque {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_bloque")
     private Integer idBloque;
 
-    @Column(name = "nombre_bloque", nullable = false, length = 100)
     private String nombreBloque;
 
-    @Column(name = "etiqueta_bloque", nullable = false, length = 20)
     private String etiquetaBloque;
 
-    @Column(name = "ubicacion", nullable = false, length = 200)
     private String ubicacion;
     public Bloque() {
     }

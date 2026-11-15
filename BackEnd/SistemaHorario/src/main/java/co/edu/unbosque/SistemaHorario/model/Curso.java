@@ -1,46 +1,25 @@
 package co.edu.unbosque.SistemaHorario.model;
 
-import jakarta.persistence.*;
-
 import java.util.List;
 
-@Entity
-@Table(name = "curso")
 public class Curso {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_curso")
     private Integer idCurso;
 
-    @Column(name = "nombre_curso", nullable = false, length = 200)
     private String nombreCurso;
 
-    @Column(name = "intensidad_horaria", nullable = false)
     private Integer intensidadHoraria;
 
-    @Column(name = "semestre", nullable = false)
     private Integer semestre;
 
-    @Column(name = "creditos", nullable = false)
     private Integer creditos;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "aula_requerida", nullable = false)
     private TipoAula aulaRequerida;
 
-    @ManyToMany
-    @JoinTable(
-            name = "curso_prerrequisito",
-            joinColumns = @JoinColumn(name = "id_curso"),
-            inverseJoinColumns = @JoinColumn(name = "id_prerrequisito")
-    )
     private List<Curso> prerrequisitos;
 
-    @OneToMany(mappedBy = "curso", fetch = FetchType.LAZY)
     private List<Grupo> grupos;
 
-    @ManyToMany(mappedBy = "cursos")
     private List<PlanEstudios> planesEstudio;
 
     public Curso() {

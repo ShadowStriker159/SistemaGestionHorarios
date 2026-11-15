@@ -62,7 +62,6 @@ public class AulaService {
                         "No existe el aula " + numeroAula + " en el bloque " + idBloque + ", no se puede eliminar"));
         AulaDTO resultado = mapeador.aula(aula);
         aulaRepository.delete(aula);
-        aulaRepository.flush();
         return resultado;
     }
 }

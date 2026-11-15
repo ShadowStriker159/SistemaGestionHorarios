@@ -61,7 +61,6 @@ public class FranjaHorariaService {
                         "No existe la franja con id: " + id + ", no se puede eliminar"));
         FranjaHorariaDTO resultado = mapeador.franja(franja);
         franjaHorariaRepository.delete(franja);
-        franjaHorariaRepository.flush();
         return resultado;
     }
 }

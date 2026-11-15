@@ -72,7 +72,6 @@ public class CursoService {
             }
         }
         cursoRepository.delete(curso);
-        cursoRepository.flush();
         return mapeador.curso(curso);
     }
 

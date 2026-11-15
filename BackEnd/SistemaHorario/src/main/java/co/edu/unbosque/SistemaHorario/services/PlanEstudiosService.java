@@ -50,7 +50,6 @@ public class PlanEstudiosService {
                 .orElseThrow(() -> new PlanEstudiosNoEncontradoException(
                         "No existe el plan con id: " + id + ", no se puede eliminar"));
         planEstudiosRepository.delete(plan);
-        planEstudiosRepository.flush();
         return mapeador.plan(plan);
     }
 

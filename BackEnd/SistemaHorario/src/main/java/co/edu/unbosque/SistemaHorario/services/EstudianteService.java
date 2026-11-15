@@ -53,13 +53,7 @@ public class EstudianteService {
             throw new EstudianteRepetidoException("Ya existe una persona con correo: " + correo);
         }
 
-        Integer idPlan = Validaciones.positivo(dto.getIdPlanEstudios(), "idPlanEstudios");
-        PlanEstudios plan = planEstudiosRepository.findById(idPlan)
-                .orElseThrow(() -> new PlanEstudiosNoEncontradoException("No existe el plan con id: " + idPlan));
-        Integer idCarrera = Validaciones.positivo(dto.getIdCarrera(), "idCarrera");
-        if (plan.getCarrera() == null || !idCarrera.equals(plan.getCarrera().getIdCarrera())) {
-            throw new IllegalArgumentException("El plan de estudios seleccionado no corresponde a la carrera.");
-        }
+        PlanEstudios plan = resolverPlan(dto);
 
         Estudiante estudiante = new Estudiante();
         estudiante.setPlanEstudios(plan);
@@ -74,6 +68,49 @@ public class EstudianteService {
                 Validaciones.enumerado(EstadoEstudiante.class, dto.getEstadoEstudiante(), "estadoEstudiante"));
 
         return mapeador.estudiante(estudianteRepository.save(estudiante));
+    }
+
+    @Transactional(readOnly = true)
+    public EstudianteDTO obtener(String id) throws EstudianteNoEncontradoException {
+        Estudiante estudiante = estudianteRepository.findById(id)
+                .orElseThrow(() -> new EstudianteNoEncontradoException("No existe el estudiante con id: " + id));
+        return mapeador.estudiante(estudiante);
+    }
+
+    @Transactional
+    public EstudianteDTO actualizar(String id, EstudianteDTO dto) throws EstudianteNoEncontradoException,
+            EstudianteRepetidoException, PlanEstudiosNoEncontradoException {
+        Estudiante estudiante = estudianteRepository.findById(id)
+                .orElseThrow(() -> new EstudianteNoEncontradoException("No existe el estudiante con id: " + id));
+        String correo = Validaciones.texto(dto.getCorreo(), "correo");
+        if (personaRepository.existsByCorreoAndIdNot(correo, id)) {
+            throw new EstudianteRepetidoException("Ya existe una persona con correo: " + correo);
+        }
+        estudiante.setNombre(Validaciones.texto(dto.getNombre(), "nombre"));
+        estudiante.setApellido(Validaciones.texto(dto.getApellido(), "apellido"));
+        estudiante.setCorreo(correo);
+        if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
+            estudiante.setPassword(dto.getPassword().trim());
+        }
+        estudiante.setSemestreCursa(Validaciones.positivo(dto.getSemestreCursa(), "semestreCursa"));
+        estudiante.setCreditosAprobados(Validaciones.noNegativo(dto.getCreditosAprobados(), "creditosAprobados"));
+        estudiante.setEstadoEstudiante(
+                Validaciones.enumerado(EstadoEstudiante.class, dto.getEstadoEstudiante(), "estadoEstudiante"));
+        if (dto.getIdPlanEstudios() != null) {
+            estudiante.setPlanEstudios(resolverPlan(dto));
+        }
+        return mapeador.estudiante(estudianteRepository.save(estudiante));
+    }
+
+    private PlanEstudios resolverPlan(EstudianteDTO dto) throws PlanEstudiosNoEncontradoException {
+        Integer idPlan = Validaciones.positivo(dto.getIdPlanEstudios(), "idPlanEstudios");
+        PlanEstudios plan = planEstudiosRepository.findById(idPlan)
+                .orElseThrow(() -> new PlanEstudiosNoEncontradoException("No existe el plan con id: " + idPlan));
+        Integer idCarrera = Validaciones.positivo(dto.getIdCarrera(), "idCarrera");
+        if (plan.getCarrera() == null || !idCarrera.equals(plan.getCarrera().getIdCarrera())) {
+            throw new IllegalArgumentException("El plan de estudios seleccionado no corresponde a la carrera.");
+        }
+        return plan;
     }
 
     @Transactional
@@ -93,7 +130,6 @@ public class EstudianteService {
                 .orElseThrow(() -> new EstudianteNoEncontradoException(
                         "No existe el estudiante con id: " + id + ", no se puede eliminar"));
         estudianteRepository.delete(estudiante);
-        estudianteRepository.flush();
         return mapeador.estudiante(estudiante);
     }
 }

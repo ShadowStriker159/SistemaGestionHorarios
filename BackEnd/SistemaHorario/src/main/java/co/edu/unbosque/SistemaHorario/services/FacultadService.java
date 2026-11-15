@@ -43,7 +43,6 @@ public class FacultadService {
                 .orElseThrow(() -> new FacultadNoEncontradaException(
                         "No existe la facultad con id: " + id + ", no se puede eliminar"));
         facultadRepository.delete(facultad);
-        facultadRepository.flush();
         return mapeador.facultad(facultad);
     }
 }

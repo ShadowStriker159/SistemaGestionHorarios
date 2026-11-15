@@ -1,24 +1,13 @@
 package co.edu.unbosque.SistemaHorario.model;
 
-import jakarta.persistence.*;
-
-@Entity
-@Table(name = "estudiante")
-@PrimaryKeyJoinColumn(name = "id")
 public class Estudiante extends Persona {
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_plan")
     private PlanEstudios planEstudios;
 
-    @Column(name = "semestre_cursa")
     private Integer semestreCursa;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "estado_estudiante")
     private EstadoEstudiante estadoEstudiante;
 
-    @Column(name = "creditos_aprobados")
     private Integer creditosAprobados;
 
     public Estudiante() {

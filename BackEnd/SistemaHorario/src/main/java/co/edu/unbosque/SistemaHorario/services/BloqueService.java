@@ -45,7 +45,6 @@ public class BloqueService {
                 .orElseThrow(() -> new BloqueNoEncontradoException(
                         "No existe el bloque con id: " + id + ", no se puede eliminar"));
         bloqueRepository.delete(bloque);
-        bloqueRepository.flush();
         return mapeador.bloque(bloque);
     }
 }

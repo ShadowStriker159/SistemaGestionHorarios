@@ -1,18 +1,12 @@
 package co.edu.unbosque.SistemaHorario.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Embeddable;
-
 import java.io.Serializable;
 import java.util.Objects;
 
-@Embeddable
 public class AulaId implements Serializable {
 
-    @Column(name = "id_bloque")
     private Integer idBloque;
 
-    @Column(name = "numero_aula", length = 10)
     private String numeroAula;
 
     public AulaId() {

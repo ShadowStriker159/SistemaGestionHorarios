@@ -51,6 +51,31 @@ public class DocenteService {
     }
 
     @Transactional
+    public DocenteDTO actualizar(String id, DocenteDTO dto)
+            throws DocenteNoEncontradoException, DocenteRepetidoException, FranjaHorariaNoEncontradaException {
+        Docente docente = docenteRepository.findById(id)
+                .orElseThrow(() -> new DocenteNoEncontradoException("No existe el docente con id: " + id));
+        String correo = Validaciones.texto(dto.getCorreo(), "correo");
+        if (personaRepository.existsByCorreoAndIdNot(correo, id)) {
+            throw new DocenteRepetidoException("Ya existe una persona con correo: " + correo);
+        }
+        docente.setNombre(Validaciones.texto(dto.getNombre(), "nombre"));
+        docente.setApellido(Validaciones.texto(dto.getApellido(), "apellido"));
+        docente.setCorreo(correo);
+        if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
+            docente.setPassword(dto.getPassword().trim());
+        }
+        docente.setEscalafon(Validaciones.enumerado(Escalafon.class, dto.getEscalafon(), "escalafon"));
+        docente.setEstadoDocente(Validaciones.enumerado(EstadoDocente.class, dto.getEstadoDocente(), "estadoDocente"));
+        docente.setTipoVinculacion(
+                Validaciones.enumerado(TipoVinculacion.class, dto.getTipoVinculacion(), "tipoVinculacion"));
+        if (dto.getDisponibilidad() != null) {
+            docente.setDisponibilidad(resolverDisponibilidad(dto.getDisponibilidad()));
+        }
+        return mapeador.docente(docenteRepository.save(docente));
+    }
+
+    @Transactional
     public DocenteDTO crear(DocenteDTO dto) throws DocenteRepetidoException, FranjaHorariaNoEncontradaException {
         String id = Validaciones.texto(dto.getId(), "id");
         String correo = Validaciones.texto(dto.getCorreo(), "correo");
@@ -89,7 +114,6 @@ public class DocenteService {
         }
         DocenteDTO resultado = mapeador.docente(docente);
         docenteRepository.delete(docente);
-        docenteRepository.flush();
         return resultado;
     }
 

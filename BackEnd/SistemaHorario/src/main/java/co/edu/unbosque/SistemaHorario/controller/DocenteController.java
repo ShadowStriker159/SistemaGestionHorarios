@@ -49,6 +49,11 @@ public class DocenteController {
         return ResponseEntity.status(HttpStatus.CREATED).body(docenteService.crear(dto));
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<DocenteDTO> actualizar(@PathVariable String id, @RequestBody DocenteDTO dto) {
+        return ResponseEntity.ok(docenteService.actualizar(id, dto));
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<DocenteDTO> eliminar(@PathVariable String id) {
         return ResponseEntity.ok(docenteService.eliminar(id));

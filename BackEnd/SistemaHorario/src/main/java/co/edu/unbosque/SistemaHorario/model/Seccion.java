@@ -1,33 +1,15 @@
 package co.edu.unbosque.SistemaHorario.model;
 
-import jakarta.persistence.*;
-
-@Entity
-@Table(name = "seccion")
 public class Seccion {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_seccion")
     private Integer idSeccion;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "estado_seccion", nullable = false)
     private EstadoSeccion estadoSeccion;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_grupo", nullable = false)
     private Grupo grupo;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumns({
-            @JoinColumn(name = "id_bloque", referencedColumnName = "id_bloque", nullable = false),
-            @JoinColumn(name = "numero_aula", referencedColumnName = "numero_aula", nullable = false)
-    })
     private Aula aula;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_franja", nullable = false)
     private FranjaHoraria franjaHoraria;
 
     public Seccion() {

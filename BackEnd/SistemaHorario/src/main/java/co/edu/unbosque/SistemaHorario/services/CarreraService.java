@@ -54,7 +54,6 @@ public class CarreraService {
                 .orElseThrow(() -> new CarreraNoEncontradaException(
                         "No existe la carrera con id: " + id + ", no se puede eliminar"));
         carreraRepository.delete(carrera);
-        carreraRepository.flush();
         return mapeador.carrera(carrera);
     }
 

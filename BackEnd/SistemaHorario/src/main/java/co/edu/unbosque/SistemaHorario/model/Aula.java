@@ -1,28 +1,15 @@
 package co.edu.unbosque.SistemaHorario.model;
 
-import jakarta.persistence.*;
-
-@Entity
-@Table(name = "aula")
 public class Aula {
 
-    @EmbeddedId
     private AulaId id;
 
-    @MapsId("idBloque")
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_bloque", nullable = false)
     private Bloque bloque;
 
-    @Column(name = "capacidad", nullable = false)
     private Integer capacidad;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "tipo_aula", nullable = false)
     private TipoAula tipoAula;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "estado_aula", nullable = false)
     private EstadoAula estadoAula;
 
     public Aula() {

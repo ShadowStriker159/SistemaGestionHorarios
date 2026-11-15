@@ -2,6 +2,8 @@ package co.edu.unbosque.SistemaHorario.controller;
 
 import co.edu.unbosque.SistemaHorario.model.dto.PlanEstudiosDTO;
 import co.edu.unbosque.SistemaHorario.model.dto.CursoDTO;
+import co.edu.unbosque.SistemaHorario.model.dto.GrupoDTO;
+import co.edu.unbosque.SistemaHorario.services.GrupoService;
 import co.edu.unbosque.SistemaHorario.services.PlanEstudiosService;
 import co.edu.unbosque.SistemaHorario.services.CursoService;
 import org.springframework.http.HttpStatus;
@@ -16,8 +18,11 @@ public class PlanEstudiosController {
 
     private final PlanEstudiosService planEstudiosService;
     private final CursoService cursoService;
+    private final GrupoService grupoService;
 
-    public PlanEstudiosController(PlanEstudiosService planEstudiosService, CursoService cursoService) {
+    public PlanEstudiosController(PlanEstudiosService planEstudiosService, CursoService cursoService,
+                                  GrupoService grupoService) {
+        this.grupoService = grupoService;
         this.planEstudiosService = planEstudiosService;
         this.cursoService = cursoService;
     }
@@ -30,6 +35,11 @@ public class PlanEstudiosController {
     @GetMapping("/{idPlan}/cursos")
     public ResponseEntity<List<CursoDTO>> listarCursos(@PathVariable Integer idPlan) {
         return ResponseEntity.ok(cursoService.listarPorPlan(idPlan));
+    }
+
+    @GetMapping("/{idPlan}/grupos")
+    public ResponseEntity<List<GrupoDTO>> listarGrupos(@PathVariable Integer idPlan) {
+        return ResponseEntity.ok(grupoService.listarPorPlan(idPlan));
     }
 
     @PostMapping("/{idPlan}/cursos")

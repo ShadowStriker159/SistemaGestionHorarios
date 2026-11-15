@@ -1,33 +1,16 @@
 package co.edu.unbosque.SistemaHorario.model;
 
-import jakarta.persistence.*;
-
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity
-@Table(name = "docente")
-@PrimaryKeyJoinColumn(name = "id")
 public class Docente extends Persona {
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "escalafon")
     private Escalafon escalafon;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "estado_docente")
     private EstadoDocente estadoDocente;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "tipo_vinculacion")
     private TipoVinculacion tipoVinculacion;
 
-    @ManyToMany
-    @JoinTable(
-            name = "docente_franja",
-            joinColumns = @JoinColumn(name = "id_docente", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "id_franja")
-    )
     private List<FranjaHoraria> disponibilidad = new ArrayList<>();
 
     public Docente() {

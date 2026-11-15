@@ -1,26 +1,15 @@
 package co.edu.unbosque.SistemaHorario.model;
 
-import jakarta.persistence.*;
-
 import java.util.List;
 
-@Entity
-@Table(name = "carrera")
 public class Carrera {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_carrera")
     private Integer idCarrera;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_facultad", nullable = false)
     private Facultad facultad;
 
-    @Column(name = "nombre_carrera", nullable = false, length = 150)
     private String nombreCarrera;
 
-    @OneToMany(mappedBy = "carrera", fetch = FetchType.LAZY)
     private List<PlanEstudios> planEstudios;
     public Carrera() {
     }

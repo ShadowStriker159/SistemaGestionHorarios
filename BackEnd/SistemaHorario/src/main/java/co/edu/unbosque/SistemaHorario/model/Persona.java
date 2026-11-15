@@ -1,26 +1,15 @@
 package co.edu.unbosque.SistemaHorario.model;
 
-import jakarta.persistence.*;
-
-@Entity
-@Table(name = "persona")
-@Inheritance(strategy = InheritanceType.JOINED)
 public abstract class Persona {
 
-    @Id
-    @Column(name = "id", length = 20)
     protected String id;
 
-    @Column(name = "nombre", nullable = false, length = 100)
     protected String nombre;
 
-    @Column(name = "apellido", nullable = false, length = 100)
     protected String apellido;
 
-    @Column(name = "password", nullable = false)
     protected String password;
 
-    @Column(name = "correo", nullable = false, unique = true)
     protected String correo;
 
     public Persona() {
