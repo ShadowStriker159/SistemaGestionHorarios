@@ -1,0 +1,401 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+<ui:composition template="/WEB-INF/templates/layout.xhtml">
+
+    <ui:define name="title">Mi Horario · Estudiante · Horarios UnBosque</ui:define>
+    <ui:define name="page-title">Constructor de Horario</ui:define>
+    <ui:define name="breadcrumb">Estudiante / Mi Horario</ui:define>
+    <ui:define name="user-avatar-letter">A</ui:define>
+    <ui:define name="user-name">Andrés F. Gómez</ui:define>
+    <ui:define name="user-role">Estudiante · Cod. 20240123</ui:define>
+
+    <ui:define name="sidebar-nav">
+        <span class="nav-section-title">Mi Cuenta</span>
+        <a href="dashboard.xhtml" class="nav-item">
+            <div class="nav-icon">📚</div> Mis Materias
+        </a>
+        <a href="horario.xhtml" class="nav-item active">
+            <div class="nav-icon">📅</div> Mi Horario
+        </a>
+        <span class="nav-section-title">Información</span>
+        <a href="#" class="nav-item">
+            <div class="nav-icon">🎓</div> Mi Perfil
+        </a>
+        <a href="#" class="nav-item">
+            <div class="nav-icon">📊</div> Mis Créditos
+        </a>
+    </ui:define>
+
+
+
+
+    <ui:define name="content">
+
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
+            <div>
+                <h1 style="font-size:1.5rem;">Mi Horario 📅</h1>
+                <p style="color:var(--text-muted);font-size:0.85rem;">Arrastra las materias desde el panel izquierdo hacia la grilla semanal</p>
+            </div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                <button type="button" class="btn btn-nm" onclick="limpiarHorario()">🗑 Limpiar Todo</button>
+                <button type="button" class="btn btn-primary" onclick="guardarHorario()">💾 Confirmar Horario</button>
+            </div>
+        </div>
+
+        <!-- Alert info -->
+        <div class="alert alert-info" style="margin-bottom:16px;">
+            💡 <strong>Tip:</strong> Arrastra cada materia a la celda del día y hora correspondiente. Para quitar una materia del horario, haz clic en la ✕ roja sobre la celda.
+        </div>
+
+        <!-- Layout drag y drop -->
+        <div class="schedule-layout">
+
+            <!-- Panel izquierdo: materias arrastrables -->
+            <div class="courses-panel">
+                <div class="courses-panel-title">📦 Grupos para Arrastrar</div>
+                <p style="font-size:0.72rem;color:var(--text-muted);margin-bottom:12px;">Selecciona grupos desde "Mis Materias" o usa los predeterminados de muestra.</p>
+
+                <div id="draggable-list">
+
+                    <div class="draggable-course color-1"
+                         draggable="true"
+                         data-id="prog2-g301"
+                         data-materia="Programación 2"
+                         data-grupo="G-301"
+                         data-docente="C. Martínez"
+                         data-aula="304-A"
+                         data-color="bg-color-1"
+                         ondragstart="onDragStart(event)">
+                        <div class="course-pill-name">Programación 2 — G301</div>
+                        <div class="course-pill-meta">
+                            <span>👨‍🏫 C. Martínez</span>
+                            <span>🏫 Aula 304-A</span>
+                        </div>
+                    </div>
+
+                    <div class="draggable-course color-2"
+                         draggable="true"
+                         data-id="bd-g401"
+                         data-materia="Base de Datos I"
+                         data-grupo="G-401"
+                         data-docente="C. Martínez"
+                         data-aula="Lab-202"
+                         data-color="bg-color-2"
+                         ondragstart="onDragStart(event)">
+                        <div class="course-pill-name">Base de Datos I — G401</div>
+                        <div class="course-pill-meta">
+                            <span>👨‍🏫 C. Martínez</span>
+                            <span>🏫 Lab-202</span>
+                        </div>
+                    </div>
+
+                    <div class="draggable-course color-3"
+                         draggable="true"
+                         data-id="alg-g201"
+                         data-materia="Álgebra Lineal"
+                         data-grupo="G-201"
+                         data-docente="M. Pérez"
+                         data-aula="Aula 101"
+                         data-color="bg-color-3"
+                         ondragstart="onDragStart(event)">
+                        <div class="course-pill-name">Álgebra Lineal — G201</div>
+                        <div class="course-pill-meta">
+                            <span>👨‍🏫 M. Pérez</span>
+                            <span>🏫 Aula 101</span>
+                        </div>
+                    </div>
+
+                    <div class="draggable-course color-4"
+                         draggable="true"
+                         data-id="hum-gh01"
+                         data-materia="Humanidades"
+                         data-grupo="G-H01"
+                         data-docente="J. Vargas"
+                         data-aula="Aula 501"
+                         data-color="bg-color-4"
+                         ondragstart="onDragStart(event)">
+                        <div class="course-pill-name">Humanidades — G-H01</div>
+                        <div class="course-pill-meta">
+                            <span>👨‍🏫 J. Vargas</span>
+                            <span>🏫 Aula 501</span>
+                        </div>
+                    </div>
+
+                    <div class="draggable-course color-5"
+                         draggable="true"
+                         data-id="ing-g501"
+                         data-materia="Inglés II"
+                         data-grupo="G-501"
+                         data-docente="L. Rodríguez"
+                         data-aula="Aula 205"
+                         data-color="bg-color-5"
+                         ondragstart="onDragStart(event)">
+                        <div class="course-pill-name">Inglés II — G501</div>
+                        <div class="course-pill-meta">
+                            <span>👨‍🏫 L. Rodríguez</span>
+                            <span>🏫 Aula 205</span>
+                        </div>
+                    </div>
+
+                    <div class="draggable-course color-6"
+                         draggable="true"
+                         data-id="est-g601"
+                         data-materia="Estadística"
+                         data-grupo="G-601"
+                         data-docente="R. Aguilar"
+                         data-aula="Aula 301"
+                         data-color="bg-color-6"
+                         ondragstart="onDragStart(event)">
+                        <div class="course-pill-name">Estadística — G601</div>
+                        <div class="course-pill-meta">
+                            <span>👨‍🏫 R. Aguilar</span>
+                            <span>🏫 Aula 301</span>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="divider"/>
+                <div style="font-size:0.72rem;color:var(--text-muted);">
+                    <strong>Leyenda:</strong><br/>
+                    ⬚ Celda vacía — Suelta aquí una materia<br/>
+                    ■ Celda ocupada — Haz clic en ✕ para liberar
+                </div>
+            </div>
+
+            <!-- Grilla semanal -->
+            <div class="schedule-grid-wrapper">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+                    <h3 style="font-size:0.95rem;font-weight:700;">Semestre 2026-1 · Sem. 3 Ing. Sistemas</h3>
+                    <div style="font-size:0.78rem;color:var(--text-muted);">0 / 6 materias colocadas</div>
+                </div>
+                <div class="schedule-grid" id="schedule-grid">
+
+                    <!-- Header row -->
+                    <div class="sched-header">Hora</div>
+                    <div class="sched-header">Lunes</div>
+                    <div class="sched-header">Martes</div>
+                    <div class="sched-header">Miércoles</div>
+                    <div class="sched-header">Jueves</div>
+                    <div class="sched-header">Viernes</div>
+                    <div class="sched-header">Sábado</div>
+
+                    <!-- Row 06:00 -->
+                    <div class="sched-time">06:00<br/>08:00</div>
+                    <div class="sched-cell" data-day="LUN" data-slot="0600" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">Arrastrar</div>
+                    <div class="sched-cell" data-day="MAR" data-slot="0600" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">Arrastrar</div>
+                    <div class="sched-cell" data-day="MIE" data-slot="0600" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">Arrastrar</div>
+                    <div class="sched-cell" data-day="JUE" data-slot="0600" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">Arrastrar</div>
+                    <div class="sched-cell" data-day="VIE" data-slot="0600" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">Arrastrar</div>
+                    <div class="sched-cell" data-day="SAB" data-slot="0600" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">Arrastrar</div>
+
+                    <!-- Row 08:00 -->
+                    <div class="sched-time">08:00<br/>10:00</div>
+                    <div class="sched-cell" data-day="LUN" data-slot="0800" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">Arrastrar</div>
+                    <div class="sched-cell" data-day="MAR" data-slot="0800" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">Arrastrar</div>
+                    <div class="sched-cell" data-day="MIE" data-slot="0800" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">Arrastrar</div>
+                    <div class="sched-cell" data-day="JUE" data-slot="0800" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">Arrastrar</div>
+                    <div class="sched-cell" data-day="VIE" data-slot="0800" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">Arrastrar</div>
+                    <div class="sched-cell" data-day="SAB" data-slot="0800" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">Arrastrar</div>
+
+                    <!-- Row 10:00 -->
+                    <div class="sched-time">10:00<br/>12:00</div>
+                    <div class="sched-cell" data-day="LUN" data-slot="1000" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">Arrastrar</div>
+                    <div class="sched-cell" data-day="MAR" data-slot="1000" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">Arrastrar</div>
+                    <div class="sched-cell" data-day="MIE" data-slot="1000" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">Arrastrar</div>
+                    <div class="sched-cell" data-day="JUE" data-slot="1000" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">Arrastrar</div>
+                    <div class="sched-cell" data-day="VIE" data-slot="1000" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">Arrastrar</div>
+                    <div class="sched-cell" data-day="SAB" data-slot="1000" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">Arrastrar</div>
+
+                    <!-- Row 12:00 -->
+                    <div class="sched-time">12:00<br/>14:00</div>
+                    <div class="sched-cell" data-day="LUN" data-slot="1200" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">Arrastrar</div>
+                    <div class="sched-cell" data-day="MAR" data-slot="1200" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">Arrastrar</div>
+                    <div class="sched-cell" data-day="MIE" data-slot="1200" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">Arrastrar</div>
+                    <div class="sched-cell" data-day="JUE" data-slot="1200" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">Arrastrar</div>
+                    <div class="sched-cell" data-day="VIE" data-slot="1200" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">Arrastrar</div>
+                    <div class="sched-cell" data-day="SAB" data-slot="1200" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">Arrastrar</div>
+
+                    <!-- Row 14:00 -->
+                    <div class="sched-time">14:00<br/>16:00</div>
+                    <div class="sched-cell" data-day="LUN" data-slot="1400" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">Arrastrar</div>
+                    <div class="sched-cell" data-day="MAR" data-slot="1400" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">Arrastrar</div>
+                    <div class="sched-cell" data-day="MIE" data-slot="1400" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">Arrastrar</div>
+                    <div class="sched-cell" data-day="JUE" data-slot="1400" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">Arrastrar</div>
+                    <div class="sched-cell" data-day="VIE" data-slot="1400" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">Arrastrar</div>
+                    <div class="sched-cell" data-day="SAB" data-slot="1400" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">Arrastrar</div>
+
+                    <!-- Row 16:00 -->
+                    <div class="sched-time">16:00<br/>18:00</div>
+                    <div class="sched-cell" data-day="LUN" data-slot="1600" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">Arrastrar</div>
+                    <div class="sched-cell" data-day="MAR" data-slot="1600" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">Arrastrar</div>
+                    <div class="sched-cell" data-day="MIE" data-slot="1600" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">Arrastrar</div>
+                    <div class="sched-cell" data-day="JUE" data-slot="1600" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">Arrastrar</div>
+                    <div class="sched-cell" data-day="VIE" data-slot="1600" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">Arrastrar</div>
+                    <div class="sched-cell" data-day="SAB" data-slot="1600" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">Arrastrar</div>
+
+                    <!-- Row 18:00 -->
+                    <div class="sched-time">18:00<br/>20:00</div>
+                    <div class="sched-cell" data-day="LUN" data-slot="1800" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">Arrastrar</div>
+                    <div class="sched-cell" data-day="MAR" data-slot="1800" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">Arrastrar</div>
+                    <div class="sched-cell" data-day="MIE" data-slot="1800" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">Arrastrar</div>
+                    <div class="sched-cell" data-day="JUE" data-slot="1800" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">Arrastrar</div>
+                    <div class="sched-cell" data-day="VIE" data-slot="1800" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">Arrastrar</div>
+                    <div class="sched-cell" data-day="SAB" data-slot="1800" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">Arrastrar</div>
+
+                </div>
+            </div>
+        </div>
+
+    </ui:define>
+
+    <ui:define name="scripts">
+    <script type="text/javascript">
+    //<![CDATA[
+    var draggedEl = null;
+    var draggedData = {};
+
+    function onDragStart(e) {
+        draggedEl = e.currentTarget;
+        draggedData = {
+            id:      draggedEl.dataset.id,
+            materia: draggedEl.dataset.materia,
+            grupo:   draggedEl.dataset.grupo,
+            docente: draggedEl.dataset.docente,
+            aula:    draggedEl.dataset.aula,
+            color:   draggedEl.dataset.color
+        };
+        e.dataTransfer.setData('text/plain', draggedData.id);
+        draggedEl.classList.add('dragging');
+        setTimeout(function(){ draggedEl.style.opacity = '0.4'; }, 0);
+    }
+
+    function onDragOver(e) {
+        e.preventDefault();
+        e.currentTarget.classList.add('drag-over');
+    }
+
+    function onDragLeave(e) {
+        e.currentTarget.classList.remove('drag-over');
+    }
+
+    function onDrop(e) {
+        e.preventDefault();
+        var cell = e.currentTarget;
+        cell.classList.remove('drag-over');
+
+        if (!draggedData.id) return;
+        if (cell.classList.contains('has-course')) {
+            // Cell occupied — ask to replace
+            if (!confirm('Esta celda ya tiene una materia. ¿Deseas reemplazarla?')) return;
+        }
+
+        // Place course in cell
+        placeCourseInCell(cell, draggedData);
+
+        // Mark pill as placed
+        draggedEl.classList.add('placed');
+        draggedEl.style.opacity = '1';
+        draggedEl.draggable = false;
+        draggedEl = null;
+        draggedData = {};
+
+        updateCounter();
+    }
+
+    document.addEventListener('dragend', function(){
+        if (draggedEl) {
+            draggedEl.style.opacity = '1';
+            draggedEl.classList.remove('dragging');
+        }
+    });
+
+    function placeCourseInCell(cell, data) {
+        cell.classList.add('has-course');
+        cell.classList.add(data.color);
+        cell.dataset.courseId = data.id;
+        cell.innerHTML =
+            '<span class="sched-remove-btn" onclick="removeCourse(this)" title="Quitar">✕</span>'
+            + '<div class="cell-course-name">' + data.materia + '</div>'
+            + '<div class="cell-course-meta">' + data.grupo + ' · ' + data.docente + '</div>';
+        cell.removeAttribute('ondragover');
+        cell.removeAttribute('ondragleave');
+        cell.removeAttribute('ondrop');
+        // Re-add drag events via JS for future drops to occupied cell
+        cell.addEventListener('dragover',  function(e){ e.preventDefault(); cell.classList.add('drag-over'); });
+        cell.addEventListener('dragleave', function(){ cell.classList.remove('drag-over'); });
+        cell.addEventListener('drop', function(e){
+            e.preventDefault(); cell.classList.remove('drag-over');
+            if (!draggedData.id) return;
+            placeCourseInCell(cell, draggedData);
+            if (draggedEl) { draggedEl.classList.add('placed'); draggedEl.style.opacity='1'; draggedEl.draggable=false; }
+            draggedEl = null; draggedData = {};
+            updateCounter();
+        });
+    }
+
+    function removeCourse(btn) {
+        var cell = btn.closest('.sched-cell');
+        var cid = cell.dataset.courseId;
+
+        // Restore the draggable pill
+        var pill = document.querySelector('[data-id="' + cid + '"]');
+        if (pill) {
+            pill.classList.remove('placed','dragging');
+            pill.style.opacity = '1';
+            pill.draggable = true;
+        }
+
+        // Clear cell
+        cell.classList.remove('has-course');
+        // Remove color classes
+        ['bg-color-1','bg-color-2','bg-color-3','bg-color-4','bg-color-5','bg-color-6'].forEach(function(c){
+            cell.classList.remove(c);
+        });
+        delete cell.dataset.courseId;
+        cell.innerHTML = 'Arrastrar';
+        cell.setAttribute('ondragover',  'onDragOver(event)');
+        cell.setAttribute('ondragleave', 'onDragLeave(event)');
+        cell.setAttribute('ondrop',      'onDrop(event)');
+        updateCounter();
+    }
+
+    function updateCounter() {
+        var filled = document.querySelectorAll('.sched-cell.has-course').length;
+        var total  = document.querySelectorAll('.draggable-course').length;
+        document.querySelector('.schedule-grid-wrapper h3 + div').textContent =
+            filled + ' / ' + total + ' materias colocadas';
+    }
+
+    function limpiarHorario() {
+        if (!confirm('¿Seguro que deseas limpiar todo el horario?')) return;
+        document.querySelectorAll('.sched-cell.has-course').forEach(function(cell){
+            var cid = cell.dataset.courseId;
+            var pill = document.querySelector('[data-id="' + cid + '"]');
+            if (pill) { pill.classList.remove('placed'); pill.style.opacity='1'; pill.draggable=true; }
+        });
+        document.querySelectorAll('.sched-cell').forEach(function(cell){
+            cell.classList.remove('has-course');
+            ['bg-color-1','bg-color-2','bg-color-3','bg-color-4','bg-color-5','bg-color-6'].forEach(function(c){ cell.classList.remove(c); });
+            delete cell.dataset.courseId;
+            cell.innerHTML = 'Arrastrar';
+        });
+        updateCounter();
+    }
+
+    function guardarHorario() {
+        var filled = document.querySelectorAll('.sched-cell.has-course').length;
+        if (filled === 0) { alert('Tu horario está vacío. Arrastra al menos una materia primero.'); return; }
+        alert('✅ Horario confirmado con ' + filled + ' materia(s).\n\nEn la versión completa, esto enviará tu selección al servidor.');
+    }
+    //]]>
+    </script>
+    </ui:define>
+
+</ui:composition>
+</html>

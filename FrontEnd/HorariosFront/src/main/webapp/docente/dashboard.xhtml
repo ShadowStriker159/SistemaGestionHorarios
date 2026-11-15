@@ -1,0 +1,386 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+<ui:composition template="/WEB-INF/templates/layout.xhtml">
+
+    <ui:define name="title">Mis Grupos · Docente · Horarios UnBosque</ui:define>
+    <ui:define name="page-title">Mis Grupos Asignados</ui:define>
+    <ui:define name="breadcrumb">Docente / Dashboard</ui:define>
+    <ui:define name="user-avatar-letter">C</ui:define>
+    <ui:define name="user-name">Carlos Martínez Díaz</ui:define>
+    <ui:define name="user-role">Docente · Profesor Titular · TC</ui:define>
+
+    <ui:define name="sidebar-nav">
+        <span class="nav-section-title">Mi Panel</span>
+        <a href="dashboard.xhtml" class="nav-item active">
+            <div class="nav-icon">🏠</div> Mis Grupos
+        </a>
+        <a href="solicitudes.xhtml" class="nav-item">
+            <div class="nav-icon">📝</div> Solicitudes
+        </a>
+        <span class="nav-section-title">Información</span>
+        <a href="#" class="nav-item">
+            <div class="nav-icon">👤</div> Mi Perfil
+        </a>
+        <a href="#" class="nav-item">
+            <div class="nav-icon">📅</div> Mi Disponibilidad
+        </a>
+    </ui:define>
+
+    <ui:define name="content">
+
+        <!-- Perfil docente banner -->
+        <div class="nm-card mb-6" style="background:linear-gradient(135deg,var(--primary-dark),var(--primary),var(--accent));color:#fff;margin-bottom:24px;">
+            <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap;">
+                <div style="width:68px;height:68px;background:rgba(255,255,255,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.7rem;font-weight:800;flex-shrink:0;box-shadow:4px 4px 12px rgba(0,0,0,0.25);border:2px solid rgba(255,255,255,0.4);">CM</div>
+                <div style="flex:1;">
+                    <div style="font-size:1.25rem;font-weight:800;">Carlos Martínez Díaz</div>
+                    <div style="opacity:0.85;font-size:0.85rem;">ID: DOC001 · c.martinez@unbosque.edu.co</div>
+                    <div style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap;">
+                        <span style="background:rgba(255,255,255,0.2);border-radius:20px;padding:3px 14px;font-size:0.75rem;font-weight:700;border:1px solid rgba(255,255,255,0.3);">🎖 Profesor Titular</span>
+                        <span style="background:rgba(255,255,255,0.2);border-radius:20px;padding:3px 14px;font-size:0.75rem;font-weight:700;border:1px solid rgba(255,255,255,0.3);">⏰ Tiempo Completo</span>
+                        <span style="background:rgba(6,214,160,0.3);border-radius:20px;padding:3px 14px;font-size:0.75rem;font-weight:700;border:1px solid rgba(6,214,160,0.5);">✅ Activo</span>
+                    </div>
+                </div>
+                <a href="solicitudes.xhtml" style="background:rgba(255,255,255,0.15);color:#fff;padding:10px 18px;border-radius:12px;font-size:0.85rem;font-weight:700;border:1px solid rgba(255,255,255,0.3);display:flex;align-items:center;gap:8px;">
+                    📝 Hacer Solicitud
+                </a>
+            </div>
+        </div>
+
+        <!-- Stat mini row -->
+        <div class="stat-grid" style="grid-template-columns:repeat(4,1fr);margin-bottom:28px;">
+            <div class="stat-card">
+                <div class="stat-icon blue">📚</div>
+                <div class="stat-body">
+                    <div class="stat-value">3</div>
+                    <div class="stat-label">Grupos Activos</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon green">👨‍🎓</div>
+                <div class="stat-body">
+                    <div class="stat-value">75</div>
+                    <div class="stat-label">Estudiantes Total</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon orange">⏱</div>
+                <div class="stat-body">
+                    <div class="stat-value">11</div>
+                    <div class="stat-label">Horas / Semana</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon purple">📋</div>
+                <div class="stat-body">
+                    <div class="stat-value">2</div>
+                    <div class="stat-label">Cursos Distintos</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Page title -->
+        <div class="page-header">
+            <h1>Grupos Asignados 👥</h1>
+            <p>Detalle de cada grupo: estudiantes, aula, bloque, horario y curso</p>
+        </div>
+
+        <!-- Group Cards -->
+        <div class="group-cards-grid">
+
+            <!-- Grupo 1 -->
+            <div class="group-card">
+                <div class="group-card-header">
+                    <div class="group-card-course">Programación 2 · ISC-201</div>
+                    <div class="group-card-name">Grupo G-301</div>
+                </div>
+                <div class="group-card-body">
+                    <div class="group-meta-row">
+                        <span class="meta-icon">🗓</span>
+                        <span><strong>Lunes</strong> · 08:00 – 10:00</span>
+                        <span class="badge badge-info" style="margin-left:auto;">DIA</span>
+                    </div>
+                    <div class="group-meta-row">
+                        <span class="meta-icon">🏫</span>
+                        <span>Aula <strong>304-A</strong> · Bloque 3 — Ciencias</span>
+                    </div>
+                    <div class="group-meta-row">
+                        <span class="meta-icon">🖥</span>
+                        <span>Tipo: <strong>SISTEMAS</strong> · Cap. 35 puestos</span>
+                    </div>
+                    <div class="group-meta-row">
+                        <span class="meta-icon">📊</span>
+                        <span>Cupo: <strong>25 / 35</strong> estudiantes</span>
+                        <span class="badge badge-success" style="margin-left:auto;">Abierto</span>
+                    </div>
+
+                    <!-- Estudiantes -->
+                    <div class="group-card-students">
+                        <div class="students-label">Estudiantes Matriculados (25)</div>
+                        <div>
+                            <span class="student-chip">👤 Andrés F. Gómez</span>
+                            <span class="student-chip">👤 Camila Vega</span>
+                            <span class="student-chip">👤 Luisa Ríos</span>
+                            <span class="student-chip">👤 Miguel Herrera</span>
+                            <span class="student-chip">👤 Paula Castro</span>
+                            <span class="student-chip">👤 Sebastián Díaz</span>
+                            <span class="student-chip">👤 Natalia Mora</span>
+                            <button type="button" class="btn btn-nm btn-sm" style="margin:2px;" onclick="openModal('modal-estudiantes-g301')">
+                                +18 más →
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Grupo 2 -->
+            <div class="group-card">
+                <div class="group-card-header" style="background:linear-gradient(135deg,#7209b7,#4361ee);">
+                    <div class="group-card-course">Base de Datos I · ISC-301</div>
+                    <div class="group-card-name">Grupo G-401</div>
+                </div>
+                <div class="group-card-body">
+                    <div class="group-meta-row">
+                        <span class="meta-icon">🗓</span>
+                        <span><strong>Martes</strong> · 10:00 – 12:00</span>
+                        <span class="badge badge-info" style="margin-left:auto;">DIA</span>
+                    </div>
+                    <div class="group-meta-row">
+                        <span class="meta-icon">🏫</span>
+                        <span>Aula <strong>Lab-202</strong> · Bloque 2 — Ingeniería</span>
+                    </div>
+                    <div class="group-meta-row">
+                        <span class="meta-icon">🖥</span>
+                        <span>Tipo: <strong>SISTEMAS</strong> · Cap. 28 puestos</span>
+                    </div>
+                    <div class="group-meta-row">
+                        <span class="meta-icon">📊</span>
+                        <span>Cupo: <strong>20 / 28</strong> estudiantes</span>
+                        <span class="badge badge-success" style="margin-left:auto;">Abierto</span>
+                    </div>
+
+                    <div class="group-card-students">
+                        <div class="students-label">Estudiantes Matriculados (20)</div>
+                        <div>
+                            <span class="student-chip">👤 Valentina Torres</span>
+                            <span class="student-chip">👤 Daniel Suárez</span>
+                            <span class="student-chip">👤 Santiago Moreno</span>
+                            <span class="student-chip">👤 Andrea López</span>
+                            <span class="student-chip">👤 Felipe Ramos</span>
+                            <button type="button" class="btn btn-nm btn-sm" style="margin:2px;" onclick="openModal('modal-estudiantes-g401')">
+                                +15 más →
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Grupo 3 -->
+            <div class="group-card">
+                <div class="group-card-header" style="background:linear-gradient(135deg,#06d6a0,#4361ee);">
+                    <div class="group-card-course">Programación 2 · ISC-201</div>
+                    <div class="group-card-name">Grupo G-302</div>
+                </div>
+                <div class="group-card-body">
+                    <div class="group-meta-row">
+                        <span class="meta-icon">🗓</span>
+                        <span><strong>Jueves</strong> · 14:00 – 16:00</span>
+                        <span class="badge badge-warning" style="margin-left:auto;">TARDE</span>
+                    </div>
+                    <div class="group-meta-row">
+                        <span class="meta-icon">🏫</span>
+                        <span>Aula <strong>305-B</strong> · Bloque 3 — Ciencias</span>
+                    </div>
+                    <div class="group-meta-row">
+                        <span class="meta-icon">🖥</span>
+                        <span>Tipo: <strong>SISTEMAS</strong> · Cap. 35 puestos</span>
+                    </div>
+                    <div class="group-meta-row">
+                        <span class="meta-icon">📊</span>
+                        <span>Cupo: <strong>30 / 35</strong> estudiantes</span>
+                        <span class="badge badge-success" style="margin-left:auto;">Abierto</span>
+                    </div>
+
+                    <div class="group-card-students">
+                        <div class="students-label">Estudiantes Matriculados (30)</div>
+                        <div>
+                            <span class="student-chip">👤 Laura García</span>
+                            <span class="student-chip">👤 Juan Pérez</span>
+                            <span class="student-chip">👤 María Castro</span>
+                            <span class="student-chip">👤 Carlos Ruiz</span>
+                            <span class="student-chip">👤 Ana Méndez</span>
+                            <button type="button" class="btn btn-nm btn-sm" style="margin:2px;" onclick="openModal('modal-estudiantes-g302')">
+                                +25 más →
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Mi Horario semanal (resumen) -->
+        <div class="nm-card" style="margin-top:28px;">
+            <div class="nm-card-header">
+                <span class="nm-card-title">📅 Mi Horario Semanal</span>
+            </div>
+            <div style="overflow-x:auto;">
+                <table class="nm-table">
+                    <thead>
+                        <tr>
+                            <th>Franja</th>
+                            <th>Lunes</th>
+                            <th>Martes</th>
+                            <th>Miércoles</th>
+                            <th>Jueves</th>
+                            <th>Viernes</th>
+                            <th>Sábado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="font-weight:600;font-size:0.8rem;white-space:nowrap;">08:00–10:00</td>
+                            <td style="background:var(--primary-light);color:var(--primary-dark);font-weight:600;font-size:0.78rem;border-radius:6px;">Prog. 2 · G301<br/><span style="font-size:0.68rem;opacity:0.8;">Aula 304-A</span></td>
+                            <td style="color:var(--text-muted);font-size:0.75rem;">—</td>
+                            <td style="color:var(--text-muted);font-size:0.75rem;">—</td>
+                            <td style="color:var(--text-muted);font-size:0.75rem;">—</td>
+                            <td style="color:var(--text-muted);font-size:0.75rem;">—</td>
+                            <td style="color:var(--text-muted);font-size:0.75rem;">—</td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight:600;font-size:0.8rem;white-space:nowrap;">10:00–12:00</td>
+                            <td style="color:var(--text-muted);font-size:0.75rem;">—</td>
+                            <td style="background:var(--accent-light);color:var(--accent);font-weight:600;font-size:0.78rem;border-radius:6px;">BD I · G401<br/><span style="font-size:0.68rem;opacity:0.8;">Lab-202</span></td>
+                            <td style="color:var(--text-muted);font-size:0.75rem;">—</td>
+                            <td style="color:var(--text-muted);font-size:0.75rem;">—</td>
+                            <td style="color:var(--text-muted);font-size:0.75rem;">—</td>
+                            <td style="color:var(--text-muted);font-size:0.75rem;">—</td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight:600;font-size:0.8rem;white-space:nowrap;">14:00–16:00</td>
+                            <td style="color:var(--text-muted);font-size:0.75rem;">—</td>
+                            <td style="color:var(--text-muted);font-size:0.75rem;">—</td>
+                            <td style="color:var(--text-muted);font-size:0.75rem;">—</td>
+                            <td style="background:var(--success-light);color:#047857;font-weight:600;font-size:0.78rem;border-radius:6px;">Prog. 2 · G302<br/><span style="font-size:0.68rem;opacity:0.8;">Aula 305-B</span></td>
+                            <td style="color:var(--text-muted);font-size:0.75rem;">—</td>
+                            <td style="color:var(--text-muted);font-size:0.75rem;">—</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </ui:define>
+
+    <ui:define name="scripts">
+
+    <!-- Modal lista estudiantes G301 -->
+    <div id="modal-estudiantes-g301" class="modal-overlay" onclick="closeModalOutside(event,'modal-estudiantes-g301')">
+        <div class="modal">
+            <div class="modal-header">
+                <span class="modal-title">👥 Estudiantes — G-301 Programación 2</span>
+                <button type="button" class="modal-close" onclick="closeModal('modal-estudiantes-g301')">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="search-box" style="max-width:100%;margin-bottom:16px;">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" placeholder="Buscar estudiante…" onkeyup="filterTable('tbl-est-g301',this.value)" />
+                </div>
+                <table class="nm-table" id="tbl-est-g301">
+                    <thead><tr><th>Código</th><th>Nombre</th><th>Sem.</th><th>Estado</th></tr></thead>
+                    <tbody>
+                        <tr><td>20240123</td><td>Andrés Felipe Gómez</td><td>3</td><td><span class="badge badge-success">Activo</span></td></tr>
+                        <tr><td>20241389</td><td>Camila Andrea Vega</td><td>2</td><td><span class="badge badge-success">Activo</span></td></tr>
+                        <tr><td>20250011</td><td>Luisa Fernanda Ríos</td><td>1</td><td><span class="badge badge-success">Activo</span></td></tr>
+                        <tr><td>20230567</td><td>Miguel Ángel Herrera</td><td>4</td><td><span class="badge badge-success">Activo</span></td></tr>
+                        <tr><td>20240765</td><td>Paula Andrea Castro</td><td>3</td><td><span class="badge badge-success">Activo</span></td></tr>
+                        <tr><td>20241102</td><td>Sebastián Díaz Ruiz</td><td>3</td><td><span class="badge badge-warning">Prueba Ac.</span></td></tr>
+                        <tr><td>20240889</td><td>Natalia Mora Peña</td><td>3</td><td><span class="badge badge-success">Activo</span></td></tr>
+                        <tr><td>20241567</td><td>Diego Ramírez López</td><td>3</td><td><span class="badge badge-success">Activo</span></td></tr>
+                        <tr><td>20242001</td><td>Fernanda Gutiérrez</td><td>2</td><td><span class="badge badge-success">Activo</span></td></tr>
+                        <tr><td>20240330</td><td>Julián Torres Vega</td><td>4</td><td><span class="badge badge-success">Activo</span></td></tr>
+                    </tbody>
+                </table>
+                <p style="font-size:0.72rem;color:var(--text-muted);text-align:right;margin-top:8px;">Total: 25 estudiantes</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-ghost" onclick="closeModal('modal-estudiantes-g301')">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal lista estudiantes G401 -->
+    <div id="modal-estudiantes-g401" class="modal-overlay" onclick="closeModalOutside(event,'modal-estudiantes-g401')">
+        <div class="modal">
+            <div class="modal-header">
+                <span class="modal-title">👥 Estudiantes — G-401 Base de Datos I</span>
+                <button type="button" class="modal-close" onclick="closeModal('modal-estudiantes-g401')">✕</button>
+            </div>
+            <div class="modal-body">
+                <table class="nm-table">
+                    <thead><tr><th>Código</th><th>Nombre</th><th>Sem.</th><th>Estado</th></tr></thead>
+                    <tbody>
+                        <tr><td>20231045</td><td>Valentina Torres Cruz</td><td>5</td><td><span class="badge badge-success">Activo</span></td></tr>
+                        <tr><td>20210344</td><td>Daniel Arturo Suárez</td><td>9</td><td><span class="badge badge-neutral">Inactivo</span></td></tr>
+                        <tr><td>20220876</td><td>Santiago Moreno Leal</td><td>7</td><td><span class="badge badge-warning">Prueba Ac.</span></td></tr>
+                        <tr><td>20240452</td><td>Andrea López Soto</td><td>4</td><td><span class="badge badge-success">Activo</span></td></tr>
+                        <tr><td>20241677</td><td>Felipe Ramos Ortiz</td><td>3</td><td><span class="badge badge-success">Activo</span></td></tr>
+                    </tbody>
+                </table>
+                <p style="font-size:0.72rem;color:var(--text-muted);text-align:right;margin-top:8px;">Total: 20 estudiantes</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-ghost" onclick="closeModal('modal-estudiantes-g401')">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal lista estudiantes G302 -->
+    <div id="modal-estudiantes-g302" class="modal-overlay" onclick="closeModalOutside(event,'modal-estudiantes-g302')">
+        <div class="modal">
+            <div class="modal-header">
+                <span class="modal-title">👥 Estudiantes — G-302 Programación 2</span>
+                <button type="button" class="modal-close" onclick="closeModal('modal-estudiantes-g302')">✕</button>
+            </div>
+            <div class="modal-body">
+                <table class="nm-table">
+                    <thead><tr><th>Código</th><th>Nombre</th><th>Sem.</th><th>Estado</th></tr></thead>
+                    <tbody>
+                        <tr><td>20240901</td><td>Laura García Reyes</td><td>3</td><td><span class="badge badge-success">Activo</span></td></tr>
+                        <tr><td>20240812</td><td>Juan Carlos Pérez</td><td>3</td><td><span class="badge badge-success">Activo</span></td></tr>
+                        <tr><td>20241234</td><td>María Elena Castro</td><td>2</td><td><span class="badge badge-success">Activo</span></td></tr>
+                        <tr><td>20240345</td><td>Carlos Ruiz Molina</td><td>4</td><td><span class="badge badge-warning">Prueba Ac.</span></td></tr>
+                        <tr><td>20242112</td><td>Ana Sofía Méndez</td><td>3</td><td><span class="badge badge-success">Activo</span></td></tr>
+                    </tbody>
+                </table>
+                <p style="font-size:0.72rem;color:var(--text-muted);text-align:right;margin-top:8px;">Total: 30 estudiantes</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-ghost" onclick="closeModal('modal-estudiantes-g302')">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+    //<![CDATA[
+    function openModal(id)  { document.getElementById(id).classList.add('open'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+    function closeModalOutside(e, id) { if (e.target.id === id) closeModal(id); }
+    function filterTable(tableId, query) {
+        var rows = document.querySelectorAll('#' + tableId + ' tbody tr');
+        var q = query.toLowerCase();
+        rows.forEach(function(row){
+            row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
+        });
+    }
+    //]]>
+    </script>
+    </ui:define>
+
+</ui:composition>
+</html>

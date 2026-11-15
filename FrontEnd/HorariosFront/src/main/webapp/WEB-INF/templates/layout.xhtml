@@ -1,0 +1,96 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+<h:head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><ui:insert name="title">Horarios · UnBosque</ui:insert></title>
+
+    <!-- 1. Neomorphism base system -->
+    <link rel="stylesheet" type="text/css"
+          href="#{request.contextPath}/css/neomorphism.css" />
+    <!-- 2. Aurora dark theme override (loads after, takes priority) -->
+    <link rel="stylesheet" type="text/css"
+          href="#{request.contextPath}/css/aurora.css" />
+
+    <link rel="icon" type="image/svg+xml"
+          href="data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'&gt;&lt;text y='.9em' font-size='90'&gt;🎓&lt;/text&gt;&lt;/svg&gt;" />
+
+    <ui:insert name="head-extra"/>
+</h:head>
+
+<h:body>
+<div class="app-shell">
+
+    <!-- ===== SIDEBAR =========================================== -->
+    <aside class="sidebar">
+
+        <!-- Brand -->
+        <div class="sidebar-brand">
+            <div class="brand-icon">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zm-7 9.83v4l7 3.82 7-3.82v-4L12 17l-7-4.17z"/>
+                </svg>
+            </div>
+            <div class="brand-text">
+                <div class="brand-name">UnBosque</div>
+                <div class="brand-sub">Gestión Académica</div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="sidebar-nav">
+            <ui:insert name="sidebar-nav">
+                <span class="nav-section-title">Navegación</span>
+            </ui:insert>
+        </nav>
+
+        <!-- User footer -->
+        <div class="sidebar-footer">
+            <div class="sidebar-user">
+                <div class="avatar">
+                    <ui:insert name="user-avatar-letter">U</ui:insert>
+                </div>
+                <div class="user-info">
+                    <div class="user-name"><ui:insert name="user-name">Usuario</ui:insert></div>
+                    <div class="user-role"><ui:insert name="user-role">Rol</ui:insert></div>
+                </div>
+                <a href="#{request.contextPath}/index.xhtml" class="logout-btn" title="Cerrar sesión">⏻</a>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ===== MAIN AREA ========================================= -->
+    <div class="main-content">
+
+        <!-- Topbar -->
+        <header class="topbar">
+            <div class="topbar-left">
+                <div>
+                    <div class="topbar-title"><ui:insert name="page-title">Panel</ui:insert></div>
+                    <div class="topbar-breadcrumb"><ui:insert name="breadcrumb">Inicio</ui:insert></div>
+                </div>
+            </div>
+            <div class="topbar-right">
+                <div class="icon-btn" title="Notificaciones">🔔</div>
+                <div class="icon-btn" title="Configuración">⚙</div>
+            </div>
+        </header>
+
+        <!-- Page Content -->
+        <main class="page-content">
+            <ui:insert name="content">
+                <p style="color:rgba(255,255,255,0.5);">Sin contenido</p>
+            </ui:insert>
+        </main>
+    </div>
+
+</div>
+
+<ui:insert name="scripts"/>
+</h:body>
+</html>

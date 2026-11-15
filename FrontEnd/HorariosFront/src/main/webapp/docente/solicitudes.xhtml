@@ -1,0 +1,360 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+<ui:composition template="/WEB-INF/templates/layout.xhtml">
+
+    <ui:define name="title">Solicitudes · Docente · Horarios UnBosque</ui:define>
+    <ui:define name="page-title">Solicitudes</ui:define>
+    <ui:define name="breadcrumb">Docente / Solicitudes</ui:define>
+    <ui:define name="user-avatar-letter">C</ui:define>
+    <ui:define name="user-name">Carlos Martínez Díaz</ui:define>
+    <ui:define name="user-role">Docente · Profesor Titular · TC</ui:define>
+
+    <ui:define name="sidebar-nav">
+        <span class="nav-section-title">Mi Panel</span>
+        <a href="dashboard.xhtml" class="nav-item">
+            <div class="nav-icon">🏠</div> Mis Grupos
+        </a>
+        <a href="solicitudes.xhtml" class="nav-item active">
+            <div class="nav-icon">📝</div> Solicitudes
+        </a>
+        <span class="nav-section-title">Información</span>
+        <a href="#" class="nav-item">
+            <div class="nav-icon">👤</div> Mi Perfil
+        </a>
+        <a href="#" class="nav-item">
+            <div class="nav-icon">📅</div> Mi Disponibilidad
+        </a>
+    </ui:define>
+
+    <ui:define name="content">
+
+        <div class="page-header">
+            <h1>Solicitudes 📝</h1>
+            <p>Gestiona tus solicitudes de vacaciones, incapacidad y otros permisos</p>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start;">
+
+            <!-- Formulario nueva solicitud -->
+            <div>
+                <div class="nm-card">
+                    <div class="nm-card-header">
+                        <span class="nm-card-title">➕ Nueva Solicitud</span>
+                    </div>
+
+                    <!-- Tipo de solicitud -->
+                    <div class="form-group">
+                        <label class="form-label">Tipo de Solicitud</label>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;" id="tipo-selector">
+                            <div class="nm-card-sm tipo-card" style="cursor:pointer;text-align:center;border:2px solid var(--primary);background:var(--primary-light);" onclick="selTipo(this,'VACACIONES')">
+                                <div style="font-size:1.5rem;margin-bottom:4px;">🏖</div>
+                                <div style="font-weight:700;font-size:0.85rem;color:var(--primary);">Vacaciones</div>
+                                <div style="font-size:0.7rem;color:var(--text-muted);">Descanso programado</div>
+                            </div>
+                            <div class="nm-card-sm tipo-card" style="cursor:pointer;text-align:center;" onclick="selTipo(this,'INCAPACIDAD')">
+                                <div style="font-size:1.5rem;margin-bottom:4px;">🏥</div>
+                                <div style="font-weight:700;font-size:0.85rem;color:var(--text-secondary);">Incapacidad</div>
+                                <div style="font-size:0.7rem;color:var(--text-muted);">Médica o accidente</div>
+                            </div>
+                            <div class="nm-card-sm tipo-card" style="cursor:pointer;text-align:center;" onclick="selTipo(this,'PERMISO')">
+                                <div style="font-size:1.5rem;margin-bottom:4px;">📋</div>
+                                <div style="font-weight:700;font-size:0.85rem;color:var(--text-secondary);">Permiso</div>
+                                <div style="font-size:0.7rem;color:var(--text-muted);">Permiso especial</div>
+                            </div>
+                            <div class="nm-card-sm tipo-card" style="cursor:pointer;text-align:center;" onclick="selTipo(this,'COMISION')">
+                                <div style="font-size:1.5rem;margin-bottom:4px;">✈️</div>
+                                <div style="font-weight:700;font-size:0.85rem;color:var(--text-secondary);">Comisión</div>
+                                <div style="font-size:0.7rem;color:var(--text-muted);">Viaje académico</div>
+                            </div>
+                        </div>
+                        <input type="hidden" id="tipo-value" value="VACACIONES" />
+                    </div>
+
+                    <div class="form-row cols-2">
+                        <div class="form-group">
+                            <label class="form-label">Fecha Inicio</label>
+                            <input type="date" class="form-control" id="fecha-inicio"
+                                   min="2026-09-04" value="2026-09-15" />
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Fecha Fin</label>
+                            <input type="date" class="form-control" id="fecha-fin"
+                                   min="2026-09-04" value="2026-09-30" />
+                        </div>
+                    </div>
+
+                    <!-- Info duración -->
+                    <div class="nm-card-sm" id="duracion-info" style="margin-bottom:16px;display:flex;align-items:center;gap:12px;">
+                        <div style="font-size:1.5rem;">📆</div>
+                        <div>
+                            <div style="font-weight:700;font-size:0.9rem;" id="dias-label">15 días calendario</div>
+                            <div style="font-size:0.72rem;color:var(--text-muted);">Del 15 Sep al 30 Sep 2026</div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Descripción / Observaciones</label>
+                        <textarea class="form-control" id="descripcion" rows="4"
+                                  style="resize:vertical;"
+                                  placeholder="Describe el motivo de la solicitud. En caso de incapacidad, indica el diagnóstico o código médico si es posible."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Adjunto (opcional)</label>
+                        <div class="form-control" style="display:flex;align-items:center;gap:10px;cursor:pointer;color:var(--text-muted);">
+                            <span>📎</span>
+                            <span style="font-size:0.82rem;">Haz clic para adjuntar documento médico o certificado…</span>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-warning">
+                        ⚠️ Al enviar una solicitud de <strong>Vacaciones o Incapacidad</strong>, tu estado en el sistema cambiará automáticamente y la secretaría será notificada para reasignar tus grupos si es necesario.
+                    </div>
+
+                    <button type="button" class="btn btn-primary w-100" style="justify-content:center;margin-top:8px;" onclick="enviarSolicitud()">
+                        📤 Enviar Solicitud
+                    </button>
+                </div>
+            </div>
+
+            <!-- Historial de solicitudes -->
+            <div>
+                <div class="nm-card">
+                    <div class="nm-card-header">
+                        <span class="nm-card-title">📋 Historial de Solicitudes</span>
+                        <select class="form-control" style="width:auto;min-width:130px;font-size:0.78rem;">
+                            <option>Todas</option>
+                            <option>Aprobadas</option>
+                            <option>Pendientes</option>
+                            <option>Rechazadas</option>
+                        </select>
+                    </div>
+
+                    <div style="display:flex;flex-direction:column;gap:12px;">
+
+                        <!-- Solicitud 1 -->
+                        <div class="nm-card-sm" style="border-left:3px solid var(--success);">
+                            <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;">
+                                <div style="flex:1;">
+                                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;">
+                                        <span style="font-size:1rem;">🏖</span>
+                                        <span style="font-weight:700;font-size:0.88rem;">Vacaciones</span>
+                                        <span class="badge badge-success">Aprobada</span>
+                                    </div>
+                                    <div style="font-size:0.78rem;color:var(--text-muted);">📅 15 Dic 2025 — 10 Ene 2026</div>
+                                    <div style="font-size:0.78rem;color:var(--text-muted);">⏱ 26 días · Período vacacional fin de año</div>
+                                    <div style="font-size:0.72rem;color:var(--success);margin-top:4px;">✅ Aprobada por: Dpto. Académico · 12 Nov 2025</div>
+                                </div>
+                                <button type="button" class="btn-icon-only" title="Ver detalle" onclick="openModal('modal-det-1')">👁</button>
+                            </div>
+                        </div>
+
+                        <!-- Solicitud 2 -->
+                        <div class="nm-card-sm" style="border-left:3px solid var(--warning);">
+                            <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;">
+                                <div style="flex:1;">
+                                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;">
+                                        <span style="font-size:1rem;">📋</span>
+                                        <span style="font-weight:700;font-size:0.88rem;">Permiso Especial</span>
+                                        <span class="badge badge-warning">Pendiente</span>
+                                    </div>
+                                    <div style="font-size:0.78rem;color:var(--text-muted);">📅 20 Sep 2026 — 22 Sep 2026</div>
+                                    <div style="font-size:0.78rem;color:var(--text-muted);">⏱ 3 días · Congreso Internacional de Informática</div>
+                                    <div style="font-size:0.72rem;color:var(--warning);margin-top:4px;">⏳ En revisión desde: 01 Sep 2026</div>
+                                </div>
+                                <button type="button" class="btn-icon-only danger" title="Cancelar solicitud" onclick="cancelarSolicitud(this)">✕</button>
+                            </div>
+                        </div>
+
+                        <!-- Solicitud 3 -->
+                        <div class="nm-card-sm" style="border-left:3px solid var(--danger);">
+                            <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;">
+                                <div style="flex:1;">
+                                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;">
+                                        <span style="font-size:1rem;">🏥</span>
+                                        <span style="font-weight:700;font-size:0.88rem;">Incapacidad</span>
+                                        <span class="badge badge-danger">Rechazada</span>
+                                    </div>
+                                    <div style="font-size:0.78rem;color:var(--text-muted);">📅 05 Mar 2026 — 12 Mar 2026</div>
+                                    <div style="font-size:0.78rem;color:var(--text-muted);">⏱ 8 días · Recuperación postoperatoria</div>
+                                    <div style="font-size:0.72rem;color:var(--danger);margin-top:4px;">❌ Rechazada: Documentación incompleta · 03 Mar 2026</div>
+                                </div>
+                                <button type="button" class="btn-icon-only" title="Reenviar" onclick="openModal('modal-reenviar')">🔄</button>
+                            </div>
+                        </div>
+
+                        <!-- Solicitud 4 -->
+                        <div class="nm-card-sm" style="border-left:3px solid var(--success);">
+                            <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;">
+                                <div style="flex:1;">
+                                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;">
+                                        <span style="font-size:1rem;">✈️</span>
+                                        <span style="font-weight:700;font-size:0.88rem;">Comisión Académica</span>
+                                        <span class="badge badge-success">Aprobada</span>
+                                    </div>
+                                    <div style="font-size:0.78rem;color:var(--text-muted);">📅 10 Jun 2026 — 14 Jun 2026</div>
+                                    <div style="font-size:0.78rem;color:var(--text-muted);">⏱ 5 días · IEEE LACCA Conference — Bogotá</div>
+                                    <div style="font-size:0.72rem;color:var(--success);margin-top:4px;">✅ Aprobada por: Decano Ing. · 28 May 2026</div>
+                                </div>
+                                <button type="button" class="btn-icon-only" title="Ver detalle">👁</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Estado docente actual -->
+                <div class="nm-card" style="margin-top:16px;">
+                    <div class="nm-card-header">
+                        <span class="nm-card-title">📊 Mi Estado Actual</span>
+                    </div>
+                    <div style="display:flex;flex-direction:column;gap:10px;">
+                        <div style="display:flex;align-items:center;justify-content:space-between;">
+                            <span style="font-size:0.85rem;color:var(--text-secondary);">Estado en sistema</span>
+                            <span class="badge badge-success">✅ Activo</span>
+                        </div>
+                        <div class="divider" style="margin:4px 0;"/>
+                        <div style="display:flex;align-items:center;justify-content:space-between;">
+                            <span style="font-size:0.85rem;color:var(--text-secondary);">Solicitudes este año</span>
+                            <span style="font-weight:700;font-size:0.9rem;">4</span>
+                        </div>
+                        <div style="display:flex;align-items:center;justify-content:space-between;">
+                            <span style="font-size:0.85rem;color:var(--text-secondary);">Días de vacaciones usados</span>
+                            <span style="font-weight:700;font-size:0.9rem;">26 / 30 días</span>
+                        </div>
+                        <div style="background:var(--nm-bg);box-shadow:var(--nm-pressed-sm);border-radius:20px;height:8px;overflow:hidden;margin-top:4px;">
+                            <div style="width:87%;height:100%;background:linear-gradient(90deg,var(--primary),var(--accent));border-radius:20px;"></div>
+                        </div>
+                        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:4px;">
+                            <span style="font-size:0.85rem;color:var(--text-secondary);">Días disponibles</span>
+                            <span style="font-weight:700;color:var(--success);">4 días restantes</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </ui:define>
+
+    <ui:define name="scripts">
+
+    <!-- Modal detalle solicitud aprobada -->
+    <div id="modal-det-1" class="modal-overlay" onclick="closeModalOutside(event,'modal-det-1')">
+        <div class="modal">
+            <div class="modal-header">
+                <span class="modal-title">🏖 Detalle — Vacaciones Dic 2025</span>
+                <button type="button" class="modal-close" onclick="closeModal('modal-det-1')">✕</button>
+            </div>
+            <div class="modal-body">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+                    <div class="nm-card-sm"><div style="font-size:0.7rem;color:var(--text-muted);margin-bottom:3px;">TIPO</div><div style="font-weight:700;">🏖 Vacaciones</div></div>
+                    <div class="nm-card-sm"><div style="font-size:0.7rem;color:var(--text-muted);margin-bottom:3px;">ESTADO</div><span class="badge badge-success">Aprobada</span></div>
+                    <div class="nm-card-sm"><div style="font-size:0.7rem;color:var(--text-muted);margin-bottom:3px;">INICIO</div><div style="font-weight:700;">15 Dic 2025</div></div>
+                    <div class="nm-card-sm"><div style="font-size:0.7rem;color:var(--text-muted);margin-bottom:3px;">FIN</div><div style="font-weight:700;">10 Ene 2026</div></div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Descripción</label>
+                    <div class="nm-card-sm" style="font-size:0.85rem;color:var(--text-secondary);">Período vacacional de fin de año. Receso académico institucional correspondiente al semestre 2025-2.</div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Observación de Aprobación</label>
+                    <div class="nm-card-sm" style="font-size:0.85rem;color:var(--text-secondary);">Aprobada conforme al calendario académico institucional. Sin afectación de clases por receso oficial.</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-ghost" onclick="closeModal('modal-det-1')">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal reenviar solicitud rechazada -->
+    <div id="modal-reenviar" class="modal-overlay" onclick="closeModalOutside(event,'modal-reenviar')">
+        <div class="modal">
+            <div class="modal-header">
+                <span class="modal-title">🔄 Reenviar Solicitud — Incapacidad Mar 2026</span>
+                <button type="button" class="modal-close" onclick="closeModal('modal-reenviar')">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-danger" style="margin-bottom:16px;">
+                    ❌ Rechazada por: <strong>Documentación incompleta</strong>. Por favor adjunta el certificado médico para reenviar.
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Adjuntar Documento</label>
+                    <div class="form-control" style="display:flex;align-items:center;gap:10px;cursor:pointer;color:var(--text-muted);">
+                        <span>📎</span>
+                        <span style="font-size:0.82rem;">Seleccionar certificado médico (PDF, JPG)…</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Comentario Adicional</label>
+                    <textarea class="form-control" rows="3" placeholder="Explica brevemente los cambios o documentos adjuntos…"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-ghost" onclick="closeModal('modal-reenviar')">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="closeModal('modal-reenviar');alert('Solicitud reenviada exitosamente.')">📤 Reenviar</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+    //<![CDATA[
+    function openModal(id)  { document.getElementById(id).classList.add('open'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+    function closeModalOutside(e, id) { if (e.target.id === id) closeModal(id); }
+
+    function selTipo(el, tipo) {
+        document.querySelectorAll('.tipo-card').forEach(function(c){
+            c.style.border = '2px solid transparent';
+            c.style.background = '';
+            c.querySelector('div:nth-child(2)').style.color = 'var(--text-secondary)';
+        });
+        el.style.border = '2px solid var(--primary)';
+        el.style.background = 'var(--primary-light)';
+        el.querySelector('div:nth-child(2)').style.color = 'var(--primary)';
+        document.getElementById('tipo-value').value = tipo;
+    }
+
+    function calcularDias() {
+        var inicio = new Date(document.getElementById('fecha-inicio').value);
+        var fin    = new Date(document.getElementById('fecha-fin').value);
+        if (isNaN(inicio) || isNaN(fin) || fin <= inicio) return;
+        var dias = Math.ceil((fin - inicio) / (1000 * 60 * 60 * 24));
+        document.getElementById('dias-label').textContent = dias + ' días calendario';
+    }
+
+    document.getElementById('fecha-inicio').addEventListener('change', calcularDias);
+    document.getElementById('fecha-fin').addEventListener('change', calcularDias);
+
+    function enviarSolicitud() {
+        var tipo  = document.getElementById('tipo-value').value;
+        var fin   = document.getElementById('fecha-fin').value;
+        var ini   = document.getElementById('fecha-inicio').value;
+        var desc  = document.getElementById('descripcion').value.trim();
+        if (!ini || !fin) { alert('Por favor selecciona las fechas.'); return; }
+        if (new Date(fin) <= new Date(ini)) { alert('La fecha de fin debe ser posterior a la de inicio.'); return; }
+        if (!desc) { alert('Por favor ingresa una descripción de la solicitud.'); return; }
+        alert('✅ Solicitud de ' + tipo + ' enviada exitosamente.\n\nSerá revisada por el departamento académico en los próximos 3 días hábiles.');
+        document.getElementById('descripcion').value = '';
+    }
+
+    function cancelarSolicitud(btn) {
+        if (!confirm('¿Deseas cancelar esta solicitud pendiente?')) return;
+        var card = btn.closest('.nm-card-sm');
+        card.style.opacity = '0.4';
+        card.style.pointerEvents = 'none';
+        var badge = card.querySelector('.badge');
+        badge.textContent = 'Cancelada';
+        badge.className = 'badge badge-neutral';
+    }
+    //]]>
+    </script>
+    </ui:define>
+
+</ui:composition>
+</html>

@@ -1,0 +1,494 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+<ui:composition template="/WEB-INF/templates/layout.xhtml">
+
+    <ui:define name="title">Cursos y Grupos · Secretaria · Horarios UnBosque</ui:define>
+    <ui:define name="page-title">Cursos y Grupos</ui:define>
+    <ui:define name="breadcrumb">Secretaría / Cursos y Grupos</ui:define>
+    <ui:define name="user-avatar-letter">S</ui:define>
+    <ui:define name="user-name">Ana García López</ui:define>
+    <ui:define name="user-role">Secretaria Académica</ui:define>
+
+    <ui:define name="sidebar-nav">
+        <span class="nav-section-title">Principal</span>
+        <a href="dashboard.xhtml" class="nav-item">
+            <div class="nav-icon">🏠</div> Dashboard
+        </a>
+        <span class="nav-section-title">Gestión</span>
+        <a href="estudiantes.xhtml" class="nav-item">
+            <div class="nav-icon">🎓</div> Estudiantes
+        </a>
+        <a href="docentes.xhtml" class="nav-item">
+            <div class="nav-icon">👨‍🏫</div> Docentes
+        </a>
+        <a href="cursos.xhtml" class="nav-item active">
+            <div class="nav-icon">📚</div> Cursos y Grupos
+        </a>
+        <span class="nav-section-title">Más</span>
+        <a href="#" class="nav-item">
+            <div class="nav-icon">🏫</div> Aulas y Bloques
+        </a>
+        <a href="#" class="nav-item">
+            <div class="nav-icon">📊</div> Reportes
+        </a>
+    </ui:define>
+
+    <ui:define name="content">
+
+        <div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:16px;">
+            <div>
+                <h1>Cursos y Grupos 📚</h1>
+                <p>Crea y administra cursos, grupos, aulas, franjas y asignaciones de docentes</p>
+            </div>
+            <button type="button" class="btn btn-primary" onclick="openModal('modal-nuevo-curso')">
+                ＋ Nuevo Curso
+            </button>
+        </div>
+
+        <!-- Tabs -->
+        <div class="nm-tabs">
+            <button type="button" class="nm-tab active" onclick="showCourseTab('tab-cursos',this)">📚 Cursos</button>
+            <button type="button" class="nm-tab" onclick="showCourseTab('tab-grupos',this)">👥 Grupos</button>
+            <button type="button" class="nm-tab" onclick="showCourseTab('tab-asignacion',this)">🔗 Asignación Docente</button>
+        </div>
+
+        <!-- Tab Cursos -->
+        <div id="tab-cursos">
+            <div class="table-toolbar">
+                <div class="search-box">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" placeholder="Buscar curso…" onkeyup="filterTable('tabla-cursos',this.value)" />
+                </div>
+                <div class="d-flex gap-3">
+                    <select class="form-control" style="width:auto;min-width:180px;">
+                        <option>Todas las carreras</option>
+                        <option>Ing. Sistemas</option>
+                        <option>Medicina</option>
+                        <option>Derecho</option>
+                        <option>Ing. Industrial</option>
+                    </select>
+                </div>
+            </div>
+            <div class="nm-table-wrapper">
+                <table class="nm-table" id="tabla-cursos">
+                    <thead>
+                        <tr>
+                            <th>Curso</th>
+                            <th>Carrera</th>
+                            <th>Semestre</th>
+                            <th>Créditos</th>
+                            <th>Intensidad</th>
+                            <th>Tipo Aula</th>
+                            <th>Grupos</th>
+                            <th style="text-align:center;">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Programación 2</strong></td>
+                            <td>Ing. Sistemas</td>
+                            <td>3</td>
+                            <td>4</td>
+                            <td>4 h/sem</td>
+                            <td><span class="badge badge-info">SISTEMAS</span></td>
+                            <td>4</td>
+                            <td class="td-actions" style="justify-content:center;">
+                                <button type="button" class="btn-icon-only" title="Editar" onclick="openModal('modal-nuevo-curso')">✏️</button>
+                                <button type="button" class="btn-icon-only" title="Ver grupos" onclick="showCourseTab('tab-grupos',document.querySelectorAll('.nm-tab')[1])">👥</button>
+                                <button type="button" class="btn-icon-only danger" title="Eliminar">🗑</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Base de Datos I</strong></td>
+                            <td>Ing. Sistemas</td>
+                            <td>4</td>
+                            <td>3</td>
+                            <td>3 h/sem</td>
+                            <td><span class="badge badge-info">SISTEMAS</span></td>
+                            <td>3</td>
+                            <td class="td-actions" style="justify-content:center;">
+                                <button type="button" class="btn-icon-only" title="Editar" onclick="openModal('modal-nuevo-curso')">✏️</button>
+                                <button type="button" class="btn-icon-only" title="Ver grupos" onclick="showCourseTab('tab-grupos',document.querySelectorAll('.nm-tab')[1])">👥</button>
+                                <button type="button" class="btn-icon-only danger" title="Eliminar">🗑</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Cálculo Diferencial</strong></td>
+                            <td>Ing. Industrial</td>
+                            <td>1</td>
+                            <td>4</td>
+                            <td>4 h/sem</td>
+                            <td><span class="badge badge-primary">GRUPAL</span></td>
+                            <td>6</td>
+                            <td class="td-actions" style="justify-content:center;">
+                                <button type="button" class="btn-icon-only" title="Editar" onclick="openModal('modal-nuevo-curso')">✏️</button>
+                                <button type="button" class="btn-icon-only" title="Ver grupos" onclick="showCourseTab('tab-grupos',document.querySelectorAll('.nm-tab')[1])">👥</button>
+                                <button type="button" class="btn-icon-only danger" title="Eliminar">🗑</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Anatomía I</strong></td>
+                            <td>Medicina</td>
+                            <td>1</td>
+                            <td>5</td>
+                            <td>6 h/sem</td>
+                            <td><span class="badge badge-accent">MEDICINA</span></td>
+                            <td>3</td>
+                            <td class="td-actions" style="justify-content:center;">
+                                <button type="button" class="btn-icon-only" title="Editar" onclick="openModal('modal-nuevo-curso')">✏️</button>
+                                <button type="button" class="btn-icon-only" title="Ver grupos" onclick="showCourseTab('tab-grupos',document.querySelectorAll('.nm-tab')[1])">👥</button>
+                                <button type="button" class="btn-icon-only danger" title="Eliminar">🗑</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Derecho Romano</strong></td>
+                            <td>Derecho</td>
+                            <td>2</td>
+                            <td>3</td>
+                            <td>3 h/sem</td>
+                            <td><span class="badge badge-warning">DERECHO</span></td>
+                            <td>2</td>
+                            <td class="td-actions" style="justify-content:center;">
+                                <button type="button" class="btn-icon-only" title="Editar" onclick="openModal('modal-nuevo-curso')">✏️</button>
+                                <button type="button" class="btn-icon-only" title="Ver grupos" onclick="showCourseTab('tab-grupos',document.querySelectorAll('.nm-tab')[1])">👥</button>
+                                <button type="button" class="btn-icon-only danger" title="Eliminar">🗑</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Tab Grupos -->
+        <div id="tab-grupos" style="display:none;">
+            <div class="table-toolbar">
+                <div class="search-box">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" placeholder="Buscar grupo…" onkeyup="filterTable('tabla-grupos',this.value)" />
+                </div>
+                <button type="button" class="btn btn-nm" onclick="openModal('modal-nuevo-grupo')">＋ Nuevo Grupo</button>
+            </div>
+            <div class="nm-table-wrapper">
+                <table class="nm-table" id="tabla-grupos">
+                    <thead>
+                        <tr>
+                            <th>Grupo</th>
+                            <th>Curso</th>
+                            <th>Docente</th>
+                            <th>Aula / Bloque</th>
+                            <th>Día · Horario</th>
+                            <th>Cupo</th>
+                            <th>Estado</th>
+                            <th style="text-align:center;">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>G-301</strong></td>
+                            <td>Programación 2</td>
+                            <td>Carlos Martínez</td>
+                            <td>304-A · Bloque 3</td>
+                            <td>Lunes 08:00–10:00</td>
+                            <td>25 / 35</td>
+                            <td><span class="badge badge-success">Abierto</span></td>
+                            <td class="td-actions" style="justify-content:center;">
+                                <button type="button" class="btn-icon-only" title="Editar">✏️</button>
+                                <button type="button" class="btn-icon-only danger" title="Cerrar">🔒</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>G-302</strong></td>
+                            <td>Programación 2</td>
+                            <td>Laura Rodríguez</td>
+                            <td>305-B · Bloque 3</td>
+                            <td>Miércoles 14:00–16:00</td>
+                            <td>30 / 35</td>
+                            <td><span class="badge badge-success">Abierto</span></td>
+                            <td class="td-actions" style="justify-content:center;">
+                                <button type="button" class="btn-icon-only" title="Editar">✏️</button>
+                                <button type="button" class="btn-icon-only danger" title="Cerrar">🔒</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>G-401</strong></td>
+                            <td>Base de Datos I</td>
+                            <td>Carlos Martínez</td>
+                            <td>Lab-202 · Bloque 2</td>
+                            <td>Martes 10:00–12:00</td>
+                            <td>20 / 30</td>
+                            <td><span class="badge badge-success">Abierto</span></td>
+                            <td class="td-actions" style="justify-content:center;">
+                                <button type="button" class="btn-icon-only" title="Editar">✏️</button>
+                                <button type="button" class="btn-icon-only danger" title="Cerrar">🔒</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>G-101</strong></td>
+                            <td>Cálculo Diferencial</td>
+                            <td>María Pérez</td>
+                            <td>Aula 101 · Bloque 1</td>
+                            <td>Jueves 06:00–08:00</td>
+                            <td>35 / 40</td>
+                            <td><span class="badge badge-danger">Cerrado</span></td>
+                            <td class="td-actions" style="justify-content:center;">
+                                <button type="button" class="btn-icon-only" title="Editar">✏️</button>
+                                <button type="button" class="btn-icon-only success" title="Abrir">🔓</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Tab Asignación Docente -->
+        <div id="tab-asignacion" style="display:none;">
+            <div class="nm-card">
+                <div class="nm-card-header">
+                    <span class="nm-card-title">🔗 Asignar Docente a Grupo</span>
+                </div>
+                <div class="form-row cols-2">
+                    <div class="form-group">
+                        <label class="form-label">Seleccionar Grupo</label>
+                        <select class="form-control">
+                            <option value="">— Selecciona un grupo —</option>
+                            <option>G-301 · Programación 2 · Lunes 08:00–10:00</option>
+                            <option>G-302 · Programación 2 · Miércoles 14:00–16:00</option>
+                            <option>G-401 · Base de Datos I · Martes 10:00–12:00</option>
+                            <option>G-101 · Cálculo Diferencial · Jueves 06:00–08:00</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Seleccionar Docente</label>
+                        <select class="form-control">
+                            <option value="">— Selecciona un docente —</option>
+                            <option>Carlos Martínez Díaz — Titular · TC</option>
+                            <option>Laura Rodríguez Pinto — Asistente · MTO</option>
+                            <option>María Pérez Solano — Asociado · TC</option>
+                            <option>Ricardo Aguilar Ruiz — Instructor · MTO</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="alert alert-info" style="margin-top:8px;">
+                    💡 El sistema verificará automáticamente disponibilidad y conflictos de horario antes de confirmar la asignación.
+                </div>
+                <div style="display:flex;justify-content:flex-end;margin-top:16px;">
+                    <button type="button" class="btn btn-primary">🔗 Confirmar Asignación</button>
+                </div>
+            </div>
+        </div>
+
+    </ui:define>
+
+    <ui:define name="scripts">
+
+    <!-- Modal Nuevo Curso -->
+    <div id="modal-nuevo-curso" class="modal-overlay" onclick="closeModalOutside(event,'modal-nuevo-curso')">
+        <div class="modal" style="max-width:680px;">
+            <div class="modal-header">
+                <span class="modal-title">➕ Crear Nuevo Curso</span>
+                <button type="button" class="modal-close" onclick="closeModal('modal-nuevo-curso')">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-row cols-2">
+                    <div class="form-group" style="grid-column:1/-1;">
+                        <label class="form-label">Nombre del Curso</label>
+                        <input type="text" class="form-control" placeholder="Ej: Programación Orientada a Objetos" />
+                    </div>
+                </div>
+                <div class="form-row cols-3">
+                    <div class="form-group">
+                        <label class="form-label">Carrera</label>
+                        <select class="form-control">
+                            <option>Ing. Sistemas</option>
+                            <option>Medicina</option>
+                            <option>Derecho</option>
+                            <option>Ing. Industrial</option>
+                            <option>Artes</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Semestre</label>
+                        <select class="form-control">
+                            <option>1</option><option>2</option><option>3</option><option>4</option>
+                            <option>5</option><option>6</option><option>7</option><option>8</option>
+                            <option>9</option><option>10</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Créditos</label>
+                        <input type="number" class="form-control" placeholder="Ej: 3" min="1" max="10" />
+                    </div>
+                </div>
+                <div class="form-row cols-3">
+                    <div class="form-group">
+                        <label class="form-label">Intensidad (h/sem)</label>
+                        <input type="number" class="form-control" placeholder="Ej: 4" min="1" max="20" />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Cupo Mínimo</label>
+                        <input type="number" class="form-control" placeholder="Ej: 10" min="1" />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Cupo Máximo</label>
+                        <input type="number" class="form-control" placeholder="Ej: 35" min="1" />
+                    </div>
+                </div>
+                <div class="form-row cols-2">
+                    <div class="form-group">
+                        <label class="form-label">Tipo de Aula Requerida</label>
+                        <select class="form-control">
+                            <option>GRUPAL</option>
+                            <option>INDIVIDUAL</option>
+                            <option>SISTEMAS</option>
+                            <option>ARTES</option>
+                            <option>MEDICINA</option>
+                            <option>DERECHO</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Docente Asignado</label>
+                        <select class="form-control">
+                            <option value="">— Seleccionar más tarde —</option>
+                            <option>Carlos Martínez Díaz</option>
+                            <option>Laura Rodríguez Pinto</option>
+                            <option>María Pérez Solano</option>
+                            <option>Ricardo Aguilar Ruiz</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="divider"/>
+                <p class="section-title">Franja Horaria</p>
+                <div class="form-row cols-3">
+                    <div class="form-group">
+                        <label class="form-label">Día</label>
+                        <select class="form-control">
+                            <option>LUNES</option><option>MARTES</option><option>MIERCOLES</option>
+                            <option>JUEVES</option><option>VIERNES</option><option>SABADO</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Hora Inicio</label>
+                        <input type="time" class="form-control" value="08:00" />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Hora Fin</label>
+                        <input type="time" class="form-control" value="10:00" />
+                    </div>
+                </div>
+                <div class="form-row cols-2">
+                    <div class="form-group">
+                        <label class="form-label">Bloque</label>
+                        <select class="form-control">
+                            <option>Bloque 1 — Edificio Principal</option>
+                            <option>Bloque 2 — Ingeniería</option>
+                            <option>Bloque 3 — Ciencias</option>
+                            <option>Bloque 4 — Medicina</option>
+                            <option>Bloque 5 — Artes</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Aula</label>
+                        <select class="form-control">
+                            <option>101 — Cap. 40</option>
+                            <option>202 — Cap. 35</option>
+                            <option>Lab-302 — Cap. 28</option>
+                            <option>304-A — Cap. 35</option>
+                            <option>Aula-Med-1 — Cap. 50</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Prerrequisitos (opcional)</label>
+                    <select class="form-control" multiple="multiple" style="height:80px;">
+                        <option>Programación 1</option>
+                        <option>Cálculo Diferencial</option>
+                        <option>Álgebra Lineal</option>
+                        <option>Estructuras de Datos</option>
+                    </select>
+                    <small style="color:var(--text-muted);font-size:0.72rem;">Ctrl+clic para seleccionar múltiples</small>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-ghost" onclick="closeModal('modal-nuevo-curso')">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="closeModal('modal-nuevo-curso')">💾 Crear Curso</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Nuevo Grupo -->
+    <div id="modal-nuevo-grupo" class="modal-overlay" onclick="closeModalOutside(event,'modal-nuevo-grupo')">
+        <div class="modal">
+            <div class="modal-header">
+                <span class="modal-title">➕ Nuevo Grupo</span>
+                <button type="button" class="modal-close" onclick="closeModal('modal-nuevo-grupo')">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Curso</label>
+                    <select class="form-control">
+                        <option>Programación 2</option>
+                        <option>Base de Datos I</option>
+                        <option>Cálculo Diferencial</option>
+                        <option>Anatomía I</option>
+                    </select>
+                </div>
+                <div class="form-row cols-2">
+                    <div class="form-group">
+                        <label class="form-label">Cupo Mínimo</label>
+                        <input type="number" class="form-control" value="10" min="1" />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Cupo Máximo</label>
+                        <input type="number" class="form-control" value="35" min="1" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Docente</label>
+                    <select class="form-control">
+                        <option value="">— Sin asignar —</option>
+                        <option>Carlos Martínez Díaz</option>
+                        <option>Laura Rodríguez Pinto</option>
+                        <option>María Pérez Solano</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-ghost" onclick="closeModal('modal-nuevo-grupo')">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="closeModal('modal-nuevo-grupo')">💾 Crear Grupo</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+    //<![CDATA[
+    function openModal(id)  { document.getElementById(id).classList.add('open'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+    function closeModalOutside(e, id) { if (e.target.id === id) closeModal(id); }
+
+    function showCourseTab(id, btn) {
+        ['tab-cursos','tab-grupos','tab-asignacion'].forEach(function(t){
+            document.getElementById(t).style.display = 'none';
+        });
+        document.getElementById(id).style.display = 'block';
+        document.querySelectorAll('.nm-tab').forEach(function(t){ t.classList.remove('active'); });
+        if (btn) btn.classList.add('active');
+    }
+
+    function filterTable(tableId, query) {
+        var rows = document.querySelectorAll('#' + tableId + ' tbody tr');
+        var q = query.toLowerCase();
+        rows.forEach(function(row){
+            row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
+        });
+    }
+    //]]>
+    </script>
+    </ui:define>
+
+</ui:composition>
+</html>

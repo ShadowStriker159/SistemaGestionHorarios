@@ -1,0 +1,226 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+<ui:composition template="/WEB-INF/templates/layout.xhtml">
+
+    <ui:define name="title">Dashboard · Secretaria · Horarios UnBosque</ui:define>
+    <ui:define name="page-title">Panel de Secretaría</ui:define>
+    <ui:define name="breadcrumb">Inicio / Dashboard</ui:define>
+    <ui:define name="user-avatar-letter">S</ui:define>
+    <ui:define name="user-name">Ana García López</ui:define>
+    <ui:define name="user-role">Secretaria Académica</ui:define>
+
+    <!-- Sidebar nav for Secretaria -->
+    <ui:define name="sidebar-nav">
+        <span class="nav-section-title">Principal</span>
+        <a href="dashboard.xhtml" class="nav-item active">
+            <div class="nav-icon">🏠</div> Dashboard
+        </a>
+        <span class="nav-section-title">Gestión</span>
+        <a href="estudiantes.xhtml" class="nav-item">
+            <div class="nav-icon">🎓</div> Estudiantes
+        </a>
+        <a href="docentes.xhtml" class="nav-item">
+            <div class="nav-icon">👨‍🏫</div> Docentes
+        </a>
+        <a href="cursos.xhtml" class="nav-item">
+            <div class="nav-icon">📚</div> Cursos y Grupos
+        </a>
+        <span class="nav-section-title">Más</span>
+        <a href="#" class="nav-item">
+            <div class="nav-icon">🏫</div> Aulas y Bloques
+        </a>
+        <a href="#" class="nav-item">
+            <div class="nav-icon">📊</div> Reportes
+        </a>
+    </ui:define>
+
+    <!-- Content -->
+    <ui:define name="content">
+
+        <!-- Page header -->
+        <div class="page-header">
+            <h1>Dashboard Secretaría ✨</h1>
+            <p>Resumen general del sistema académico — Semestre 2026-1</p>
+        </div>
+
+        <!-- Stat Cards -->
+        <div class="stat-grid">
+            <div class="stat-card animate-fadeInUp animate-delay-1">
+                <div class="stat-icon blue">👨‍🎓</div>
+                <div class="stat-body">
+                    <div class="stat-value">842</div>
+                    <div class="stat-label">Estudiantes Activos</div>
+                    <div class="stat-change up">▲ +23 este semestre</div>
+                </div>
+            </div>
+            <div class="stat-card animate-fadeInUp animate-delay-2">
+                <div class="stat-icon purple">👨‍🏫</div>
+                <div class="stat-body">
+                    <div class="stat-value">67</div>
+                    <div class="stat-label">Docentes Activos</div>
+                    <div class="stat-change up">▲ +5 nuevos</div>
+                </div>
+            </div>
+            <div class="stat-card animate-fadeInUp animate-delay-3">
+                <div class="stat-icon green">📚</div>
+                <div class="stat-body">
+                    <div class="stat-value">128</div>
+                    <div class="stat-label">Cursos Activos</div>
+                    <div class="stat-change down">▼ -3 vs semestre anterior</div>
+                </div>
+            </div>
+            <div class="stat-card animate-fadeInUp animate-delay-4">
+                <div class="stat-icon orange">📋</div>
+                <div class="stat-body">
+                    <div class="stat-value">312</div>
+                    <div class="stat-label">Grupos Totales</div>
+                    <div class="stat-change up">▲ +18 aperturados</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Two columns -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:24px;">
+
+            <!-- Cursos recientes -->
+            <div class="nm-card">
+                <div class="nm-card-header">
+                    <span class="nm-card-title">📚 Cursos Recientes</span>
+                    <a href="cursos.xhtml" class="btn btn-nm btn-sm">Ver todos</a>
+                </div>
+                <table class="nm-table" style="font-size:0.82rem;">
+                    <thead>
+                        <tr>
+                            <th>Curso</th>
+                            <th>Carrera</th>
+                            <th>Grupos</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Programación 2</strong></td>
+                            <td>Ing. Sistemas</td>
+                            <td>4</td>
+                            <td><span class="badge badge-success">Activo</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Cálculo Diferencial</strong></td>
+                            <td>Ing. Industrial</td>
+                            <td>6</td>
+                            <td><span class="badge badge-success">Activo</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Anatomía I</strong></td>
+                            <td>Medicina</td>
+                            <td>3</td>
+                            <td><span class="badge badge-success">Activo</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Derecho Romano</strong></td>
+                            <td>Derecho</td>
+                            <td>2</td>
+                            <td><span class="badge badge-warning">Pendiente</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Base de Datos</strong></td>
+                            <td>Ing. Sistemas</td>
+                            <td>3</td>
+                            <td><span class="badge badge-success">Activo</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Docentes y actividad -->
+            <div class="nm-card">
+                <div class="nm-card-header">
+                    <span class="nm-card-title">👨‍🏫 Docentes — Disponibilidad</span>
+                    <a href="docentes.xhtml" class="btn btn-nm btn-sm">Ver todos</a>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:12px;">
+                    <div class="nm-card-sm d-flex align-center gap-3">
+                        <div class="avatar" style="background:linear-gradient(135deg,#4361ee,#3a0ca3);width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;flex-shrink:0;">CM</div>
+                        <div style="flex:1;">
+                            <div style="font-weight:600;font-size:0.85rem;">Carlos Martínez</div>
+                            <div style="font-size:0.72rem;color:var(--text-muted);">Profesor Titular · TC</div>
+                        </div>
+                        <span class="badge badge-success">Activo</span>
+                    </div>
+                    <div class="nm-card-sm d-flex align-center gap-3">
+                        <div class="avatar" style="background:linear-gradient(135deg,#7209b7,#4361ee);width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;flex-shrink:0;">LR</div>
+                        <div style="flex:1;">
+                            <div style="font-weight:600;font-size:0.85rem;">Laura Rodríguez</div>
+                            <div style="font-size:0.72rem;color:var(--text-muted);">Profesor Asistente · MTO</div>
+                        </div>
+                        <span class="badge badge-success">Activo</span>
+                    </div>
+                    <div class="nm-card-sm d-flex align-center gap-3">
+                        <div class="avatar" style="background:linear-gradient(135deg,#06d6a0,#4361ee);width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;flex-shrink:0;">JV</div>
+                        <div style="flex:1;">
+                            <div style="font-weight:600;font-size:0.85rem;">Jorge Vargas</div>
+                            <div style="font-size:0.72rem;color:var(--text-muted);">Instructor Asociado · HC</div>
+                        </div>
+                        <span class="badge badge-warning">Vacaciones</span>
+                    </div>
+                    <div class="nm-card-sm d-flex align-center gap-3">
+                        <div class="avatar" style="background:linear-gradient(135deg,#ef233c,#7209b7);width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;flex-shrink:0;">MP</div>
+                        <div style="flex:1;">
+                            <div style="font-weight:600;font-size:0.85rem;">María Pérez</div>
+                            <div style="font-size:0.72rem;color:var(--text-muted);">Profesor Asociado · TC</div>
+                        </div>
+                        <span class="badge badge-success">Activo</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Actividad reciente -->
+        <div class="nm-card">
+            <div class="nm-card-header">
+                <span class="nm-card-title">🕐 Actividad Reciente</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+                <div style="display:flex;align-items:center;gap:16px;padding:12px 0;border-bottom:1px solid rgba(163,177,198,0.2);">
+                    <div class="stat-icon green" style="width:38px;height:38px;font-size:1rem;flex-shrink:0;">✅</div>
+                    <div style="flex:1;">
+                        <div style="font-size:0.85rem;font-weight:600;">Grupo G-301 asignado a Carlos Martínez</div>
+                        <div style="font-size:0.72rem;color:var(--text-muted);">Programación 2 · Aula 304-A · Bloque 3</div>
+                    </div>
+                    <div style="font-size:0.72rem;color:var(--text-muted);">Hace 15 min</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:16px;padding:12px 0;border-bottom:1px solid rgba(163,177,198,0.2);">
+                    <div class="stat-icon blue" style="width:38px;height:38px;font-size:1rem;flex-shrink:0;">👤</div>
+                    <div style="flex:1;">
+                        <div style="font-size:0.85rem;font-weight:600;">Nuevo estudiante registrado: Sofía Hernández</div>
+                        <div style="font-size:0.72rem;color:var(--text-muted);">Cód: 20261045 · Ing. Sistemas · Sem 1</div>
+                    </div>
+                    <div style="font-size:0.72rem;color:var(--text-muted);">Hace 40 min</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:16px;padding:12px 0;border-bottom:1px solid rgba(163,177,198,0.2);">
+                    <div class="stat-icon purple" style="width:38px;height:38px;font-size:1rem;flex-shrink:0;">📚</div>
+                    <div style="flex:1;">
+                        <div style="font-size:0.85rem;font-weight:600;">Curso "Álgebra Lineal" creado — 4 créditos</div>
+                        <div style="font-size:0.72rem;color:var(--text-muted);">Ing. Industrial · Aula GRUPAL · 3 grupos abiertos</div>
+                    </div>
+                    <div style="font-size:0.72rem;color:var(--text-muted);">Hace 2 h</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:16px;padding:12px 0;">
+                    <div class="stat-icon orange" style="width:38px;height:38px;font-size:1rem;flex-shrink:0;">⚠️</div>
+                    <div style="flex:1;">
+                        <div style="font-size:0.85rem;font-weight:600;">Conflicto detectado — Franja 08:00–10:00 Lunes</div>
+                        <div style="font-size:0.72rem;color:var(--text-muted);">Aula 201-B · 2 grupos asignados simultáneamente</div>
+                    </div>
+                    <div style="font-size:0.72rem;color:var(--text-muted);">Hace 3 h</div>
+                </div>
+            </div>
+        </div>
+
+    </ui:define>
+</ui:composition>
+</html>

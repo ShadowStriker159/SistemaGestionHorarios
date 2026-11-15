@@ -1,0 +1,459 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+<ui:composition template="/WEB-INF/templates/layout.xhtml">
+
+    <ui:define name="title">Docentes · Secretaria · Horarios UnBosque</ui:define>
+    <ui:define name="page-title">Gestión de Docentes</ui:define>
+    <ui:define name="breadcrumb">Secretaría / Docentes</ui:define>
+    <ui:define name="user-avatar-letter">S</ui:define>
+    <ui:define name="user-name">Ana García López</ui:define>
+    <ui:define name="user-role">Secretaria Académica</ui:define>
+
+    <ui:define name="sidebar-nav">
+        <span class="nav-section-title">Principal</span>
+        <a href="dashboard.xhtml" class="nav-item">
+            <div class="nav-icon">🏠</div> Dashboard
+        </a>
+        <span class="nav-section-title">Gestión</span>
+        <a href="estudiantes.xhtml" class="nav-item">
+            <div class="nav-icon">🎓</div> Estudiantes
+        </a>
+        <a href="docentes.xhtml" class="nav-item active">
+            <div class="nav-icon">👨‍🏫</div> Docentes
+        </a>
+        <a href="cursos.xhtml" class="nav-item">
+            <div class="nav-icon">📚</div> Cursos y Grupos
+        </a>
+        <span class="nav-section-title">Más</span>
+        <a href="#" class="nav-item">
+            <div class="nav-icon">🏫</div> Aulas y Bloques
+        </a>
+        <a href="#" class="nav-item">
+            <div class="nav-icon">📊</div> Reportes
+        </a>
+    </ui:define>
+
+    <ui:define name="content">
+
+        <div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:16px;">
+            <div>
+                <h1>Docentes 👨‍🏫</h1>
+                <p>Gestiona el personal docente, escalafón y tipo de vinculación</p>
+            </div>
+            <button type="button" class="btn btn-primary" onclick="openModal('modal-nuevo-doc')">
+                ＋ Nuevo Docente
+            </button>
+        </div>
+
+        <!-- Tabs -->
+        <div class="nm-tabs">
+            <button type="button" class="nm-tab active" onclick="showTab('tab-lista',this)">📋 Lista de Docentes</button>
+            <button type="button" class="nm-tab" onclick="showTab('tab-escalafon',this)">🎖 Escalafón</button>
+            <button type="button" class="nm-tab" onclick="showTab('tab-disponibilidad',this)">📅 Disponibilidad</button>
+        </div>
+
+        <!-- Tab: Lista -->
+        <div id="tab-lista">
+            <div class="table-toolbar">
+                <div class="search-box">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" placeholder="Buscar docente…" onkeyup="filterTable('tabla-docentes', this.value)" />
+                </div>
+                <div class="d-flex gap-3">
+                    <select class="form-control" style="width:auto;min-width:170px;">
+                        <option>Todos los estados</option>
+                        <option>Activo</option>
+                        <option>Vacaciones</option>
+                        <option>Incapacitado</option>
+                        <option>Inactivo</option>
+                    </select>
+                    <select class="form-control" style="width:auto;min-width:170px;">
+                        <option>Todos los tipos</option>
+                        <option>TC</option>
+                        <option>MTO</option>
+                        <option>HC</option>
+                    </select>
+                </div>
+            </div>
+            <div class="nm-table-wrapper">
+                <table class="nm-table" id="tabla-docentes">
+                    <thead>
+                        <tr>
+                            <th>Docente</th>
+                            <th>ID</th>
+                            <th>Escalafón</th>
+                            <th>Vinculación</th>
+                            <th>Grupos Asignados</th>
+                            <th>Estado</th>
+                            <th style="text-align:center;">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div style="display:flex;align-items:center;gap:10px;">
+                                    <div class="av av-blue" style="width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:0.78rem;flex-shrink:0;">CM</div>
+                                    <div>
+                                        <div style="font-weight:600;font-size:0.88rem;">Carlos Martínez Díaz</div>
+                                        <div style="font-size:0.72rem;color:var(--text-muted);">c.martinez@unbosque.edu.co</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td><code>DOC001</code></td>
+                            <td><span class="badge badge-primary">Profesor Titular</span></td>
+                            <td><span class="badge badge-accent">TC</span></td>
+                            <td>3 grupos</td>
+                            <td><span class="badge badge-success">Activo</span></td>
+                            <td class="td-actions" style="justify-content:center;">
+                                <button type="button" class="btn-icon-only" title="Editar" onclick="editarDocente('Carlos Martínez Díaz')">✏️</button>
+                                <button type="button" class="btn-icon-only" title="Ver escalafón" onclick="openModal('modal-escalafon')">🎖</button>
+                                <button type="button" class="btn-icon-only danger" title="Inactivar">⛔</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div style="display:flex;align-items:center;gap:10px;">
+                                    <div class="av av-purple" style="width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:0.78rem;flex-shrink:0;">LR</div>
+                                    <div>
+                                        <div style="font-weight:600;font-size:0.88rem;">Laura Rodríguez Pinto</div>
+                                        <div style="font-size:0.72rem;color:var(--text-muted);">l.rodriguez@unbosque.edu.co</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td><code>DOC002</code></td>
+                            <td><span class="badge badge-primary">Profesor Asistente</span></td>
+                            <td><span class="badge badge-info">MTO</span></td>
+                            <td>2 grupos</td>
+                            <td><span class="badge badge-success">Activo</span></td>
+                            <td class="td-actions" style="justify-content:center;">
+                                <button type="button" class="btn-icon-only" title="Editar" onclick="editarDocente('Laura Rodríguez Pinto')">✏️</button>
+                                <button type="button" class="btn-icon-only" title="Ver escalafón" onclick="openModal('modal-escalafon')">🎖</button>
+                                <button type="button" class="btn-icon-only danger" title="Inactivar">⛔</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div style="display:flex;align-items:center;gap:10px;">
+                                    <div class="av av-green" style="width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:0.78rem;flex-shrink:0;">JV</div>
+                                    <div>
+                                        <div style="font-weight:600;font-size:0.88rem;">Jorge Vargas Leal</div>
+                                        <div style="font-size:0.72rem;color:var(--text-muted);">j.vargas@unbosque.edu.co</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td><code>DOC003</code></td>
+                            <td><span class="badge badge-neutral">Instructor Asociado</span></td>
+                            <td><span class="badge badge-neutral">HC</span></td>
+                            <td>1 grupo</td>
+                            <td><span class="badge badge-warning">Vacaciones</span></td>
+                            <td class="td-actions" style="justify-content:center;">
+                                <button type="button" class="btn-icon-only" title="Editar" onclick="editarDocente('Jorge Vargas Leal')">✏️</button>
+                                <button type="button" class="btn-icon-only" title="Ver escalafón" onclick="openModal('modal-escalafon')">🎖</button>
+                                <button type="button" class="btn-icon-only success" title="Activar">✅</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div style="display:flex;align-items:center;gap:10px;">
+                                    <div class="av av-orange" style="width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:0.78rem;flex-shrink:0;">MP</div>
+                                    <div>
+                                        <div style="font-weight:600;font-size:0.88rem;">María Pérez Solano</div>
+                                        <div style="font-size:0.72rem;color:var(--text-muted);">m.perez@unbosque.edu.co</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td><code>DOC004</code></td>
+                            <td><span class="badge badge-accent">Profesor Asociado</span></td>
+                            <td><span class="badge badge-accent">TC</span></td>
+                            <td>4 grupos</td>
+                            <td><span class="badge badge-success">Activo</span></td>
+                            <td class="td-actions" style="justify-content:center;">
+                                <button type="button" class="btn-icon-only" title="Editar" onclick="editarDocente('María Pérez Solano')">✏️</button>
+                                <button type="button" class="btn-icon-only" title="Ver escalafón" onclick="openModal('modal-escalafon')">🎖</button>
+                                <button type="button" class="btn-icon-only danger" title="Inactivar">⛔</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div style="display:flex;align-items:center;gap:10px;">
+                                    <div class="av av-red" style="width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:0.78rem;flex-shrink:0;">RA</div>
+                                    <div>
+                                        <div style="font-weight:600;font-size:0.88rem;">Ricardo Aguilar Ruiz</div>
+                                        <div style="font-size:0.72rem;color:var(--text-muted);">r.aguilar@unbosque.edu.co</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td><code>DOC005</code></td>
+                            <td><span class="badge badge-neutral">Instructor Asistente</span></td>
+                            <td><span class="badge badge-info">MTO</span></td>
+                            <td>2 grupos</td>
+                            <td><span class="badge badge-danger">Incapacitado</span></td>
+                            <td class="td-actions" style="justify-content:center;">
+                                <button type="button" class="btn-icon-only" title="Editar" onclick="editarDocente('Ricardo Aguilar Ruiz')">✏️</button>
+                                <button type="button" class="btn-icon-only" title="Ver escalafón" onclick="openModal('modal-escalafon')">🎖</button>
+                                <button type="button" class="btn-icon-only success" title="Activar">✅</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Tab: Escalafón -->
+        <div id="tab-escalafon" style="display:none;">
+            <div class="alert alert-info">📌 Selecciona un docente de la tabla principal y haz clic en el icono 🎖 para gestionar su escalafón y tipo de vinculación.</div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:20px;">
+                <div class="nm-card">
+                    <div style="text-align:center;margin-bottom:16px;">
+                        <div style="width:56px;height:56px;background:linear-gradient(135deg,#4361ee,#3a0ca3);border-radius:50%;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:1.2rem;box-shadow:var(--nm-raised-sm);">CM</div>
+                        <div style="font-weight:700;">Carlos Martínez</div>
+                        <div style="font-size:0.75rem;color:var(--text-muted);">DOC001</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Escalafón</label>
+                        <select class="form-control">
+                            <option>Instructor Asistente</option>
+                            <option>Instructor Asociado</option>
+                            <option>Profesor Asistente</option>
+                            <option>Profesor Asociado</option>
+                            <option selected="selected">Profesor Titular</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Tipo de Vinculación</label>
+                        <select class="form-control">
+                            <option selected="selected">TC — Tiempo Completo</option>
+                            <option>MTO — Medio Tiempo</option>
+                            <option>HC — Hora Cátedra</option>
+                        </select>
+                    </div>
+                    <button type="button" class="btn btn-primary w-100" style="justify-content:center;">💾 Guardar Cambios</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: Disponibilidad -->
+        <div id="tab-disponibilidad" style="display:none;">
+            <div class="alert alert-info">📅 Aquí se visualiza la disponibilidad horaria declarada por cada docente para asignación de franjas.</div>
+            <div class="nm-card">
+                <div class="nm-card-header">
+                    <span class="nm-card-title">Disponibilidad — Carlos Martínez Díaz</span>
+                    <select class="form-control" style="width:auto;min-width:200px;">
+                        <option>Carlos Martínez Díaz</option>
+                        <option>Laura Rodríguez Pinto</option>
+                        <option>Jorge Vargas Leal</option>
+                    </select>
+                </div>
+                <div style="overflow-x:auto;">
+                    <table class="nm-table">
+                        <thead>
+                            <tr>
+                                <th>Franja</th>
+                                <th>Lunes</th>
+                                <th>Martes</th>
+                                <th>Miércoles</th>
+                                <th>Jueves</th>
+                                <th>Viernes</th>
+                                <th>Sábado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="font-weight:600;font-size:0.8rem;">06:00 – 08:00</td>
+                                <td><span class="badge badge-neutral">No disp.</span></td>
+                                <td><span class="badge badge-success">Disp.</span></td>
+                                <td><span class="badge badge-success">Disp.</span></td>
+                                <td><span class="badge badge-neutral">No disp.</span></td>
+                                <td><span class="badge badge-success">Disp.</span></td>
+                                <td><span class="badge badge-neutral">No disp.</span></td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight:600;font-size:0.8rem;">08:00 – 10:00</td>
+                                <td><span class="badge badge-success">Disp.</span></td>
+                                <td><span class="badge badge-success">Disp.</span></td>
+                                <td><span class="badge badge-neutral">No disp.</span></td>
+                                <td><span class="badge badge-success">Disp.</span></td>
+                                <td><span class="badge badge-success">Disp.</span></td>
+                                <td><span class="badge badge-neutral">No disp.</span></td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight:600;font-size:0.8rem;">10:00 – 12:00</td>
+                                <td><span class="badge badge-success">Disp.</span></td>
+                                <td><span class="badge badge-neutral">No disp.</span></td>
+                                <td><span class="badge badge-success">Disp.</span></td>
+                                <td><span class="badge badge-success">Disp.</span></td>
+                                <td><span class="badge badge-neutral">No disp.</span></td>
+                                <td><span class="badge badge-neutral">No disp.</span></td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight:600;font-size:0.8rem;">14:00 – 16:00</td>
+                                <td><span class="badge badge-success">Disp.</span></td>
+                                <td><span class="badge badge-success">Disp.</span></td>
+                                <td><span class="badge badge-success">Disp.</span></td>
+                                <td><span class="badge badge-neutral">No disp.</span></td>
+                                <td><span class="badge badge-success">Disp.</span></td>
+                                <td><span class="badge badge-neutral">No disp.</span></td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight:600;font-size:0.8rem;">18:00 – 20:00</td>
+                                <td><span class="badge badge-neutral">No disp.</span></td>
+                                <td><span class="badge badge-neutral">No disp.</span></td>
+                                <td><span class="badge badge-success">Disp.</span></td>
+                                <td><span class="badge badge-success">Disp.</span></td>
+                                <td><span class="badge badge-neutral">No disp.</span></td>
+                                <td><span class="badge badge-neutral">No disp.</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </ui:define>
+
+    <ui:define name="scripts">
+
+    <!-- Modal Nuevo Docente -->
+    <div id="modal-nuevo-doc" class="modal-overlay" onclick="closeModalOutside(event,'modal-nuevo-doc')">
+        <div class="modal">
+            <div class="modal-header">
+                <span class="modal-title">➕ Nuevo Docente</span>
+                <button type="button" class="modal-close" onclick="closeModal('modal-nuevo-doc')">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-row cols-2">
+                    <div class="form-group">
+                        <label class="form-label">Nombre</label>
+                        <input type="text" class="form-control" placeholder="Ej: Carlos" />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Apellido</label>
+                        <input type="text" class="form-control" placeholder="Ej: Martínez Díaz" />
+                    </div>
+                </div>
+                <div class="form-row cols-2">
+                    <div class="form-group">
+                        <label class="form-label">Cédula / ID</label>
+                        <input type="text" class="form-control" placeholder="Número de identificación" />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Correo Institucional</label>
+                        <input type="email" class="form-control" placeholder="nombre@unbosque.edu.co" />
+                    </div>
+                </div>
+                <div class="form-row cols-2">
+                    <div class="form-group">
+                        <label class="form-label">Escalafón</label>
+                        <select class="form-control">
+                            <option>Instructor Asistente</option>
+                            <option>Instructor Asociado</option>
+                            <option>Profesor Asistente</option>
+                            <option>Profesor Asociado</option>
+                            <option>Profesor Titular</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Tipo de Vinculación</label>
+                        <select class="form-control">
+                            <option>TC — Tiempo Completo</option>
+                            <option>MTO — Medio Tiempo</option>
+                            <option>HC — Hora Cátedra</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Estado Inicial</label>
+                    <select class="form-control">
+                        <option>Activo</option>
+                        <option>Inactivo</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-ghost" onclick="closeModal('modal-nuevo-doc')">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="closeModal('modal-nuevo-doc')">💾 Guardar Docente</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Escalafón -->
+    <div id="modal-escalafon" class="modal-overlay" onclick="closeModalOutside(event,'modal-escalafon')">
+        <div class="modal">
+            <div class="modal-header">
+                <span class="modal-title" id="modal-esc-title">🎖 Gestión de Escalafón</span>
+                <button type="button" class="modal-close" onclick="closeModal('modal-escalafon')">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Escalafón Actual</label>
+                    <select class="form-control" id="esc-select">
+                        <option>Instructor Asistente</option>
+                        <option>Instructor Asociado</option>
+                        <option>Profesor Asistente</option>
+                        <option>Profesor Asociado</option>
+                        <option selected="selected">Profesor Titular</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Tipo de Vinculación</label>
+                    <select class="form-control">
+                        <option selected="selected">TC — Tiempo Completo</option>
+                        <option>MTO — Medio Tiempo</option>
+                        <option>HC — Hora Cátedra</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Estado</label>
+                    <select class="form-control">
+                        <option>Activo</option>
+                        <option>Incapacitado</option>
+                        <option>Vacaciones</option>
+                        <option>Inactivo</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-ghost" onclick="closeModal('modal-escalafon')">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="closeModal('modal-escalafon')">💾 Actualizar</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+    //<![CDATA[
+    function openModal(id)  { document.getElementById(id).classList.add('open'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+    function closeModalOutside(e, id) { if (e.target.id === id) closeModal(id); }
+
+    function editarDocente(nombre) {
+        document.getElementById('modal-esc-title').textContent = '🎖 Escalafón — ' + nombre;
+        openModal('modal-escalafon');
+    }
+
+    function showTab(id, btn) {
+        document.getElementById('tab-lista').style.display = 'none';
+        document.getElementById('tab-escalafon').style.display = 'none';
+        document.getElementById('tab-disponibilidad').style.display = 'none';
+        document.getElementById(id).style.display = 'block';
+        document.querySelectorAll('.nm-tab').forEach(function(t){ t.classList.remove('active'); });
+        btn.classList.add('active');
+    }
+
+    function filterTable(tableId, query) {
+        var rows = document.querySelectorAll('#' + tableId + ' tbody tr');
+        var q = query.toLowerCase();
+        rows.forEach(function(row) {
+            row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
+        });
+    }
+    //]]>
+    </script>
+    </ui:define>
+
+</ui:composition>
+</html>

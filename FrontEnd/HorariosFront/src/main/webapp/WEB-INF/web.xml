@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="https://jakarta.ee/xml/ns/jakartaee"
+         xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee
+                             https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd"
+         id="WebApp_ID" version="6.0">
+
+  <display-name>HorariosFront</display-name>
+
+  <!-- ============================================================
+       Weld CDI — listener obligatorio para que @Named, @ViewScoped
+       y la inyección de dependencias funcionen con Tomcat.
+       Sin este listener Tomcat no puede resolver los beans JSF.
+       ============================================================ -->
+  <listener>
+    <listener-class>org.jboss.weld.environment.servlet.Listener</listener-class>
+  </listener>
+
+  <!-- Weld necesita este resource para la sincronización de sesiones -->
+  <resource-env-ref>
+    <resource-env-ref-name>BeanManager</resource-env-ref-name>
+    <resource-env-ref-type>jakarta.enterprise.inject.spi.BeanManager</resource-env-ref-type>
+  </resource-env-ref>
+
+  <!-- ============================================================
+       JSF FacesServlet
+       ============================================================ -->
+  <servlet>
+    <servlet-name>FacesServlet</servlet-name>
+    <servlet-class>jakarta.faces.webapp.FacesServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>FacesServlet</servlet-name>
+    <url-pattern>*.xhtml</url-pattern>
+  </servlet-mapping>
+
+  <!-- ============================================================
+       Parámetros de JSF
+       ============================================================ -->
+  <context-param>
+    <param-name>jakarta.faces.PROJECT_STAGE</param-name>
+    <param-value>Development</param-value>
+  </context-param>
+
+  <context-param>
+    <param-name>jakarta.faces.FACELETS_SKIP_COMMENTS</param-name>
+    <param-value>true</param-value>
+  </context-param>
+
+  <!-- Necesario para que Weld + JSF funcionen juntos correctamente -->
+  <context-param>
+    <param-name>jakarta.faces.ENABLE_CDI_RESOLVER_CHAIN</param-name>
+    <param-value>true</param-value>
+  </context-param>
+
+  <!-- ============================================================
+       Página de bienvenida
+       ============================================================ -->
+  <welcome-file-list>
+    <welcome-file>index.xhtml</welcome-file>
+  </welcome-file-list>
+
+</web-app>

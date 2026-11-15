@@ -1,0 +1,343 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+<h:head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Sistema de Gestión Académica — Universidad El Bosque." />
+    <title>Ingresar · Horarios UnBosque</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap"
+          rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="#{request.contextPath}/css/neomorphism.css" />
+    <link rel="stylesheet" type="text/css" href="#{request.contextPath}/css/aurora.css" />
+</h:head>
+
+<h:body>
+<div class="aurora-scene">
+
+    <!-- Blobs aurora animados -->
+    <div class="aurora-blob blob-1"></div>
+    <div class="aurora-blob blob-2"></div>
+    <div class="aurora-blob blob-3"></div>
+    <div class="aurora-blob blob-4"></div>
+    <div class="aurora-blob blob-5"></div>
+    <div class="stars"></div>
+
+    <div class="aurora-card-wrapper">
+    <div class="aurora-card">
+
+        <!-- Encabezado / Brand -->
+        <div class="aurora-brand">
+            <div class="aurora-logo-ring">🎓</div>
+            <div class="aurora-brand-text">
+                <div class="brand-name">UnBosque</div>
+                <div class="brand-sub">Sistema de Gestión Académica</div>
+            </div>
+        </div>
+
+        <!-- Indicador de pasos -->
+        <div class="step-indicator">
+            <div class="step-item #{loginBean.paso1 ? 'active' : 'done'}">
+                <div class="step-dot">
+                    <h:outputText value="✓" rendered="#{loginBean.paso2}" />
+                    <h:outputText value="1" rendered="#{loginBean.paso1}" />
+                </div>
+                <div class="step-label">Credenciales</div>
+            </div>
+            <div class="step-connector">
+                <div class="step-connector-fill #{loginBean.paso2 ? 'done' : ''}"></div>
+            </div>
+            <div class="step-item #{loginBean.paso2 ? 'active' : ''}">
+                <div class="step-dot">2</div>
+                <div class="step-label">Verificación</div>
+            </div>
+        </div>
+
+
+        <h:form id="formPaso1" prependId="false"
+                style="#{loginBean.paso1 ? '' : 'display:none;'}">
+
+            <div class="step-title">Bienvenido de nuevo 👋</div>
+            <div class="step-subtitle">
+                Selecciona tu rol e ingresa tus datos para continuar
+            </div>
+
+            <!-- Error -->
+            <h:panelGroup rendered="#{not empty loginBean.mensajeError and loginBean.paso1}">
+                <div class="aurora-error show">
+                    ⚠️ <h:outputText value="#{loginBean.mensajeError}" />
+                </div>
+            </h:panelGroup>
+
+            <!-- Selector de rol -->
+            <div style="margin-bottom:20px;">
+                <label class="dark-form-label">Ingresa como</label>
+                <div class="aurora-role-selector">
+
+                    <h:panelGroup>
+                        <input type="radio" name="rol-visual" id="rol-admin"
+                               class="aurora-role-option"
+                               onclick="setRol('administrador')"
+                               checked="checked" />
+                        <label for="rol-admin" class="aurora-role-label">
+                            <span class="aurora-role-emoji">👩‍💼</span>
+                            <span class="aurora-role-name">Secretaria</span>
+                        </label>
+                    </h:panelGroup>
+
+                    <h:panelGroup>
+                        <input type="radio" name="rol-visual" id="rol-docente"
+                               class="aurora-role-option"
+                               onclick="setRol('docente')" />
+                        <label for="rol-docente" class="aurora-role-label">
+                            <span class="aurora-role-emoji">👨‍🏫</span>
+                            <span class="aurora-role-name">Docente</span>
+                        </label>
+                    </h:panelGroup>
+
+                    <h:panelGroup>
+                        <input type="radio" name="rol-visual" id="rol-estudiante"
+                               class="aurora-role-option"
+                               onclick="setRol('estudiante')" />
+                        <label for="rol-estudiante" class="aurora-role-label">
+                            <span class="aurora-role-emoji">👨‍🎓</span>
+                            <span class="aurora-role-name">Estudiante</span>
+                        </label>
+                    </h:panelGroup>
+
+                </div>
+                <!-- Campo oculto que lleva el valor al bean -->
+                <h:inputHidden id="rolHidden" value="#{loginBean.rol}" />
+            </div>
+
+            <!-- ID / Cédula -->
+            <div class="dark-form-group">
+                <label class="dark-form-label" for="inp-id">
+                    Número de Identificación / Código
+                </label>
+                <div class="dark-input-wrapper">
+                    <span class="dark-input-icon">🪪</span>
+                    <h:inputText id="inp-id"
+                                 value="#{loginBean.id}"
+                                 styleClass="dark-input"
+                                 placeholder="Ej: 1234567890 · DOC001 · 20240123" />
+                </div>
+            </div>
+
+            <!-- Nombre -->
+            <div class="dark-form-group">
+                <label class="dark-form-label" for="inp-nombre">Nombre</label>
+                <div class="dark-input-wrapper">
+                    <span class="dark-input-icon">👤</span>
+                    <h:inputText id="inp-nombre"
+                                 value="#{loginBean.nombre}"
+                                 styleClass="dark-input"
+                                 placeholder="Tu nombre tal como está registrado" />
+                </div>
+            </div>
+
+            <!-- Contraseña -->
+            <div class="dark-form-group">
+                <label class="dark-form-label" for="inp-password">Contraseña</label>
+                <div class="dark-input-wrapper">
+                    <span class="dark-input-icon">🔒</span>
+                    <h:inputSecret id="inp-password"
+                                   value="#{loginBean.password}"
+                                   styleClass="dark-input"
+                                   placeholder="••••••••••"
+                                   style="padding-right:44px;"
+                                   redisplay="false"
+                                   autocomplete="current-password" />
+                    <span class="dark-input-eye" id="eye-icon"
+                          onclick="togglePassword('inp-password','eye-icon')"
+                          title="Mostrar / ocultar">👁</span>
+                </div>
+            </div>
+
+            <!-- Botón Continuar -->
+            <h:commandButton id="btnContinuar"
+                             value="Continuar →"
+                             action="#{loginBean.iniciarLogin}"
+                             styleClass="aurora-btn"
+                             style="width:100%;justify-content:center;margin-top:8px;" />
+
+            <div class="aurora-bottom-note" style="margin-top:20px;">
+                <a href="#">Política de privacidad</a> · <a href="#">Soporte técnico</a>
+            </div>
+
+        </h:form>
+
+      
+        <h:form id="formPaso2" prependId="false"
+                style="#{loginBean.paso2 ? '' : 'display:none;'}">
+
+            <div class="step-title">Verifica tu identidad 🔐</div>
+            <div class="step-subtitle">
+                Revisa tu correo institucional — el backend envió un código de
+                6 dígitos a la dirección registrada en el sistema.
+            </div>
+
+            <!-- Panel de aviso de correo -->
+            <div class="email-hint-panel">
+                <div class="email-hint-icon">✉️</div>
+                <div class="email-hint-text">
+                    <div class="email-hint-label">Código enviado al correo de</div>
+                    <div class="email-hint-addr">
+                        <h:outputText value="#{loginBean.nombre}" /> ·
+                        <h:outputText value="#{loginBean.rol}" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Error OTP -->
+            <h:panelGroup rendered="#{not empty loginBean.mensajeError and loginBean.paso2}">
+                <div class="aurora-error show">
+                    ⚠️ <h:outputText value="#{loginBean.mensajeError}" />
+                </div>
+            </h:panelGroup>
+
+            <!-- Cajas visuales OTP (6 dígitos) -->
+            <div>
+                <label class="dark-form-label" style="text-align:center;display:block;margin-bottom:4px;">
+                    Código de verificación
+                </label>
+                <div class="otp-grid">
+                    <input type="text" class="otp-box" id="otp-0" maxlength="1"
+                           inputmode="numeric"
+                           onkeyup="otpKeyUp(event,0)" onkeydown="otpKeyDown(event,0)" />
+                    <input type="text" class="otp-box" id="otp-1" maxlength="1"
+                           inputmode="numeric"
+                           onkeyup="otpKeyUp(event,1)" onkeydown="otpKeyDown(event,1)" />
+                    <input type="text" class="otp-box" id="otp-2" maxlength="1"
+                           inputmode="numeric"
+                           onkeyup="otpKeyUp(event,2)" onkeydown="otpKeyDown(event,2)" />
+                    <input type="text" class="otp-box" id="otp-3" maxlength="1"
+                           inputmode="numeric"
+                           onkeyup="otpKeyUp(event,3)" onkeydown="otpKeyDown(event,3)" />
+                    <input type="text" class="otp-box" id="otp-4" maxlength="1"
+                           inputmode="numeric"
+                           onkeyup="otpKeyUp(event,4)" onkeydown="otpKeyDown(event,4)" />
+                    <input type="text" class="otp-box" id="otp-5" maxlength="1"
+                           inputmode="numeric"
+                           onkeyup="otpKeyUp(event,5)" onkeydown="otpKeyDown(event,5)" />
+                </div>
+                <!-- Campo hidden vinculado al bean — se llena con JS -->
+                <h:inputHidden id="otpHidden" value="#{loginBean.otpCode}" />
+            </div>
+
+            <!-- Botón Verificar -->
+            <h:commandButton id="btnVerificar"
+                             value="Verificar e Ingresar 🔓"
+                             action="#{loginBean.verificarOtp}"
+                             styleClass="aurora-btn"
+                             onclick="return prepararOtp()"
+                             style="width:100%;justify-content:center;margin-top:12px;" />
+
+            <!-- Botón Volver -->
+            <h:commandButton id="btnVolver"
+                             value="← Volver al paso anterior"
+                             action="#{loginBean.volverPaso1}"
+                             styleClass="aurora-btn-ghost"
+                             immediate="true"
+                             style="width:100%;justify-content:center;margin-top:10px;" />
+
+        </h:form>
+
+    </div><!-- /aurora-card -->
+    </div><!-- /aurora-card-wrapper -->
+
+</div><!-- /aurora-scene -->
+
+<script type="text/javascript">
+
+function setRol(rol) {
+    var h = document.getElementById('rolHidden');
+    if (h) h.value = rol;
+}
+
+
+function togglePassword(inputId, iconId) {
+    var inp  = document.getElementById(inputId);
+    var icon = document.getElementById(iconId);
+    if (!inp) return;
+    if (inp.type === 'password') { inp.type = 'text';     if (icon) icon.textContent = '🙈'; }
+    else                         { inp.type = 'password'; if (icon) icon.textContent = '👁'; }
+}
+
+function otpKeyUp(e, idx) {
+    var box = document.getElementById('otp-' + idx);
+    var val = box.value.replace(/[^0-9]/g, '');
+    box.value = val;
+    box.classList.toggle('filled', val !== '');
+
+ 
+    if (val.length > 1) {
+        var digits = val.split('');
+        for (var i = 0; i < 6 &amp;&amp; i < digits.length; i++) {
+            var b = document.getElementById('otp-' + (idx + i));
+            if (b) { b.value = digits[i]; b.classList.add('filled'); }
+        }
+        var nxt = Math.min(idx + digits.length, 5);
+        document.getElementById('otp-' + nxt).focus();
+    } else if (val &amp;&amp; idx < 5) {
+        document.getElementById('otp-' + (idx + 1)).focus();
+    }
+}
+
+function otpKeyDown(e, idx) {
+    if (e.key === 'Backspace') {
+        var box = document.getElementById('otp-' + idx);
+        if (!box.value &amp;&amp; idx > 0) {
+            var prev = document.getElementById('otp-' + (idx - 1));
+            prev.value = ''; prev.classList.remove('filled'); prev.focus();
+        }
+    }
+    if (e.key === 'ArrowLeft'  &amp;&amp; idx > 0) { document.getElementById('otp-'+(idx-1)).focus(); e.preventDefault(); }
+    if (e.key === 'ArrowRight' &amp;&amp; idx < 5) { document.getElementById('otp-'+(idx+1)).focus(); e.preventDefault(); }
+}
+
+function prepararOtp() {
+    var codigo = '';
+    for (var i = 0; i < 6; i++) {
+        var b = document.getElementById('otp-' + i);
+        codigo += (b &amp;&amp; b.value) ? b.value : '';
+    }
+    var hidden = document.getElementById('otpHidden');
+    if (hidden) hidden.value = codigo;
+
+    if (codigo.length !== 6) {
+        alert('Ingresa los 6 dígitos del código que llegó a tu correo.');
+        return false;
+    }
+    return true;
+}
+
+document.addEventListener('paste', function(e) {
+    var focused = document.activeElement;
+    if (!focused || !focused.classList.contains('otp-box')) return;
+    e.preventDefault();
+    var texto = (e.clipboardData || window.clipboardData).getData('text')
+                .replace(/\D/g, '').substring(0, 6);
+    for (var i = 0; i < 6; i++) {
+        var b = document.getElementById('otp-' + i);
+        if (b) { b.value = texto[i] || ''; b.classList.toggle('filled', !!texto[i]); }
+    }
+});
+
+
+window.addEventListener('load', function() {
+    var first = document.getElementById('inp-id') || document.getElementById('otp-0');
+    if (first) first.focus();
+});
+//]]>
+</script>
+
+</h:body>
+</html>

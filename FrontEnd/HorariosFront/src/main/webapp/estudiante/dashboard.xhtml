@@ -1,0 +1,278 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+<ui:composition template="/WEB-INF/templates/layout.xhtml">
+
+    <ui:define name="title">Mis Materias · Estudiante · Horarios UnBosque</ui:define>
+    <ui:define name="page-title">Selección de Materias</ui:define>
+    <ui:define name="breadcrumb">Estudiante / Mis Materias</ui:define>
+    <ui:define name="user-avatar-letter">A</ui:define>
+    <ui:define name="user-name">Andrés F. Gómez</ui:define>
+    <ui:define name="user-role">Estudiante · Cod. 20240123</ui:define>
+
+    <ui:define name="sidebar-nav">
+        <span class="nav-section-title">Mi Cuenta</span>
+        <a href="dashboard.xhtml" class="nav-item active">
+            <div class="nav-icon">📚</div> Mis Materias
+        </a>
+        <a href="horario.xhtml" class="nav-item">
+            <div class="nav-icon">📅</div> Mi Horario
+        </a>
+        <span class="nav-section-title">Información</span>
+        <a href="#" class="nav-item">
+            <div class="nav-icon">🎓</div> Mi Perfil
+        </a>
+        <a href="#" class="nav-item">
+            <div class="nav-icon">📊</div> Mis Créditos
+        </a>
+    </ui:define>
+
+    <ui:define name="content">
+
+        <!-- Perfil rápido -->
+        <div class="nm-card mb-6" style="background:linear-gradient(135deg,var(--primary),var(--accent));color:#fff;margin-bottom:24px;">
+            <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap;">
+                <div style="width:64px;height:64px;background:rgba(255,255,255,0.25);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.6rem;font-weight:800;flex-shrink:0;box-shadow:4px 4px 12px rgba(0,0,0,0.2);">AG</div>
+                <div style="flex:1;">
+                    <div style="font-size:1.2rem;font-weight:800;">Andrés Felipe Gómez</div>
+                    <div style="opacity:0.85;font-size:0.85rem;">Código: 20240123 · Semestre 3 · 62 créditos aprobados</div>
+                    <div style="margin-top:8px;display:flex;gap:10px;flex-wrap:wrap;">
+                        <span style="background:rgba(255,255,255,0.2);border-radius:20px;padding:3px 12px;font-size:0.75rem;font-weight:600;">🎓 Ing. Sistemas</span>
+                        <span style="background:rgba(255,255,255,0.2);border-radius:20px;padding:3px 12px;font-size:0.75rem;font-weight:600;">✅ Activo</span>
+                    </div>
+                </div>
+                <a href="horario.xhtml" style="background:rgba(255,255,255,0.2);color:#fff;padding:10px 20px;border-radius:12px;font-size:0.85rem;font-weight:700;display:flex;align-items:center;gap:8px;transition:all 0.2s;border:1px solid rgba(255,255,255,0.3);">
+                    📅 Ver Mi Horario →
+                </a>
+            </div>
+        </div>
+
+        <!-- Selector de carrera -->
+        <div class="page-header">
+            <h1>Materias Disponibles 📖</h1>
+            <p>Selecciona tu carrera y elige las materias que deseas cursar este semestre</p>
+        </div>
+
+        <div class="d-flex align-center gap-4 mb-5" style="flex-wrap:wrap;margin-bottom:24px;">
+            <div class="form-group" style="margin-bottom:0;flex:1;min-width:200px;max-width:300px;">
+                <label class="form-label">Carrera</label>
+                <select class="form-control" id="sel-carrera" onchange="filtrarMaterias()">
+                    <option value="sistemas" selected="selected">Ing. de Sistemas</option>
+                    <option value="medicina">Medicina</option>
+                    <option value="derecho">Derecho</option>
+                    <option value="industrial">Ing. Industrial</option>
+                </select>
+            </div>
+            <div class="form-group" style="margin-bottom:0;flex:1;min-width:200px;max-width:300px;">
+                <label class="form-label">Semestre</label>
+                <select class="form-control" id="sel-semestre" onchange="filtrarMaterias()">
+                    <option value="3" selected="selected">Semestre 3</option>
+                    <option value="4">Semestre 4</option>
+                    <option value="5">Semestre 5</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Materias en grid -->
+        <div id="materias-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px;">
+
+            <!-- Materia 1 -->
+            <div class="nm-card" style="border-left:4px solid var(--primary);">
+                <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;">
+                    <div>
+                        <div style="font-weight:800;font-size:1rem;color:var(--text-primary);">Programación 2</div>
+                        <div style="font-size:0.75rem;color:var(--text-muted);">CÓD: ISC-201 · 4 créditos · 4 h/sem</div>
+                    </div>
+                    <span class="badge badge-primary">Obligatoria</span>
+                </div>
+                <div style="font-size:0.82rem;color:var(--text-secondary);margin-bottom:14px;">Prerrequisito: Programación 1 ✅</div>
+
+                <div class="section-title">Grupos Disponibles</div>
+                <div style="display:flex;flex-direction:column;gap:8px;">
+                    <div class="nm-card-sm" style="cursor:pointer;border-left:3px solid var(--primary);" onclick="seleccionarGrupo(this,'Programación 2','G-301','Lunes 08:00–10:00','Carlos Martínez','304-A')">
+                        <div style="display:flex;align-items:center;justify-content:space-between;">
+                            <div>
+                                <div style="font-weight:700;font-size:0.85rem;">Grupo G-301</div>
+                                <div style="font-size:0.72rem;color:var(--text-muted);">🗓 Lunes 08:00–10:00 · 🏫 Aula 304-A Bloque 3</div>
+                                <div style="font-size:0.72rem;color:var(--text-muted);">👨‍🏫 Carlos Martínez · 25/35 cupos</div>
+                            </div>
+                            <button type="button" class="btn btn-primary btn-sm">+ Agregar</button>
+                        </div>
+                    </div>
+                    <div class="nm-card-sm" style="cursor:pointer;border-left:3px solid var(--primary);" onclick="seleccionarGrupo(this,'Programación 2','G-302','Miércoles 14:00–16:00','Laura Rodríguez','305-B')">
+                        <div style="display:flex;align-items:center;justify-content:space-between;">
+                            <div>
+                                <div style="font-weight:700;font-size:0.85rem;">Grupo G-302</div>
+                                <div style="font-size:0.72rem;color:var(--text-muted);">🗓 Miércoles 14:00–16:00 · 🏫 Aula 305-B Bloque 3</div>
+                                <div style="font-size:0.72rem;color:var(--text-muted);">👨‍🏫 Laura Rodríguez · 30/35 cupos</div>
+                            </div>
+                            <button type="button" class="btn btn-primary btn-sm">+ Agregar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Materia 2 -->
+            <div class="nm-card" style="border-left:4px solid var(--accent);">
+                <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;">
+                    <div>
+                        <div style="font-weight:800;font-size:1rem;color:var(--text-primary);">Base de Datos I</div>
+                        <div style="font-size:0.75rem;color:var(--text-muted);">CÓD: ISC-301 · 3 créditos · 3 h/sem</div>
+                    </div>
+                    <span class="badge badge-primary">Obligatoria</span>
+                </div>
+                <div style="font-size:0.82rem;color:var(--text-secondary);margin-bottom:14px;">Prerrequisito: Programación 1 ✅</div>
+
+                <div class="section-title">Grupos Disponibles</div>
+                <div style="display:flex;flex-direction:column;gap:8px;">
+                    <div class="nm-card-sm" style="cursor:pointer;border-left:3px solid var(--accent);" onclick="seleccionarGrupo(this,'Base de Datos I','G-401','Martes 10:00–12:00','Carlos Martínez','Lab-202')">
+                        <div style="display:flex;align-items:center;justify-content:space-between;">
+                            <div>
+                                <div style="font-weight:700;font-size:0.85rem;">Grupo G-401</div>
+                                <div style="font-size:0.72rem;color:var(--text-muted);">🗓 Martes 10:00–12:00 · 🏫 Lab-202 Bloque 2</div>
+                                <div style="font-size:0.72rem;color:var(--text-muted);">👨‍🏫 Carlos Martínez · 20/30 cupos</div>
+                            </div>
+                            <button type="button" class="btn btn-accent btn-sm">+ Agregar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Materia 3 -->
+            <div class="nm-card" style="border-left:4px solid var(--success);">
+                <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;">
+                    <div>
+                        <div style="font-weight:800;font-size:1rem;color:var(--text-primary);">Álgebra Lineal</div>
+                        <div style="font-size:0.75rem;color:var(--text-muted);">CÓD: MAT-201 · 4 créditos · 4 h/sem</div>
+                    </div>
+                    <span class="badge badge-primary">Obligatoria</span>
+                </div>
+                <div style="font-size:0.82rem;color:var(--text-secondary);margin-bottom:14px;">Sin prerrequisitos</div>
+
+                <div class="section-title">Grupos Disponibles</div>
+                <div style="display:flex;flex-direction:column;gap:8px;">
+                    <div class="nm-card-sm" style="cursor:pointer;border-left:3px solid var(--success);" onclick="seleccionarGrupo(this,'Álgebra Lineal','G-201','Jueves 06:00–08:00','María Pérez','Aula 101')">
+                        <div style="display:flex;align-items:center;justify-content:space-between;">
+                            <div>
+                                <div style="font-weight:700;font-size:0.85rem;">Grupo G-201</div>
+                                <div style="font-size:0.72rem;color:var(--text-muted);">🗓 Jueves 06:00–08:00 · 🏫 Aula 101 Bloque 1</div>
+                                <div style="font-size:0.72rem;color:var(--text-muted);">👨‍🏫 María Pérez · 18/40 cupos</div>
+                            </div>
+                            <button type="button" class="btn btn-success btn-sm">+ Agregar</button>
+                        </div>
+                    </div>
+                    <div class="nm-card-sm" style="cursor:pointer;border-left:3px solid var(--success);" onclick="seleccionarGrupo(this,'Álgebra Lineal','G-202','Viernes 14:00–16:00','Ricardo Aguilar','Aula 202')">
+                        <div style="display:flex;align-items:center;justify-content:space-between;">
+                            <div>
+                                <div style="font-weight:700;font-size:0.85rem;">Grupo G-202</div>
+                                <div style="font-size:0.72rem;color:var(--text-muted);">🗓 Viernes 14:00–16:00 · 🏫 Aula 202 Bloque 1</div>
+                                <div style="font-size:0.72rem;color:var(--text-muted);">👨‍🏫 Ricardo Aguilar · 22/40 cupos</div>
+                            </div>
+                            <button type="button" class="btn btn-success btn-sm">+ Agregar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Materia 4 — Electiva -->
+            <div class="nm-card" style="border-left:4px solid var(--warning);">
+                <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;">
+                    <div>
+                        <div style="font-weight:800;font-size:1rem;color:var(--text-primary);">Electiva Humanidades</div>
+                        <div style="font-size:0.75rem;color:var(--text-muted);">CÓD: HUM-100 · 2 créditos · 2 h/sem</div>
+                    </div>
+                    <span class="badge badge-warning">Electiva</span>
+                </div>
+                <div style="font-size:0.82rem;color:var(--text-secondary);margin-bottom:14px;">Sin prerrequisitos</div>
+
+                <div class="section-title">Grupos Disponibles</div>
+                <div style="display:flex;flex-direction:column;gap:8px;">
+                    <div class="nm-card-sm" style="cursor:pointer;border-left:3px solid var(--warning);" onclick="seleccionarGrupo(this,'Electiva Humanidades','G-H01','Sábado 08:00–10:00','Jorge Vargas','Aula 501')">
+                        <div style="display:flex;align-items:center;justify-content:space-between;">
+                            <div>
+                                <div style="font-weight:700;font-size:0.85rem;">Grupo G-H01</div>
+                                <div style="font-size:0.72rem;color:var(--text-muted);">🗓 Sábado 08:00–10:00 · 🏫 Aula 501 Bloque 5</div>
+                                <div style="font-size:0.72rem;color:var(--text-muted);">👨‍🏫 Jorge Vargas · 10/30 cupos</div>
+                            </div>
+                            <button type="button" class="btn btn-nm btn-sm">+ Agregar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Carrito de materias seleccionadas -->
+        <div id="carrito" class="nm-card" style="margin-top:24px;border:2px dashed rgba(67,97,238,0.3);display:none;">
+            <div class="nm-card-header">
+                <span class="nm-card-title">🛒 Materias Seleccionadas</span>
+                <a href="horario.xhtml" class="btn btn-primary">📅 Armar Horario →</a>
+            </div>
+            <div id="carrito-items" style="display:flex;flex-wrap:wrap;gap:10px;"></div>
+        </div>
+
+    </ui:define>
+
+    <ui:define name="scripts">
+    <script type="text/javascript">
+    //<![CDATA[
+    var gruposSeleccionados = [];
+
+    function seleccionarGrupo(el, materia, grupo, horario, docente, aula) {
+        var key = materia;
+        var idx = gruposSeleccionados.findIndex(function(g){ return g.materia === key; });
+        if (idx >= 0) {
+            // Ya tiene esta materia, reemplazar
+            gruposSeleccionados[idx] = { materia: materia, grupo: grupo, horario: horario, docente: docente, aula: aula };
+        } else {
+            gruposSeleccionados.push({ materia: materia, grupo: grupo, horario: horario, docente: docente, aula: aula });
+        }
+
+        // Guardar en sessionStorage para horario
+        sessionStorage.setItem('gruposSeleccionados', JSON.stringify(gruposSeleccionados));
+        renderCarrito();
+
+        // Feedback visual
+        el.style.boxShadow = 'var(--nm-pressed-sm)';
+        el.querySelector('button').textContent = '✅ Agregado';
+        el.querySelector('button').style.background = 'var(--success)';
+        setTimeout(function(){
+            el.style.boxShadow = '';
+        }, 400);
+    }
+
+    function renderCarrito() {
+        var carrito = document.getElementById('carrito');
+        var items = document.getElementById('carrito-items');
+        if (gruposSeleccionados.length === 0) { carrito.style.display = 'none'; return; }
+        carrito.style.display = 'block';
+        items.innerHTML = '';
+        gruposSeleccionados.forEach(function(g, i){
+            var chip = document.createElement('div');
+            chip.style.cssText = 'background:var(--nm-bg);box-shadow:var(--nm-raised-sm);border-radius:12px;padding:8px 14px;display:flex;align-items:center;gap:10px;';
+            chip.innerHTML = '<div><div style="font-weight:700;font-size:0.82rem;">' + g.materia + ' — ' + g.grupo + '</div>'
+                + '<div style="font-size:0.7rem;color:var(--text-muted);">' + g.horario + ' · ' + g.docente + '</div></div>'
+                + '<button onclick="eliminarGrupo(' + i + ')" style="background:var(--danger-light);color:var(--danger);border:none;border-radius:6px;padding:2px 8px;cursor:pointer;font-size:0.75rem;">✕</button>';
+            items.appendChild(chip);
+        });
+    }
+
+    function eliminarGrupo(i) {
+        gruposSeleccionados.splice(i,1);
+        sessionStorage.setItem('gruposSeleccionados', JSON.stringify(gruposSeleccionados));
+        renderCarrito();
+    }
+
+    function filtrarMaterias() {
+        // Future: filter by carrera/semestre from server
+    }
+    //]]>
+    </script>
+    </ui:define>
+
+</ui:composition>
+</html>
