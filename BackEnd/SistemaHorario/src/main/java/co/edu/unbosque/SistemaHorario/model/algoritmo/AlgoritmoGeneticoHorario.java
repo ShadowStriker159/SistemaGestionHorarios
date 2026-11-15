@@ -51,6 +51,7 @@ public class AlgoritmoGeneticoHorario implements IAlgoritmoHorario {
 
         validarRecursos(secciones, aulas, franjas);
         disponibilidadDocentes = construirDisponibilidad(secciones);
+        validarDisponibilidadDocentes(secciones, franjas);
 
         List<List<Seccion>> poblacion =
                 inicializarPoblacion(secciones, aulas, franjas);
@@ -179,9 +180,8 @@ public class AlgoritmoGeneticoHorario implements IAlgoritmoHorario {
                     aulas.get(rng.nextInt(aulas.size()))
             );
 
-            copia.setFranjaHoraria(
-                    franjas.get(rng.nextInt(franjas.size()))
-            );
+            List<FranjaHoraria> opcionesFranjas = franjasPermitidas(original, franjas);
+            copia.setFranjaHoraria(opcionesFranjas.get(rng.nextInt(opcionesFranjas.size())));
 
             individuo.add(copia);
         }
@@ -204,7 +204,7 @@ public class AlgoritmoGeneticoHorario implements IAlgoritmoHorario {
                 continue;
             }
 
-            long aulaId = s.getAula().getIdAula();
+            String aulaId = s.getAula().getId().getIdBloque() + "-" + s.getAula().getNumeroAula();
             long franjaId = s.getFranjaHoraria().getIdFranja();
 
             TipoAula requerida =
@@ -292,7 +292,8 @@ public class AlgoritmoGeneticoHorario implements IAlgoritmoHorario {
         if (rng.nextBoolean()) {
             s.setAula(aulas.get(rng.nextInt(aulas.size())));
         } else {
-            s.setFranjaHoraria(franjas.get(rng.nextInt(franjas.size())));
+            List<FranjaHoraria> opcionesFranjas = franjasPermitidas(s, franjas);
+            s.setFranjaHoraria(opcionesFranjas.get(rng.nextInt(opcionesFranjas.size())));
         }
     }
 
@@ -331,6 +332,39 @@ public class AlgoritmoGeneticoHorario implements IAlgoritmoHorario {
             mapa.put(d.getId(), ids);
         }
         return mapa;
+    }
+
+    private void validarDisponibilidadDocentes(List<Seccion> secciones, List<FranjaHoraria> franjas)
+            throws HorarioInalcanzableException {
+        for (Seccion seccion : secciones) {
+            Docente docente = seccion.getGrupo().getDocente();
+            if (docente == null) {
+                throw new HorarioInalcanzableException(
+                        "El grupo " + seccion.getGrupo().getIdGrupo() + " no tiene un docente asignado.");
+            }
+            if (franjasPermitidas(seccion, franjas).isEmpty()) {
+                String nombreDocente = ((docente.getNombre() == null ? "" : docente.getNombre()) + " "
+                        + (docente.getApellido() == null ? "" : docente.getApellido())).trim();
+                if (nombreDocente.isEmpty()) {
+                    nombreDocente = docente.getId();
+                }
+                throw new HorarioInalcanzableException(
+                        "El docente " + nombreDocente + " no tiene franjas disponibles compatibles "
+                                + "con el horario global. Registra su disponibilidad antes de generar el horario.");
+            }
+        }
+    }
+
+    private List<FranjaHoraria> franjasPermitidas(Seccion seccion, List<FranjaHoraria> franjas) {
+        Docente docente = seccion.getGrupo().getDocente();
+        if (docente == null) {
+            return Collections.emptyList();
+        }
+        Set<Integer> idsDisponibles = disponibilidadDocentes.getOrDefault(
+                docente.getId(), Collections.emptySet());
+        return franjas.stream()
+                .filter(franja -> idsDisponibles.contains(franja.getIdFranja()))
+                .collect(Collectors.toList());
     }
 
     private void validarRecursos(List<Seccion> secciones,

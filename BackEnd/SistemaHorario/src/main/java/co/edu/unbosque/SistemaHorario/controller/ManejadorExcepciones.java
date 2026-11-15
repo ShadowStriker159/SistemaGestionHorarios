@@ -15,7 +15,7 @@ public class ManejadorExcepciones {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
 
-    @ExceptionHandler({AreaRepetidaException.class, AulaRepetidaException.class, BloqueRepetidoException.class, CarreraRepetidaException.class, CursoRepetidoException.class, DocenteRepetidoException.class, EstudianteRepetidoException.class, FacultadRepetidaException.class, FranjaHorariaRepetidaException.class, GrupoRepetidoException.class, PlanEstudiosRepetidoException.class})
+    @ExceptionHandler({AreaRepetidaException.class, AulaRepetidaException.class, BloqueRepetidoException.class, CarreraRepetidaException.class, CursoRepetidoException.class, DocenteRepetidoException.class, DocenteConGruposException.class, EstudianteRepetidoException.class, FacultadRepetidaException.class, FranjaHorariaRepetidaException.class, GrupoRepetidoException.class, PlanEstudiosRepetidoException.class})
     public ResponseEntity<String> repetido(RuntimeException e) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
     }

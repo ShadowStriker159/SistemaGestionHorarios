@@ -29,11 +29,22 @@ public class AulaService {
     }
 
     @Transactional
-    public AulaDTO crear(Integer idBloque, AulaDTO dto) throws BloqueNoEncontradoException {
+    public AulaDTO crear(Integer idBloque, AulaDTO dto) throws BloqueNoEncontradoException, AulaRepetidaException {
         Bloque bloque = bloqueRepository.findById(idBloque)
                 .orElseThrow(() -> new BloqueNoEncontradoException("No existe el bloque con id: " + idBloque));
 
+        String numero = Validaciones.texto(dto.getNumeroAula(), "numeroAula");
+        if (!numero.matches("[\\p{L}\\p{N}-]{1,10}")) {
+            throw new IllegalArgumentException(
+                    "El nombre del aula debe tener hasta 10 letras, números o guiones; por ejemplo, A-101.");
+        }
+        AulaId id = new AulaId(idBloque, numero);
+        if (aulaRepository.existsById(id)) {
+            throw new AulaRepetidaException("Ya existe el aula " + numero + " en el bloque " + bloque.getEtiquetaBloque());
+        }
+
         Aula aula = new Aula();
+        aula.setId(id);
         aula.setBloque(bloque);
         aula.setCapacidad(Validaciones.positivo(dto.getCapacidad(), "capacidad"));
         aula.setTipoAula(Validaciones.enumerado(TipoAula.class, dto.getTipoAula(), "tipoAula"));
@@ -45,10 +56,10 @@ public class AulaService {
     }
 
     @Transactional
-    public AulaDTO eliminar(Integer id) throws AulaNoEncontradaException {
-        Aula aula = aulaRepository.findById(id)
+    public AulaDTO eliminar(Integer idBloque, String numeroAula) throws AulaNoEncontradaException {
+        Aula aula = aulaRepository.findById(new AulaId(idBloque, numeroAula))
                 .orElseThrow(() -> new AulaNoEncontradaException(
-                        "No existe el aula con id: " + id + ", no se puede eliminar"));
+                        "No existe el aula " + numeroAula + " en el bloque " + idBloque + ", no se puede eliminar"));
         AulaDTO resultado = mapeador.aula(aula);
         aulaRepository.delete(aula);
         aulaRepository.flush();

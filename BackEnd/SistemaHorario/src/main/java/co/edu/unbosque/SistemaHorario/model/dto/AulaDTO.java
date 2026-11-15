@@ -1,7 +1,7 @@
 package co.edu.unbosque.SistemaHorario.model.dto;
 
 public class AulaDTO {
-    private Integer idAula;
+    private String numeroAula;
     private Integer capacidad;
     private String tipoAula;
     private String estadoAula;
@@ -10,20 +10,20 @@ public class AulaDTO {
     public AulaDTO() {
     }
 
-    public AulaDTO(Integer idAula, Integer capacidad, String tipoAula, String estadoAula, BloqueDTO bloque) {
-        this.idAula = idAula;
+    public AulaDTO(String numeroAula, Integer capacidad, String tipoAula, String estadoAula, BloqueDTO bloque) {
+        this.numeroAula = numeroAula;
         this.capacidad = capacidad;
         this.tipoAula = tipoAula;
         this.estadoAula = estadoAula;
         this.bloque = bloque;
     }
 
-    public Integer getIdAula() {
-        return idAula;
+    public String getNumeroAula() {
+        return numeroAula;
     }
 
-    public void setIdAula(Integer idAula) {
-        this.idAula = idAula;
+    public void setNumeroAula(String numeroAula) {
+        this.numeroAula = numeroAula;
     }
 
     public Integer getCapacidad() {

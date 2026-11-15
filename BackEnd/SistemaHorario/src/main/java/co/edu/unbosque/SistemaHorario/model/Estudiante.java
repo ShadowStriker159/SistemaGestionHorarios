@@ -7,6 +7,10 @@ import jakarta.persistence.*;
 @PrimaryKeyJoinColumn(name = "id")
 public class Estudiante extends Persona {
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_plan")
+    private PlanEstudios planEstudios;
+
     @Column(name = "semestre_cursa")
     private Integer semestreCursa;
 
@@ -31,6 +35,14 @@ public class Estudiante extends Persona {
 
     public void setEstadoEstudiante(EstadoEstudiante estadoEstudiante) {
         this.estadoEstudiante = estadoEstudiante;
+    }
+
+    public PlanEstudios getPlanEstudios() {
+        return planEstudios;
+    }
+
+    public void setPlanEstudios(PlanEstudios planEstudios) {
+        this.planEstudios = planEstudios;
     }
 
     public Integer getSemestreCursa() {

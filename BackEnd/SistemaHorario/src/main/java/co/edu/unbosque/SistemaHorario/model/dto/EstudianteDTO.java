@@ -10,6 +10,9 @@ public class EstudianteDTO {
     private Integer semestreCursa;
     private String estadoEstudiante;
     private Integer creditosAprobados;
+    private Integer idPlanEstudios;
+    private Integer idCarrera;
+    private String nombreCarrera;
 
     public EstudianteDTO() {
     }
@@ -81,6 +84,30 @@ public class EstudianteDTO {
 
     public void setSemestreCursa(Integer semestreCursa) {
         this.semestreCursa = semestreCursa;
+    }
+
+    public Integer getIdPlanEstudios() {
+        return idPlanEstudios;
+    }
+
+    public void setIdPlanEstudios(Integer idPlanEstudios) {
+        this.idPlanEstudios = idPlanEstudios;
+    }
+
+    public Integer getIdCarrera() {
+        return idCarrera;
+    }
+
+    public void setIdCarrera(Integer idCarrera) {
+        this.idCarrera = idCarrera;
+    }
+
+    public String getNombreCarrera() {
+        return nombreCarrera;
+    }
+
+    public void setNombreCarrera(String nombreCarrera) {
+        this.nombreCarrera = nombreCarrera;
     }
 
     public Integer getCreditosAprobados() {

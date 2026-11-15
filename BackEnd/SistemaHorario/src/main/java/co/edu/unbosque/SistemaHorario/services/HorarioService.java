@@ -96,7 +96,7 @@ public class HorarioService {
 
         Aula aula = seccion.getAula();
         if (aula != null) {
-            dto.setEspacioFisico("Aula " + aula.getIdAula());
+            dto.setEspacioFisico("Aula " + aula.getNumeroAula());
 
             Bloque bloque = aula.getBloque();
             if (bloque != null) {

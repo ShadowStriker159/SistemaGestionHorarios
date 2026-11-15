@@ -18,6 +18,16 @@ public class GrupoController {
         this.grupoService = grupoService;
     }
 
+    @PostMapping("/{idGrupo}/estudiantes/{idEstudiante}")
+    public ResponseEntity<GrupoDTO> inscribir(@PathVariable Integer idGrupo, @PathVariable String idEstudiante) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(grupoService.inscribirEstudiante(idGrupo, idEstudiante));
+    }
+
+    @DeleteMapping("/{idGrupo}/estudiantes/{idEstudiante}")
+    public ResponseEntity<GrupoDTO> retirar(@PathVariable Integer idGrupo, @PathVariable String idEstudiante) {
+        return ResponseEntity.ok(grupoService.retirarEstudiante(idGrupo, idEstudiante));
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<GrupoDTO> eliminar(@PathVariable Integer id) {
         return ResponseEntity.ok(grupoService.eliminar(id));

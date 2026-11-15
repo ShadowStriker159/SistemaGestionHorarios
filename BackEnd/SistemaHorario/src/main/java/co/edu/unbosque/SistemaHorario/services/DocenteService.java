@@ -16,18 +16,38 @@ public class DocenteService {
     private final DocenteRepository docenteRepository;
     private final PersonaRepository personaRepository;
     private final FranjaHorariaRepository franjaHorariaRepository;
+    private final GrupoRepository grupoRepository;
     private final MapeadorDTO mapeador;
 
-    public DocenteService(DocenteRepository docenteRepository, PersonaRepository personaRepository, FranjaHorariaRepository franjaHorariaRepository, MapeadorDTO mapeador) {
+    public DocenteService(DocenteRepository docenteRepository, PersonaRepository personaRepository,
+                          FranjaHorariaRepository franjaHorariaRepository, GrupoRepository grupoRepository,
+                          MapeadorDTO mapeador) {
         this.docenteRepository = docenteRepository;
         this.personaRepository = personaRepository;
         this.franjaHorariaRepository = franjaHorariaRepository;
+        this.grupoRepository = grupoRepository;
         this.mapeador = mapeador;
     }
 
     @Transactional(readOnly = true)
     public List<DocenteDTO> listarTodos() {
         return docenteRepository.findAll().stream().map(mapeador::docente).toList();
+    }
+
+    @Transactional(readOnly = true)
+    public DocenteDTO obtener(String id) throws DocenteNoEncontradoException {
+        Docente docente = docenteRepository.findById(id)
+                .orElseThrow(() -> new DocenteNoEncontradoException("No existe el docente con id: " + id));
+        return mapeador.docente(docente);
+    }
+
+    @Transactional
+    public DocenteDTO actualizarDisponibilidad(String id, List<FranjaHorariaDTO> disponibilidad)
+            throws DocenteNoEncontradoException, FranjaHorariaNoEncontradaException {
+        Docente docente = docenteRepository.findById(id)
+                .orElseThrow(() -> new DocenteNoEncontradoException("No existe el docente con id: " + id));
+        docente.setDisponibilidad(resolverDisponibilidad(disponibilidad));
+        return mapeador.docente(docenteRepository.save(docente));
     }
 
     @Transactional
@@ -58,10 +78,15 @@ public class DocenteService {
     }
 
     @Transactional
-    public DocenteDTO eliminar(String id) throws DocenteNoEncontradoException {
+    public DocenteDTO eliminar(String id) throws DocenteNoEncontradoException, DocenteConGruposException {
         Docente docente = docenteRepository.findById(id)
                 .orElseThrow(() -> new DocenteNoEncontradoException(
                         "No existe el docente con id: " + id + ", no se puede eliminar"));
+        if (grupoRepository.existsByDocente_Id(id)) {
+            throw new DocenteConGruposException(
+                    "No se puede eliminar el docente porque tiene grupos asignados. "
+                            + "Reasigna o elimina esos grupos primero.");
+        }
         DocenteDTO resultado = mapeador.docente(docente);
         docenteRepository.delete(docente);
         docenteRepository.flush();

@@ -23,8 +23,8 @@ public class AulaController {
         return ResponseEntity.ok(aulaService.listarTodos());
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<AulaDTO> eliminar(@PathVariable Integer id) {
-        return ResponseEntity.ok(aulaService.eliminar(id));
+    @DeleteMapping("/{idBloque}/{numeroAula}")
+    public ResponseEntity<AulaDTO> eliminar(@PathVariable Integer idBloque, @PathVariable String numeroAula) {
+        return ResponseEntity.ok(aulaService.eliminar(idBloque, numeroAula));
     }
 }

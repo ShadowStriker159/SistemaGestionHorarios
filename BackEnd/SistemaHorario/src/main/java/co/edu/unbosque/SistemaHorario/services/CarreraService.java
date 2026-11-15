@@ -24,6 +24,11 @@ public class CarreraService {
     }
 
     @Transactional(readOnly = true)
+    public List<CarreraDTO> listarTodas() {
+        return carreraRepository.findAll().stream().map(mapeador::carrera).toList();
+    }
+
+    @Transactional(readOnly = true)
     public List<CarreraDTO> listarPorFacultad(Integer idFacultad) throws FacultadNoEncontradaException {
         Facultad facultad = buscarFacultad(idFacultad);
         return carreraRepository.findByFacultad(facultad).stream().map(mapeador::carrera).toList();

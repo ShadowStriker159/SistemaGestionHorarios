@@ -68,7 +68,7 @@ public class CursoService {
                         "No existe el curso con id: " + id + ", no se puede eliminar"));
         if (curso.getPlanesEstudio() != null) {
             for (PlanEstudios plan : curso.getPlanesEstudio()) {
-                plan.getCursos().remove(curso);
+                plan.getCursos().removeIf(c -> c.getIdCurso().equals(id));
             }
         }
         cursoRepository.delete(curso);

@@ -8,6 +8,7 @@ public class GrupoDTO {
     private List<EstudianteDTO> estudiantes;
     private List<SeccionDTO> secciones;
     private DocenteDTO docente;
+    private CursoDTO curso;
     private Integer cupoMaximo;
     private Integer cupoMinimo;
 
@@ -62,6 +63,14 @@ public class GrupoDTO {
 
     public void setDocente(DocenteDTO docente) {
         this.docente = docente;
+    }
+
+    public CursoDTO getCurso() {
+        return curso;
+    }
+
+    public void setCurso(CursoDTO curso) {
+        this.curso = curso;
     }
 
     public Integer getCupoMaximo() {

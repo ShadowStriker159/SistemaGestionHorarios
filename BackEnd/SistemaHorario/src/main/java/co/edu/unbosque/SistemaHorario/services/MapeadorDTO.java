@@ -33,9 +33,18 @@ public class MapeadorDTO {
     }
 
     public EstudianteDTO estudiante(Estudiante estudiante) {
-        return new EstudianteDTO(estudiante.getId(), estudiante.getNombre(), estudiante.getApellido(),
+        EstudianteDTO dto = new EstudianteDTO(estudiante.getId(), estudiante.getNombre(), estudiante.getApellido(),
                 estudiante.getCorreo(), null, estudiante.getSemestreCursa(),
                 texto(estudiante.getEstadoEstudiante()), estudiante.getCreditosAprobados());
+        PlanEstudios plan = estudiante.getPlanEstudios();
+        if (plan != null) {
+            dto.setIdPlanEstudios(plan.getIdPlanEstudios());
+            if (plan.getCarrera() != null) {
+                dto.setIdCarrera(plan.getCarrera().getIdCarrera());
+                dto.setNombreCarrera(plan.getCarrera().getNombreCarrera());
+            }
+        }
+        return dto;
     }
 
     public FacultadDTO facultad(Facultad facultad) {
@@ -84,8 +93,30 @@ public class MapeadorDTO {
         dto.setEstadoGrupo(texto(grupo.getEstadoGrupo()));
         dto.setCupoMaximo(grupo.getCupoMaximo());
         dto.setCupoMinimo(grupo.getCupoMinimo());
+        if (grupo.getCurso() != null) {
+            dto.setCurso(curso(grupo.getCurso()));
+        }
         if (grupo.getDocente() != null) {
             dto.setDocente(docente(grupo.getDocente()));
+        }
+        dto.setEstudiantes(grupo.getEstudiantes() == null
+                ? List.of()
+                : grupo.getEstudiantes().stream().map(this::estudiante).toList());
+        dto.setSecciones(grupo.getSecciones() == null
+                ? List.of()
+                : grupo.getSecciones().stream().map(this::seccion).toList());
+        return dto;
+    }
+
+    public SeccionDTO seccion(Seccion seccion) {
+        SeccionDTO dto = new SeccionDTO();
+        dto.setIdSeccion(seccion.getIdSeccion());
+        dto.setEstadoSeccion(texto(seccion.getEstadoSeccion()));
+        if (seccion.getAula() != null) {
+            dto.setAula(aula(seccion.getAula()));
+        }
+        if (seccion.getFranjaHoraria() != null) {
+            dto.setFranjaHoraria(franja(seccion.getFranjaHoraria()));
         }
         return dto;
     }
@@ -101,7 +132,7 @@ public class MapeadorDTO {
 
     public AulaDTO aula(Aula aula) {
         AulaDTO dto = new AulaDTO();
-        dto.setIdAula(aula.getIdAula());
+        dto.setNumeroAula(aula.getNumeroAula());
         dto.setCapacidad(aula.getCapacidad());
         dto.setTipoAula(texto(aula.getTipoAula()));
         dto.setEstadoAula(texto(aula.getEstadoAula()));

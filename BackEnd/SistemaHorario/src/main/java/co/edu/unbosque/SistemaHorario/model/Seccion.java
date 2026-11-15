@@ -20,7 +20,10 @@ public class Seccion {
     private Grupo grupo;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_aula", nullable = false)
+    @JoinColumns({
+            @JoinColumn(name = "id_bloque", referencedColumnName = "id_bloque", nullable = false),
+            @JoinColumn(name = "numero_aula", referencedColumnName = "numero_aula", nullable = false)
+    })
     private Aula aula;
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -28,6 +28,11 @@ public class EstudianteController {
         return ResponseEntity.status(HttpStatus.CREATED).body(estudianteService.crear(dto));
     }
 
+    @PutMapping("/{id}/plan/{idPlan}")
+    public ResponseEntity<EstudianteDTO> asignarPlan(@PathVariable String id, @PathVariable Integer idPlan) {
+        return ResponseEntity.ok(estudianteService.asignarPlan(id, idPlan));
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<EstudianteDTO> eliminar(@PathVariable String id) {
         return ResponseEntity.ok(estudianteService.eliminar(id));

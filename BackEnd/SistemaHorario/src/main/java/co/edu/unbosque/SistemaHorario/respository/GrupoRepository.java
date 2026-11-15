@@ -8,4 +8,6 @@ import java.util.List;
 
 public interface GrupoRepository extends JpaRepository<Grupo,Integer> {
     List<Grupo> findByCurso(Curso curso);
+    List<Grupo> findByDocente_Id(String idDocente);
+    boolean existsByDocente_Id(String idDocente);
 }

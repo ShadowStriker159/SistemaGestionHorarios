@@ -6,11 +6,10 @@ import jakarta.persistence.*;
 @Table(name = "aula")
 public class Aula {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_aula")
-    private Integer idAula;
+    @EmbeddedId
+    private AulaId id;
 
+    @MapsId("idBloque")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_bloque", nullable = false)
     private Bloque bloque;
@@ -29,20 +28,24 @@ public class Aula {
     public Aula() {
     }
 
-    public Aula(Integer idAula, Integer capacidad, TipoAula tipoAula, EstadoAula estadoAula, Bloque bloque) {
-        this.idAula = idAula;
+    public Aula(AulaId id, Integer capacidad, TipoAula tipoAula, EstadoAula estadoAula, Bloque bloque) {
+        this.id = id;
         this.capacidad = capacidad;
         this.tipoAula = tipoAula;
         this.estadoAula = estadoAula;
         this.bloque = bloque;
     }
 
-    public Integer getIdAula() {
-        return idAula;
+    public AulaId getId() {
+        return id;
     }
 
-    public void setIdAula(Integer idAula) {
-        this.idAula = idAula;
+    public void setId(AulaId id) {
+        this.id = id;
+    }
+
+    public String getNumeroAula() {
+        return id == null ? null : id.getNumeroAula();
     }
 
     public Bloque getBloque() {
@@ -81,10 +84,15 @@ public class Aula {
     public boolean equals(Object obj) {
         if (this == obj)
             return true;
-        if (obj == null || getClass() != obj.getClass())
+        if (!(obj instanceof Aula))
             return false;
 
         Aula aula = (Aula) obj;
-        return idAula.equals(aula.idAula);
+        return id != null && id.equals(aula.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return id == null ? 0 : id.hashCode();
     }
 }
