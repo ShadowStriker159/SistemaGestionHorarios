@@ -1546,3 +1546,260 @@ code {
   .form-row.cols-2,
   .form-row.cols-3 { grid-template-columns: 1fr; }
 }
+
+/* ================================================================
+   SECCION 20 - Componentes de las vistas de Secretaria (SGPHU)
+   ================================================================ */
+
+/* ---- Alertas de resultado ---- */
+.aurora-alert {
+  padding: 12px 18px;
+  border-radius: 12px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  animation: fadeInUp 0.3s ease;
+}
+.aurora-alert-error {
+  background: rgba(239,68,68,0.15);
+  border: 1px solid rgba(239,68,68,0.4);
+  color: #fca5a5;
+}
+.aurora-alert-ok {
+  background: rgba(16,185,129,0.15);
+  border: 1px solid rgba(16,185,129,0.4);
+  color: #6ee7b7;
+}
+
+/* ---- Grid de formularios ---- */
+.form-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+/* ---- Inline form (input + botón en una fila) ---- */
+.inline-form {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+/* ---- Header de card estilo Aurora ---- */
+.card-header-aurora {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(163,177,198,0.15);
+}
+.card-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary, #e2e8f0);
+  margin: 0;
+}
+
+/* ---- Select estilo dark ---- */
+.dark-select {
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23a0aec0' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 36px;
+}
+
+/* ---- Tabla aurora ---- */
+.table-container {
+  overflow-x: auto;
+  border-radius: 12px;
+}
+.aurora-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.84rem;
+}
+.aurora-table thead tr {
+  background: rgba(99,102,241,0.12);
+}
+.aurora-table th {
+  padding: 11px 14px;
+  text-align: left;
+  font-weight: 700;
+  color: rgba(255,255,255,0.7);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+.aurora-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(163,177,198,0.1);
+  color: rgba(255,255,255,0.85);
+  vertical-align: middle;
+}
+.aurora-table tr:hover td {
+  background: rgba(99,102,241,0.06);
+}
+.aurora-table tr:last-child td { border-bottom: none; }
+
+/* ---- Badges ---- */
+.badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 100px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+.badge-info    { background: rgba(99,102,241,0.2); color: #a5b4fc; border: 1px solid rgba(99,102,241,0.35); }
+.badge-purple  { background: rgba(168,85,247,0.2); color: #d8b4fe; border: 1px solid rgba(168,85,247,0.35); }
+.badge-teal    { background: rgba(20,184,166,0.2); color: #99f6e4; border: 1px solid rgba(20,184,166,0.35); }
+.badge-green   { background: rgba(16,185,129,0.2); color: #6ee7b7; border: 1px solid rgba(16,185,129,0.35); }
+.badge-red     { background: rgba(239,68,68,0.2);  color: #fca5a5; border: 1px solid rgba(239,68,68,0.35); }
+.badge-gold    { background: rgba(251,191,36,0.2); color: #fde68a; border: 1px solid rgba(251,191,36,0.35); }
+.badge-blue    { background: rgba(59,130,246,0.2); color: #93c5fd; border: 1px solid rgba(59,130,246,0.35); }
+.badge-success { background: rgba(16,185,129,0.2); color: #6ee7b7; border: 1px solid rgba(16,185,129,0.35); }
+.badge-warning { background: rgba(245,158,11,0.2); color: #fde68a; border: 1px solid rgba(245,158,11,0.35); }
+
+/* ---- Botones variantes ---- */
+.aurora-btn-sm    { padding: 6px 14px; font-size: 0.8rem; }
+.aurora-btn-ghost {
+  background: transparent;
+  border: 1px solid rgba(163,177,198,0.3);
+  color: rgba(255,255,255,0.7);
+  padding: 8px 18px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.aurora-btn-ghost:hover {
+  background: rgba(163,177,198,0.1);
+  color: #fff;
+  border-color: rgba(163,177,198,0.5);
+}
+.aurora-btn-danger {
+  background: rgba(239,68,68,0.18);
+  border: 1px solid rgba(239,68,68,0.4);
+  color: #fca5a5;
+  padding: 6px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 0.78rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+.aurora-btn-danger:hover {
+  background: rgba(239,68,68,0.35);
+  color: #fff;
+}
+
+/* ---- Chips académicos (jerarquía) ---- */
+.chip-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+  min-height: 36px;
+  align-items: center;
+}
+.academ-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+  border-radius: 100px;
+  padding: 4px 6px 4px 14px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  border: 1px solid rgba(255,255,255,0.1);
+  transition: all 0.2s;
+}
+.academ-chip:hover { opacity: 0.9; transform: translateY(-1px); }
+.chip-azul   { background: rgba(99,102,241,0.18); color: #a5b4fc; border-color: rgba(99,102,241,0.3); }
+.chip-teal   { background: rgba(20,184,166,0.18); color: #99f6e4; border-color: rgba(20,184,166,0.3); }
+.chip-purple { background: rgba(168,85,247,0.18); color: #d8b4fe; border-color: rgba(168,85,247,0.3); }
+.chip-gold   { background: rgba(251,191,36,0.18); color: #fde68a; border-color: rgba(251,191,36,0.3); }
+.chip-label  { cursor: pointer; }
+.chip-del {
+  background: rgba(255,255,255,0.1);
+  border: none;
+  border-radius: 50%;
+  width: 20px; height: 20px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.7rem;
+  cursor: pointer;
+  margin-left: 8px;
+  color: rgba(255,255,255,0.7);
+  transition: background 0.2s;
+}
+.chip-del:hover { background: rgba(239,68,68,0.4); color: #fff; }
+
+/* ---- Grid 2 columnas ---- */
+.columns-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+/* ---- Info boxes para horarios ---- */
+.horario-info-boxes {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+.info-box {
+  border-radius: 14px;
+  padding: 16px;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  border: 1px solid rgba(255,255,255,0.07);
+}
+.info-box-blue   { background: rgba(59,130,246,0.1); }
+.info-box-teal   { background: rgba(20,184,166,0.1); }
+.info-box-purple { background: rgba(168,85,247,0.1); }
+.info-box-icon   { font-size: 1.5rem; flex-shrink: 0; }
+.info-box-label  { font-weight: 700; font-size: 0.85rem; color: rgba(255,255,255,0.9); margin-bottom: 4px; }
+.info-box-desc   { font-size: 0.76rem; color: rgba(255,255,255,0.5); line-height: 1.4; }
+
+/* ---- Filtros de día ---- */
+.horario-filter-bar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.filter-chip {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+  color: rgba(255,255,255,0.6);
+  padding: 6px 16px;
+  border-radius: 100px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.filter-chip:hover          { background: rgba(99,102,241,0.2); color: #a5b4fc; border-color: rgba(99,102,241,0.4); }
+.filter-chip-active         { background: rgba(99,102,241,0.25); color: #a5b4fc; border-color: rgba(99,102,241,0.5); }
+
+/* ---- Responsive nuevos componentes ---- */
+@media (max-width: 900px) {
+  .form-grid-2          { grid-template-columns: 1fr; }
+  .columns-2            { grid-template-columns: 1fr; }
+  .horario-info-boxes   { grid-template-columns: 1fr; }
+}
+@media (max-width: 600px) {
+  .inline-form { flex-direction: column; align-items: stretch; }
+  .chip-list   { gap: 6px; }
+}

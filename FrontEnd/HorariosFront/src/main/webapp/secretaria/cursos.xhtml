@@ -7,487 +7,390 @@
 
 <ui:composition template="/WEB-INF/templates/layout.xhtml">
 
-    <ui:define name="title">Cursos y Grupos · Secretaria · Horarios UnBosque</ui:define>
-    <ui:define name="page-title">Cursos y Grupos</ui:define>
-    <ui:define name="breadcrumb">Secretaría / Cursos y Grupos</ui:define>
+    <ui:define name="title">Estructura Académica · Secretaría · Horarios UnBosque</ui:define>
+    <ui:define name="page-title">Gestión Académica</ui:define>
+    <ui:define name="breadcrumb">Secretaría / Académico</ui:define>
     <ui:define name="user-avatar-letter">S</ui:define>
-    <ui:define name="user-name">Ana García López</ui:define>
-    <ui:define name="user-role">Secretaria Académica</ui:define>
+    <ui:define name="user-name">Secretaría Académica</ui:define>
+    <ui:define name="user-role">Administrador del Sistema</ui:define>
 
     <ui:define name="sidebar-nav">
         <span class="nav-section-title">Principal</span>
-        <a href="dashboard.xhtml" class="nav-item">
-            <div class="nav-icon">🏠</div> Dashboard
-        </a>
+        <a href="dashboard.xhtml" class="nav-item"><div class="nav-icon">🏠</div> Dashboard</a>
         <span class="nav-section-title">Gestión</span>
-        <a href="estudiantes.xhtml" class="nav-item">
-            <div class="nav-icon">🎓</div> Estudiantes
-        </a>
-        <a href="docentes.xhtml" class="nav-item">
-            <div class="nav-icon">👨‍🏫</div> Docentes
-        </a>
-        <a href="cursos.xhtml" class="nav-item active">
-            <div class="nav-icon">📚</div> Cursos y Grupos
-        </a>
-        <span class="nav-section-title">Más</span>
-        <a href="#" class="nav-item">
-            <div class="nav-icon">🏫</div> Aulas y Bloques
-        </a>
-        <a href="#" class="nav-item">
-            <div class="nav-icon">📊</div> Reportes
-        </a>
+        <a href="estudiantes.xhtml"     class="nav-item"><div class="nav-icon">👨‍🎓</div> Estudiantes</a>
+        <a href="docentes.xhtml"        class="nav-item"><div class="nav-icon">👨‍🏫</div> Docentes</a>
+        <a href="cursos.xhtml"          class="nav-item active"><div class="nav-icon">📚</div> Académico</a>
+        <a href="infraestructura.xhtml" class="nav-item"><div class="nav-icon">🏢</div> Infraestructura</a>
+        <a href="horarios.xhtml"        class="nav-item"><div class="nav-icon">📅</div> Horarios</a>
     </ui:define>
 
     <ui:define name="content">
+    <div id="academico-page">
 
-        <div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:16px;">
-            <div>
-                <h1>Cursos y Grupos 📚</h1>
-                <p>Crea y administra cursos, grupos, aulas, franjas y asignaciones de docentes</p>
+        <!-- Mensajes -->
+        <h:panelGroup rendered="#{not empty academicoBean.mensajeError}">
+            <div class="aurora-alert aurora-alert-error">⚠️ <h:outputText value="#{academicoBean.mensajeError}"/></div>
+        </h:panelGroup>
+        <h:panelGroup rendered="#{not empty academicoBean.mensajeOk}">
+            <div class="aurora-alert aurora-alert-ok">✅ <h:outputText value="#{academicoBean.mensajeOk}"/></div>
+        </h:panelGroup>
+
+        <!-- =========================================================
+             NIVEL 1: FACULTADES
+             ========================================================= -->
+        <div class="nm-card" style="margin-bottom:20px;">
+            <div class="card-header-aurora">
+                <h2 class="card-title">🏛 Facultades</h2>
             </div>
-            <button type="button" class="btn btn-primary" onclick="openModal('modal-nuevo-curso')">
-                ＋ Nuevo Curso
-            </button>
-        </div>
 
-        <!-- Tabs -->
-        <div class="nm-tabs">
-            <button type="button" class="nm-tab active" onclick="showCourseTab('tab-cursos',this)">📚 Cursos</button>
-            <button type="button" class="nm-tab" onclick="showCourseTab('tab-grupos',this)">👥 Grupos</button>
-            <button type="button" class="nm-tab" onclick="showCourseTab('tab-asignacion',this)">🔗 Asignación Docente</button>
-        </div>
-
-        <!-- Tab Cursos -->
-        <div id="tab-cursos">
-            <div class="table-toolbar">
-                <div class="search-box">
-                    <span class="search-icon">🔍</span>
-                    <input type="text" placeholder="Buscar curso…" onkeyup="filterTable('tabla-cursos',this.value)" />
+            <!-- Crear facultad -->
+            <h:form id="formFacultad" prependId="false">
+                <div class="inline-form">
+                    <div class="dark-input-wrapper" style="flex:1;">
+                        <span class="dark-input-icon">🏛</span>
+                        <h:inputText id="fNombre" value="#{academicoBean.fNombre}"
+                                     styleClass="dark-input" placeholder="Nombre de la facultad" />
+                    </div>
+                    <h:commandButton value="➕ Agregar" action="#{academicoBean.crearFacultad}"
+                                     styleClass="aurora-btn aurora-btn-sm" />
                 </div>
-                <div class="d-flex gap-3">
-                    <select class="form-control" style="width:auto;min-width:180px;">
-                        <option>Todas las carreras</option>
-                        <option>Ing. Sistemas</option>
-                        <option>Medicina</option>
-                        <option>Derecho</option>
-                        <option>Ing. Industrial</option>
-                    </select>
-                </div>
+            </h:form>
+
+            <!-- Lista de facultades -->
+            <div class="chip-list" id="lista-facultades">
+                <span style="color:rgba(255,255,255,0.4);">Cargando facultades…</span>
             </div>
-            <div class="nm-table-wrapper">
-                <table class="nm-table" id="tabla-cursos">
-                    <thead>
-                        <tr>
-                            <th>Curso</th>
-                            <th>Carrera</th>
-                            <th>Semestre</th>
-                            <th>Créditos</th>
-                            <th>Intensidad</th>
-                            <th>Tipo Aula</th>
-                            <th>Grupos</th>
-                            <th style="text-align:center;">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><strong>Programación 2</strong></td>
-                            <td>Ing. Sistemas</td>
-                            <td>3</td>
-                            <td>4</td>
-                            <td>4 h/sem</td>
-                            <td><span class="badge badge-info">SISTEMAS</span></td>
-                            <td>4</td>
-                            <td class="td-actions" style="justify-content:center;">
-                                <button type="button" class="btn-icon-only" title="Editar" onclick="openModal('modal-nuevo-curso')">✏️</button>
-                                <button type="button" class="btn-icon-only" title="Ver grupos" onclick="showCourseTab('tab-grupos',document.querySelectorAll('.nm-tab')[1])">👥</button>
-                                <button type="button" class="btn-icon-only danger" title="Eliminar">🗑</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><strong>Base de Datos I</strong></td>
-                            <td>Ing. Sistemas</td>
-                            <td>4</td>
-                            <td>3</td>
-                            <td>3 h/sem</td>
-                            <td><span class="badge badge-info">SISTEMAS</span></td>
-                            <td>3</td>
-                            <td class="td-actions" style="justify-content:center;">
-                                <button type="button" class="btn-icon-only" title="Editar" onclick="openModal('modal-nuevo-curso')">✏️</button>
-                                <button type="button" class="btn-icon-only" title="Ver grupos" onclick="showCourseTab('tab-grupos',document.querySelectorAll('.nm-tab')[1])">👥</button>
-                                <button type="button" class="btn-icon-only danger" title="Eliminar">🗑</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><strong>Cálculo Diferencial</strong></td>
-                            <td>Ing. Industrial</td>
-                            <td>1</td>
-                            <td>4</td>
-                            <td>4 h/sem</td>
-                            <td><span class="badge badge-primary">GRUPAL</span></td>
-                            <td>6</td>
-                            <td class="td-actions" style="justify-content:center;">
-                                <button type="button" class="btn-icon-only" title="Editar" onclick="openModal('modal-nuevo-curso')">✏️</button>
-                                <button type="button" class="btn-icon-only" title="Ver grupos" onclick="showCourseTab('tab-grupos',document.querySelectorAll('.nm-tab')[1])">👥</button>
-                                <button type="button" class="btn-icon-only danger" title="Eliminar">🗑</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><strong>Anatomía I</strong></td>
-                            <td>Medicina</td>
-                            <td>1</td>
-                            <td>5</td>
-                            <td>6 h/sem</td>
-                            <td><span class="badge badge-accent">MEDICINA</span></td>
-                            <td>3</td>
-                            <td class="td-actions" style="justify-content:center;">
-                                <button type="button" class="btn-icon-only" title="Editar" onclick="openModal('modal-nuevo-curso')">✏️</button>
-                                <button type="button" class="btn-icon-only" title="Ver grupos" onclick="showCourseTab('tab-grupos',document.querySelectorAll('.nm-tab')[1])">👥</button>
-                                <button type="button" class="btn-icon-only danger" title="Eliminar">🗑</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><strong>Derecho Romano</strong></td>
-                            <td>Derecho</td>
-                            <td>2</td>
-                            <td>3</td>
-                            <td>3 h/sem</td>
-                            <td><span class="badge badge-warning">DERECHO</span></td>
-                            <td>2</td>
-                            <td class="td-actions" style="justify-content:center;">
-                                <button type="button" class="btn-icon-only" title="Editar" onclick="openModal('modal-nuevo-curso')">✏️</button>
-                                <button type="button" class="btn-icon-only" title="Ver grupos" onclick="showCourseTab('tab-grupos',document.querySelectorAll('.nm-tab')[1])">👥</button>
-                                <button type="button" class="btn-icon-only danger" title="Eliminar">🗑</button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+            <h:outputText id="facultadesData" value="#{academicoBean.facultadesJson}" style="display:none;" escape="false"/>
+
+            <!-- Acciones ocultas -->
+            <h:form id="formAccFacultad" prependId="false">
+                <h:inputHidden id="facIdSel"   value="#{academicoBean.idFacultadSel}" />
+                <h:commandButton id="btnSelFac" style="display:none;" action="#{academicoBean.seleccionarFacultad(academicoBean.idFacultadSel)}" />
+                <h:commandButton id="btnDelFac" style="display:none;" action="#{academicoBean.eliminarFacultad(academicoBean.idFacultadSel)}" />
+            </h:form>
         </div>
 
-        <!-- Tab Grupos -->
-        <div id="tab-grupos" style="display:none;">
-            <div class="table-toolbar">
-                <div class="search-box">
-                    <span class="search-icon">🔍</span>
-                    <input type="text" placeholder="Buscar grupo…" onkeyup="filterTable('tabla-grupos',this.value)" />
-                </div>
-                <button type="button" class="btn btn-nm" onclick="openModal('modal-nuevo-grupo')">＋ Nuevo Grupo</button>
-            </div>
-            <div class="nm-table-wrapper">
-                <table class="nm-table" id="tabla-grupos">
-                    <thead>
-                        <tr>
-                            <th>Grupo</th>
-                            <th>Curso</th>
-                            <th>Docente</th>
-                            <th>Aula / Bloque</th>
-                            <th>Día · Horario</th>
-                            <th>Cupo</th>
-                            <th>Estado</th>
-                            <th style="text-align:center;">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><strong>G-301</strong></td>
-                            <td>Programación 2</td>
-                            <td>Carlos Martínez</td>
-                            <td>304-A · Bloque 3</td>
-                            <td>Lunes 08:00–10:00</td>
-                            <td>25 / 35</td>
-                            <td><span class="badge badge-success">Abierto</span></td>
-                            <td class="td-actions" style="justify-content:center;">
-                                <button type="button" class="btn-icon-only" title="Editar">✏️</button>
-                                <button type="button" class="btn-icon-only danger" title="Cerrar">🔒</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><strong>G-302</strong></td>
-                            <td>Programación 2</td>
-                            <td>Laura Rodríguez</td>
-                            <td>305-B · Bloque 3</td>
-                            <td>Miércoles 14:00–16:00</td>
-                            <td>30 / 35</td>
-                            <td><span class="badge badge-success">Abierto</span></td>
-                            <td class="td-actions" style="justify-content:center;">
-                                <button type="button" class="btn-icon-only" title="Editar">✏️</button>
-                                <button type="button" class="btn-icon-only danger" title="Cerrar">🔒</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><strong>G-401</strong></td>
-                            <td>Base de Datos I</td>
-                            <td>Carlos Martínez</td>
-                            <td>Lab-202 · Bloque 2</td>
-                            <td>Martes 10:00–12:00</td>
-                            <td>20 / 30</td>
-                            <td><span class="badge badge-success">Abierto</span></td>
-                            <td class="td-actions" style="justify-content:center;">
-                                <button type="button" class="btn-icon-only" title="Editar">✏️</button>
-                                <button type="button" class="btn-icon-only danger" title="Cerrar">🔒</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><strong>G-101</strong></td>
-                            <td>Cálculo Diferencial</td>
-                            <td>María Pérez</td>
-                            <td>Aula 101 · Bloque 1</td>
-                            <td>Jueves 06:00–08:00</td>
-                            <td>35 / 40</td>
-                            <td><span class="badge badge-danger">Cerrado</span></td>
-                            <td class="td-actions" style="justify-content:center;">
-                                <button type="button" class="btn-icon-only" title="Editar">✏️</button>
-                                <button type="button" class="btn-icon-only success" title="Abrir">🔓</button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+        <!-- =========================================================
+             NIVEL 2: ÁREAS y CARRERAS de la facultad seleccionada
+             ========================================================= -->
+        <div class="columns-2" id="sec-areas-carreras" style="display:none;">
 
-        <!-- Tab Asignación Docente -->
-        <div id="tab-asignacion" style="display:none;">
+            <!-- Áreas -->
             <div class="nm-card">
-                <div class="nm-card-header">
-                    <span class="nm-card-title">🔗 Asignar Docente a Grupo</span>
+                <div class="card-header-aurora">
+                    <h3 class="card-title">📁 Áreas</h3>
                 </div>
-                <div class="form-row cols-2">
-                    <div class="form-group">
-                        <label class="form-label">Seleccionar Grupo</label>
-                        <select class="form-control">
-                            <option value="">— Selecciona un grupo —</option>
-                            <option>G-301 · Programación 2 · Lunes 08:00–10:00</option>
-                            <option>G-302 · Programación 2 · Miércoles 14:00–16:00</option>
-                            <option>G-401 · Base de Datos I · Martes 10:00–12:00</option>
-                            <option>G-101 · Cálculo Diferencial · Jueves 06:00–08:00</option>
-                        </select>
+                <h:form id="formArea" prependId="false">
+                    <div class="inline-form">
+                        <div class="dark-input-wrapper" style="flex:1;">
+                            <span class="dark-input-icon">📁</span>
+                            <h:inputText id="aNombre" value="#{academicoBean.aNombre}"
+                                         styleClass="dark-input" placeholder="Nombre del área" />
+                        </div>
+                        <h:commandButton value="➕" action="#{academicoBean.crearArea}" styleClass="aurora-btn aurora-btn-sm" />
                     </div>
-                    <div class="form-group">
-                        <label class="form-label">Seleccionar Docente</label>
-                        <select class="form-control">
-                            <option value="">— Selecciona un docente —</option>
-                            <option>Carlos Martínez Díaz — Titular · TC</option>
-                            <option>Laura Rodríguez Pinto — Asistente · MTO</option>
-                            <option>María Pérez Solano — Asociado · TC</option>
-                            <option>Ricardo Aguilar Ruiz — Instructor · MTO</option>
-                        </select>
+                </h:form>
+                <div class="chip-list" id="lista-areas"><span style="color:rgba(255,255,255,0.4);">—</span></div>
+                <h:outputText id="areasData" value="#{academicoBean.areasJson}" style="display:none;" escape="false"/>
+                <h:form id="formDelArea" prependId="false">
+                    <h:inputHidden id="areaIdDel" value="#{academicoBean.idFacultadSel}" />
+                    <h:commandButton id="btnDelArea" style="display:none;" action="#{academicoBean.eliminarArea(academicoBean.idFacultadSel)}" />
+                </h:form>
+            </div>
+
+            <!-- Carreras -->
+            <div class="nm-card">
+                <div class="card-header-aurora">
+                    <h3 class="card-title">🎓 Carreras</h3>
+                </div>
+                <h:form id="formCarrera" prependId="false">
+                    <div class="inline-form">
+                        <div class="dark-input-wrapper" style="flex:1;">
+                            <span class="dark-input-icon">🎓</span>
+                            <h:inputText id="cNombre" value="#{academicoBean.cNombre}"
+                                         styleClass="dark-input" placeholder="Nombre de la carrera" />
+                        </div>
+                        <h:commandButton value="➕" action="#{academicoBean.crearCarrera}" styleClass="aurora-btn aurora-btn-sm" />
                     </div>
-                </div>
-                <div class="alert alert-info" style="margin-top:8px;">
-                    💡 El sistema verificará automáticamente disponibilidad y conflictos de horario antes de confirmar la asignación.
-                </div>
-                <div style="display:flex;justify-content:flex-end;margin-top:16px;">
-                    <button type="button" class="btn btn-primary">🔗 Confirmar Asignación</button>
-                </div>
+                </h:form>
+                <div class="chip-list" id="lista-carreras"><span style="color:rgba(255,255,255,0.4);">—</span></div>
+                <h:outputText id="carrerasData" value="#{academicoBean.carrerasJson}" style="display:none;" escape="false"/>
+                <h:form id="formAccCarrera" prependId="false">
+                    <h:inputHidden id="carIdSel" value="#{academicoBean.idCarreraSel}" />
+                    <h:commandButton id="btnSelCar" style="display:none;" action="#{academicoBean.seleccionarCarrera(academicoBean.idCarreraSel)}" />
+                    <h:commandButton id="btnDelCar" style="display:none;" action="#{academicoBean.eliminarCarrera(academicoBean.idCarreraSel)}" />
+                </h:form>
             </div>
         </div>
 
-    </ui:define>
-
-    <ui:define name="scripts">
-
-    <!-- Modal Nuevo Curso -->
-    <div id="modal-nuevo-curso" class="modal-overlay" onclick="closeModalOutside(event,'modal-nuevo-curso')">
-        <div class="modal" style="max-width:680px;">
-            <div class="modal-header">
-                <span class="modal-title">➕ Crear Nuevo Curso</span>
-                <button type="button" class="modal-close" onclick="closeModal('modal-nuevo-curso')">✕</button>
+        <!-- =========================================================
+             NIVEL 3: PLANES DE ESTUDIO
+             ========================================================= -->
+        <div class="nm-card" id="sec-planes" style="display:none;margin-top:20px;">
+            <div class="card-header-aurora">
+                <h3 class="card-title">📋 Planes de Estudio</h3>
             </div>
-            <div class="modal-body">
-                <div class="form-row cols-2">
-                    <div class="form-group" style="grid-column:1/-1;">
-                        <label class="form-label">Nombre del Curso</label>
-                        <input type="text" class="form-control" placeholder="Ej: Programación Orientada a Objetos" />
+            <h:form id="formPlan" prependId="false">
+                <div class="inline-form">
+                    <div class="dark-input-wrapper" style="flex:2;">
+                        <span class="dark-input-icon">📋</span>
+                        <h:inputText id="pNombre" value="#{academicoBean.pNombre}" styleClass="dark-input" placeholder="Nombre del plan" />
                     </div>
+                    <div class="dark-input-wrapper" style="flex:1;">
+                        <span class="dark-input-icon">📅</span>
+                        <h:inputText id="pAnio"   value="#{academicoBean.pAnio}"   styleClass="dark-input" placeholder="Año (Ej: 2024)" />
+                    </div>
+                    <h:commandButton value="➕" action="#{academicoBean.crearPlan}" styleClass="aurora-btn aurora-btn-sm" />
                 </div>
-                <div class="form-row cols-3">
-                    <div class="form-group">
-                        <label class="form-label">Carrera</label>
-                        <select class="form-control">
-                            <option>Ing. Sistemas</option>
-                            <option>Medicina</option>
-                            <option>Derecho</option>
-                            <option>Ing. Industrial</option>
-                            <option>Artes</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Semestre</label>
-                        <select class="form-control">
-                            <option>1</option><option>2</option><option>3</option><option>4</option>
-                            <option>5</option><option>6</option><option>7</option><option>8</option>
-                            <option>9</option><option>10</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Créditos</label>
-                        <input type="number" class="form-control" placeholder="Ej: 3" min="1" max="10" />
-                    </div>
-                </div>
-                <div class="form-row cols-3">
-                    <div class="form-group">
-                        <label class="form-label">Intensidad (h/sem)</label>
-                        <input type="number" class="form-control" placeholder="Ej: 4" min="1" max="20" />
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Cupo Mínimo</label>
-                        <input type="number" class="form-control" placeholder="Ej: 10" min="1" />
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Cupo Máximo</label>
-                        <input type="number" class="form-control" placeholder="Ej: 35" min="1" />
-                    </div>
-                </div>
-                <div class="form-row cols-2">
-                    <div class="form-group">
-                        <label class="form-label">Tipo de Aula Requerida</label>
-                        <select class="form-control">
-                            <option>GRUPAL</option>
-                            <option>INDIVIDUAL</option>
-                            <option>SISTEMAS</option>
-                            <option>ARTES</option>
-                            <option>MEDICINA</option>
-                            <option>DERECHO</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Docente Asignado</label>
-                        <select class="form-control">
-                            <option value="">— Seleccionar más tarde —</option>
-                            <option>Carlos Martínez Díaz</option>
-                            <option>Laura Rodríguez Pinto</option>
-                            <option>María Pérez Solano</option>
-                            <option>Ricardo Aguilar Ruiz</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="divider"/>
-                <p class="section-title">Franja Horaria</p>
-                <div class="form-row cols-3">
-                    <div class="form-group">
-                        <label class="form-label">Día</label>
-                        <select class="form-control">
-                            <option>LUNES</option><option>MARTES</option><option>MIERCOLES</option>
-                            <option>JUEVES</option><option>VIERNES</option><option>SABADO</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Hora Inicio</label>
-                        <input type="time" class="form-control" value="08:00" />
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Hora Fin</label>
-                        <input type="time" class="form-control" value="10:00" />
-                    </div>
-                </div>
-                <div class="form-row cols-2">
-                    <div class="form-group">
-                        <label class="form-label">Bloque</label>
-                        <select class="form-control">
-                            <option>Bloque 1 — Edificio Principal</option>
-                            <option>Bloque 2 — Ingeniería</option>
-                            <option>Bloque 3 — Ciencias</option>
-                            <option>Bloque 4 — Medicina</option>
-                            <option>Bloque 5 — Artes</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Aula</label>
-                        <select class="form-control">
-                            <option>101 — Cap. 40</option>
-                            <option>202 — Cap. 35</option>
-                            <option>Lab-302 — Cap. 28</option>
-                            <option>304-A — Cap. 35</option>
-                            <option>Aula-Med-1 — Cap. 50</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Prerrequisitos (opcional)</label>
-                    <select class="form-control" multiple="multiple" style="height:80px;">
-                        <option>Programación 1</option>
-                        <option>Cálculo Diferencial</option>
-                        <option>Álgebra Lineal</option>
-                        <option>Estructuras de Datos</option>
-                    </select>
-                    <small style="color:var(--text-muted);font-size:0.72rem;">Ctrl+clic para seleccionar múltiples</small>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-ghost" onclick="closeModal('modal-nuevo-curso')">Cancelar</button>
-                <button type="button" class="btn btn-primary" onclick="closeModal('modal-nuevo-curso')">💾 Crear Curso</button>
-            </div>
+            </h:form>
+            <div class="chip-list" id="lista-planes"><span style="color:rgba(255,255,255,0.4);">—</span></div>
+            <h:outputText id="planesData" value="#{academicoBean.planesJson}" style="display:none;" escape="false"/>
+            <h:form id="formAccPlan" prependId="false">
+                <h:inputHidden id="planIdSel" value="#{academicoBean.idPlanSel}" />
+                <h:commandButton id="btnSelPlan" style="display:none;" action="#{academicoBean.seleccionarPlan(academicoBean.idPlanSel)}" />
+                <h:commandButton id="btnDelPlan" style="display:none;" action="#{academicoBean.eliminarPlan(academicoBean.idPlanSel)}" />
+            </h:form>
         </div>
-    </div>
 
-    <!-- Modal Nuevo Grupo -->
-    <div id="modal-nuevo-grupo" class="modal-overlay" onclick="closeModalOutside(event,'modal-nuevo-grupo')">
-        <div class="modal">
-            <div class="modal-header">
-                <span class="modal-title">➕ Nuevo Grupo</span>
-                <button type="button" class="modal-close" onclick="closeModal('modal-nuevo-grupo')">✕</button>
+        <!-- =========================================================
+             NIVEL 4: CURSOS
+             ========================================================= -->
+        <div class="nm-card" id="sec-cursos" style="display:none;margin-top:20px;">
+            <div class="card-header-aurora">
+                <h3 class="card-title">📚 Cursos del Plan</h3>
             </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label class="form-label">Curso</label>
-                    <select class="form-control">
-                        <option>Programación 2</option>
-                        <option>Base de Datos I</option>
-                        <option>Cálculo Diferencial</option>
-                        <option>Anatomía I</option>
-                    </select>
-                </div>
-                <div class="form-row cols-2">
-                    <div class="form-group">
-                        <label class="form-label">Cupo Mínimo</label>
-                        <input type="number" class="form-control" value="10" min="1" />
+            <h:form id="formCurso" prependId="false">
+                <div class="inline-form">
+                    <div class="dark-input-wrapper" style="flex:2;">
+                        <span class="dark-input-icon">📚</span>
+                        <h:inputText id="cuNombre"   value="#{academicoBean.cuNombre}"   styleClass="dark-input" placeholder="Nombre del curso" />
                     </div>
-                    <div class="form-group">
-                        <label class="form-label">Cupo Máximo</label>
-                        <input type="number" class="form-control" value="35" min="1" />
+                    <div class="dark-input-wrapper" style="flex:1;">
+                        <span class="dark-input-icon">⭐</span>
+                        <h:inputText id="cuCreditos" value="#{academicoBean.cuCreditos}" styleClass="dark-input" placeholder="Créditos" />
                     </div>
+                    <h:commandButton value="➕" action="#{academicoBean.crearCurso}" styleClass="aurora-btn aurora-btn-sm" />
                 </div>
-                <div class="form-group">
-                    <label class="form-label">Docente</label>
-                    <select class="form-control">
-                        <option value="">— Sin asignar —</option>
-                        <option>Carlos Martínez Díaz</option>
-                        <option>Laura Rodríguez Pinto</option>
-                        <option>María Pérez Solano</option>
-                    </select>
-                </div>
+            </h:form>
+            <div class="table-container" style="margin-top:12px;">
+                <table class="aurora-table">
+                    <thead><tr><th>Nombre</th><th>Créditos</th><th>Ver Grupos</th><th>Eliminar</th></tr></thead>
+                    <tbody id="tbody-cursos"><tr><td colspan="4" style="text-align:center;color:rgba(255,255,255,0.4);">—</td></tr></tbody>
+                </table>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-ghost" onclick="closeModal('modal-nuevo-grupo')">Cancelar</button>
-                <button type="button" class="btn btn-primary" onclick="closeModal('modal-nuevo-grupo')">💾 Crear Grupo</button>
-            </div>
+            <h:outputText id="cursosData" value="#{academicoBean.cursosJson}" style="display:none;" escape="false"/>
+            <h:form id="formAccCurso" prependId="false">
+                <h:inputHidden id="cursoIdSel" value="#{academicoBean.idCursoSel}" />
+                <h:commandButton id="btnSelCurso" style="display:none;" action="#{academicoBean.seleccionarCurso(academicoBean.idCursoSel)}" />
+                <h:commandButton id="btnDelCurso" style="display:none;" action="#{academicoBean.eliminarCurso(academicoBean.idCursoSel)}" />
+            </h:form>
         </div>
+
+        <!-- =========================================================
+             NIVEL 5: GRUPOS del curso
+             ========================================================= -->
+        <div class="nm-card" id="sec-grupos" style="display:none;margin-top:20px;">
+            <div class="card-header-aurora">
+                <h3 class="card-title">👥 Grupos del Curso</h3>
+            </div>
+            <h:form id="formGrupo" prependId="false">
+                <div class="inline-form">
+                    <div class="dark-input-wrapper" style="flex:2;">
+                        <span class="dark-input-icon">👥</span>
+                        <h:inputText id="gNombre" value="#{academicoBean.gNombre}" styleClass="dark-input" placeholder="Ej: Grupo A" />
+                    </div>
+                    <div class="dark-input-wrapper" style="flex:2;">
+                        <span class="dark-input-icon">👨‍🏫</span>
+                        <h:selectOneMenu id="gDocente" value="#{academicoBean.gIdDocente}" styleClass="dark-input dark-select"
+                                         onchange="document.getElementById('gIdDocente').value=this.value">
+                            <f:selectItem itemValue="" itemLabel="— Selecciona docente —" />
+                        </h:selectOneMenu>
+                        <!-- Input hidden backup -->
+                        <h:inputHidden id="gIdDocente" value="#{academicoBean.gIdDocente}" />
+                    </div>
+                    <h:commandButton value="➕" action="#{academicoBean.crearGrupo}" styleClass="aurora-btn aurora-btn-sm" />
+                </div>
+            </h:form>
+            <div class="table-container" style="margin-top:12px;">
+                <table class="aurora-table">
+                    <thead><tr><th>Grupo</th><th>Docente</th><th>Eliminar</th></tr></thead>
+                    <tbody id="tbody-grupos"><tr><td colspan="3" style="text-align:center;color:rgba(255,255,255,0.4);">—</td></tr></tbody>
+                </table>
+            </div>
+            <h:outputText id="gruposData"   value="#{academicoBean.gruposJson}"   style="display:none;" escape="false"/>
+            <h:outputText id="docentesData2" value="#{academicoBean.docentesJson}" style="display:none;" escape="false"/>
+            <h:form id="formDelGrupo" prependId="false">
+                <h:inputHidden id="grupoIdDel" value="#{academicoBean.idCursoSel}" />
+                <h:commandButton id="btnDelGrupo" style="display:none;" action="#{academicoBean.eliminarGrupo(academicoBean.idCursoSel)}" />
+            </h:form>
+        </div>
+
     </div>
 
     <script type="text/javascript">
     //<![CDATA[
-    function openModal(id)  { document.getElementById(id).classList.add('open'); }
-    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-    function closeModalOutside(e, id) { if (e.target.id === id) closeModal(id); }
+    /* ============================================================
+       Renderizado dinámico de la jerarquía académica desde JSON
+       ============================================================ */
 
-    function showCourseTab(id, btn) {
-        ['tab-cursos','tab-grupos','tab-asignacion'].forEach(function(t){
-            document.getElementById(t).style.display = 'none';
-        });
-        document.getElementById(id).style.display = 'block';
-        document.querySelectorAll('.nm-tab').forEach(function(t){ t.classList.remove('active'); });
-        if (btn) btn.classList.add('active');
+    function esc(s)  { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+    function escA(s) { return String(s||'').replace(/'/g,"\\'"); }
+
+    // ---- Helpers de postback ----
+    function selFacultad(id) {
+        document.getElementById('facIdSel').value  = id;
+        document.getElementById('btnSelFac').click();
+    }
+    function delFacultad(id) {
+        if (!confirm('¿Eliminar facultad con ID ' + id + '?')) return;
+        document.getElementById('facIdSel').value  = id;
+        document.getElementById('btnDelFac').click();
+    }
+    function selCarrera(id) {
+        document.getElementById('carIdSel').value = id;
+        document.getElementById('btnSelCar').click();
+    }
+    function delCarrera(id) {
+        if (!confirm('¿Eliminar carrera con ID ' + id + '?')) return;
+        document.getElementById('carIdSel').value = id;
+        document.getElementById('btnDelCar').click();
+    }
+    function delArea(id) {
+        if (!confirm('¿Eliminar área con ID ' + id + '?')) return;
+        document.getElementById('areaIdDel').value = id;
+        document.getElementById('btnDelArea').click();
+    }
+    function selPlan(id) {
+        document.getElementById('planIdSel').value = id;
+        document.getElementById('btnSelPlan').click();
+    }
+    function delPlan(id) {
+        if (!confirm('¿Eliminar plan con ID ' + id + '?')) return;
+        document.getElementById('planIdSel').value = id;
+        document.getElementById('btnDelPlan').click();
+    }
+    function selCurso(id) {
+        document.getElementById('cursoIdSel').value = id;
+        document.getElementById('btnSelCurso').click();
+    }
+    function delCurso(id) {
+        if (!confirm('¿Eliminar curso con ID ' + id + '?')) return;
+        document.getElementById('cursoIdSel').value = id;
+        document.getElementById('btnDelCurso').click();
+    }
+    function delGrupo(id) {
+        if (!confirm('¿Eliminar grupo con ID ' + id + '?')) return;
+        document.getElementById('grupoIdDel').value = id;
+        document.getElementById('btnDelGrupo').click();
     }
 
-    function filterTable(tableId, query) {
-        var rows = document.querySelectorAll('#' + tableId + ' tbody tr');
-        var q = query.toLowerCase();
-        rows.forEach(function(row){
-            row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
-        });
+    // ---- Render chips ----
+    function renderChips(elId, data, labelKey, idKey, onSel, onDel, extraClass) {
+        var el = document.getElementById(elId);
+        if (!el) return;
+        if (!data || data.length === 0) { el.innerHTML = '<span style="color:rgba(255,255,255,0.4);">No hay registros aún.</span>'; return; }
+        var html = '';
+        for (var i = 0; i < data.length; i++) {
+            var item = data[i];
+            var label = esc(item[labelKey] || '');
+            var id    = item[idKey];
+            html += '<div class="academ-chip ' + (extraClass||'') + '">'
+                +   '<span class="chip-label" onclick="' + onSel + '(' + id + ')" style="cursor:pointer;" title="Ver detalle">' + label + '</span>'
+                +   '<button class="chip-del" onclick="' + onDel + '(' + id + ')" title="Eliminar">✕</button>'
+                + '</div>';
+        }
+        el.innerHTML = html;
     }
+
+    function parseJSON(elId) {
+        var el = document.getElementById(elId);
+        if (!el) return [];
+        try { return JSON.parse(el.textContent || el.innerText || '[]'); } catch(e) { return []; }
+    }
+
+    // ---- Render tabla cursos ----
+    function renderCursos(data) {
+        var tbody = document.getElementById('tbody-cursos');
+        if (!tbody) return;
+        if (!data || data.length === 0) { tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:rgba(255,255,255,0.4);">Sin cursos en este plan.</td></tr>'; return; }
+        var html = '';
+        for (var i = 0; i < data.length; i++) {
+            var c = data[i];
+            html += '<tr>'
+                + '<td>' + esc(c.nombre||'') + '</td>'
+                + '<td><span class="badge badge-teal">' + esc(c.creditos||'') + ' cr.</span></td>'
+                + '<td><button class="aurora-btn-ghost aurora-btn-sm" onclick="selCurso(' + c.id + ')">👥 Grupos</button></td>'
+                + '<td><button class="aurora-btn-danger aurora-btn-sm" onclick="delCurso(' + c.id + ')">🗑</button></td>'
+                + '</tr>';
+        }
+        tbody.innerHTML = html;
+    }
+
+    // ---- Render tabla grupos ----
+    function renderGrupos(data) {
+        var tbody = document.getElementById('tbody-grupos');
+        if (!tbody) return;
+        if (!data || data.length === 0) { tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;color:rgba(255,255,255,0.4);">Sin grupos en este curso.</td></tr>'; return; }
+        var html = '';
+        for (var i = 0; i < data.length; i++) {
+            var g = data[i];
+            html += '<tr>'
+                + '<td>' + esc(g.nombre||g.id||'') + '</td>'
+                + '<td>' + esc(g.docenteNombre||g.idDocente||'—') + '</td>'
+                + '<td><button class="aurora-btn-danger aurora-btn-sm" onclick="delGrupo(' + g.id + ')">🗑</button></td>'
+                + '</tr>';
+        }
+        tbody.innerHTML = html;
+    }
+
+    // ---- Poblar select de docentes para crear grupo ----
+    function poblarSelectDocentes() {
+        var docentes = parseJSON('docentesData2');
+        var sel = document.getElementById('gDocente');
+        if (!sel || docentes.length === 0) return;
+        var html = '<option value="">— Selecciona docente —</option>';
+        for (var i = 0; i < docentes.length; i++) {
+            var d = docentes[i];
+            html += '<option value="' + esc(d.id||'') + '">' + esc((d.nombre||'') + ' ' + (d.apellido||'')) + '</option>';
+        }
+        sel.innerHTML = html;
+    }
+
+    // ---- Init al cargar página ----
+    document.addEventListener('DOMContentLoaded', function() {
+        // Facultades
+        var facs = parseJSON('facultadesData');
+        renderChips('lista-facultades', facs, 'nombre', 'id', 'selFacultad', 'delFacultad', 'chip-azul');
+
+        // Si hay áreas → mostrar sección
+        var areas = parseJSON('areasData');
+        if (areas.length > 0 || document.getElementById('sec-areas-carreras').dataset.show) {
+            document.getElementById('sec-areas-carreras').style.display = 'grid';
+        }
+        renderChips('lista-areas',    areas,            'nombre', 'id', 'selFacultad', 'delArea',    'chip-teal');
+
+        var cars = parseJSON('carrerasData');
+        if (cars.length > 0) document.getElementById('sec-areas-carreras').style.display = 'grid';
+        renderChips('lista-carreras', cars,             'nombre', 'id', 'selCarrera',  'delCarrera', 'chip-purple');
+
+        var plans = parseJSON('planesData');
+        if (plans.length > 0) document.getElementById('sec-planes').style.display = 'block';
+        renderChips('lista-planes',   plans,            'nombre', 'id', 'selPlan',     'delPlan',    'chip-gold');
+
+        var cursos = parseJSON('cursosData');
+        if (cursos.length > 0) document.getElementById('sec-cursos').style.display = 'block';
+        renderCursos(cursos);
+
+        var grupos = parseJSON('gruposData');
+        if (grupos.length > 0) document.getElementById('sec-grupos').style.display = 'block';
+        renderGrupos(grupos);
+
+        poblarSelectDocentes();
+    });
     //]]>
     </script>
+
     </ui:define>
 
 </ui:composition>

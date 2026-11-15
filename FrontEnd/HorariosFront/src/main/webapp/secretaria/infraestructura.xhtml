@@ -1,0 +1,311 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+<ui:composition template="/WEB-INF/templates/layout.xhtml">
+
+    <ui:define name="title">Infraestructura · Secretaría · Horarios UnBosque</ui:define>
+    <ui:define name="page-title">Infraestructura Física</ui:define>
+    <ui:define name="breadcrumb">Secretaría / Infraestructura</ui:define>
+    <ui:define name="user-avatar-letter">S</ui:define>
+    <ui:define name="user-name">Secretaría Académica</ui:define>
+    <ui:define name="user-role">Administrador del Sistema</ui:define>
+
+    <ui:define name="sidebar-nav">
+        <span class="nav-section-title">Principal</span>
+        <a href="dashboard.xhtml"       class="nav-item"><div class="nav-icon">🏠</div> Dashboard</a>
+        <span class="nav-section-title">Gestión</span>
+        <a href="estudiantes.xhtml"     class="nav-item"><div class="nav-icon">👨‍🎓</div> Estudiantes</a>
+        <a href="docentes.xhtml"        class="nav-item"><div class="nav-icon">👨‍🏫</div> Docentes</a>
+        <a href="cursos.xhtml"          class="nav-item"><div class="nav-icon">📚</div> Académico</a>
+        <a href="infraestructura.xhtml" class="nav-item active"><div class="nav-icon">🏢</div> Infraestructura</a>
+        <a href="horarios.xhtml"        class="nav-item"><div class="nav-icon">📅</div> Horarios</a>
+    </ui:define>
+
+    <ui:define name="content">
+    <div id="infra-page">
+
+        <!-- Mensajes -->
+        <h:panelGroup rendered="#{not empty infraBean.mensajeError}">
+            <div class="aurora-alert aurora-alert-error">⚠️ <h:outputText value="#{infraBean.mensajeError}"/></div>
+        </h:panelGroup>
+        <h:panelGroup rendered="#{not empty infraBean.mensajeOk}">
+            <div class="aurora-alert aurora-alert-ok">✅ <h:outputText value="#{infraBean.mensajeOk}"/></div>
+        </h:panelGroup>
+
+        <div class="columns-2" style="align-items:start;">
+
+            <!-- ====================================================
+                 COLUMNA IZQUIERDA: Bloques y Aulas
+                 ==================================================== -->
+            <div>
+
+                <!-- Crear Bloque -->
+                <div class="nm-card" style="margin-bottom:20px;">
+                    <div class="card-header-aurora">
+                        <h2 class="card-title">🏢 Bloques</h2>
+                    </div>
+
+                    <h:form id="formBloque" prependId="false">
+                        <div class="inline-form">
+                            <div class="dark-input-wrapper" style="flex:1;">
+                                <span class="dark-input-icon">🏢</span>
+                                <h:inputText id="bNombre" value="#{infraBean.bNombre}"
+                                             styleClass="dark-input" placeholder="Nombre del bloque (Ej: Bloque A)" />
+                            </div>
+                            <h:commandButton value="➕ Agregar" action="#{infraBean.crearBloque}"
+                                             styleClass="aurora-btn aurora-btn-sm" />
+                        </div>
+                    </h:form>
+
+                    <div class="chip-list" id="lista-bloques">
+                        <span style="color:rgba(255,255,255,0.4);">Cargando bloques…</span>
+                    </div>
+                    <h:outputText id="bloquesData" value="#{infraBean.bloquesJson}" style="display:none;" escape="false"/>
+
+                    <h:form id="formAccBloque" prependId="false">
+                        <h:inputHidden id="bloqueIdSel" value="#{infraBean.idBloqueSel}" />
+                        <h:commandButton id="btnSelBloque" style="display:none;" action="#{infraBean.seleccionarBloque(infraBean.idBloqueSel)}" />
+                        <h:commandButton id="btnDelBloque" style="display:none;" action="#{infraBean.eliminarBloque(infraBean.idBloqueSel)}" />
+                    </h:form>
+                </div>
+
+                <!-- Aulas del bloque seleccionado -->
+                <div class="nm-card" id="sec-aulas">
+                    <div class="card-header-aurora">
+                        <h3 class="card-title">🚪 Aulas del Bloque</h3>
+                    </div>
+
+                    <h:form id="formAula" prependId="false">
+                        <div class="form-grid-2" style="margin-bottom:10px;">
+                            <div class="dark-form-group">
+                                <label class="dark-form-label">Nombre / Número *</label>
+                                <div class="dark-input-wrapper">
+                                    <span class="dark-input-icon">🚪</span>
+                                    <h:inputText id="auNombre" value="#{infraBean.auNombre}"
+                                                 styleClass="dark-input" placeholder="Ej: 101, Lab-01" />
+                                </div>
+                            </div>
+                            <div class="dark-form-group">
+                                <label class="dark-form-label">Capacidad</label>
+                                <div class="dark-input-wrapper">
+                                    <span class="dark-input-icon">👥</span>
+                                    <h:inputText id="auCapacidad" value="#{infraBean.auCapacidad}"
+                                                 styleClass="dark-input" placeholder="Ej: 40" />
+                                </div>
+                            </div>
+                            <div class="dark-form-group">
+                                <label class="dark-form-label">Tipo de Aula *</label>
+                                <div class="dark-input-wrapper">
+                                    <span class="dark-input-icon">🏷</span>
+                                    <h:selectOneMenu id="auTipo" value="#{infraBean.auTipo}" styleClass="dark-input dark-select">
+                                        <f:selectItem itemValue="SALON_ESTANDAR"  itemLabel="Salón Estándar" />
+                                        <f:selectItem itemValue="LABORATORIO"     itemLabel="Laboratorio" />
+                                        <f:selectItem itemValue="SALA_COMPUTO"    itemLabel="Sala de Cómputo" />
+                                        <f:selectItem itemValue="AUDITORIO"       itemLabel="Auditorio" />
+                                        <f:selectItem itemValue="SALA_ESTUDIO"    itemLabel="Sala de Estudio" />
+                                    </h:selectOneMenu>
+                                </div>
+                            </div>
+                        </div>
+                        <h:commandButton value="➕ Agregar Aula" action="#{infraBean.crearAula}"
+                                         styleClass="aurora-btn aurora-btn-sm" />
+                    </h:form>
+
+                    <div class="table-container" style="margin-top:14px;">
+                        <table class="aurora-table">
+                            <thead><tr><th>Nombre</th><th>Capacidad</th><th>Tipo</th><th>Acción</th></tr></thead>
+                            <tbody id="tbody-aulas">
+                                <tr><td colspan="4" style="text-align:center;color:rgba(255,255,255,0.4);">Selecciona un bloque para ver sus aulas.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <h:outputText id="aulasData" value="#{infraBean.aulasJson}" style="display:none;" escape="false"/>
+
+                    <h:form id="formDelAula" prependId="false">
+                        <h:inputHidden id="aulaIdDel" value="#{infraBean.idBloqueSel}" />
+                        <h:commandButton id="btnDelAula" style="display:none;" action="#{infraBean.eliminarAula(infraBean.idBloqueSel)}" />
+                    </h:form>
+                </div>
+
+            </div>
+
+            <!-- ====================================================
+                 COLUMNA DERECHA: Franjas Horarias
+                 ==================================================== -->
+            <div class="nm-card">
+                <div class="card-header-aurora">
+                    <h2 class="card-title">⏰ Franjas Horarias</h2>
+                </div>
+
+                <h:form id="formFranja" prependId="false">
+                    <div class="dark-form-group">
+                        <label class="dark-form-label" for="frDia">Día *</label>
+                        <div class="dark-input-wrapper">
+                            <span class="dark-input-icon">📅</span>
+                            <h:selectOneMenu id="frDia" value="#{infraBean.frDia}" styleClass="dark-input dark-select">
+                                <f:selectItem itemValue="LUNES"     itemLabel="Lunes" />
+                                <f:selectItem itemValue="MARTES"    itemLabel="Martes" />
+                                <f:selectItem itemValue="MIERCOLES" itemLabel="Miércoles" />
+                                <f:selectItem itemValue="JUEVES"    itemLabel="Jueves" />
+                                <f:selectItem itemValue="VIERNES"   itemLabel="Viernes" />
+                                <f:selectItem itemValue="SABADO"    itemLabel="Sábado" />
+                            </h:selectOneMenu>
+                        </div>
+                    </div>
+
+                    <div class="form-grid-2">
+                        <div class="dark-form-group">
+                            <label class="dark-form-label" for="frInicio">Hora Inicio *</label>
+                            <div class="dark-input-wrapper">
+                                <span class="dark-input-icon">🕐</span>
+                                <h:inputText id="frInicio" value="#{infraBean.frHoraInicio}"
+                                             styleClass="dark-input" placeholder="HH:mm (Ej: 07:00)" />
+                            </div>
+                        </div>
+                        <div class="dark-form-group">
+                            <label class="dark-form-label" for="frFin">Hora Fin *</label>
+                            <div class="dark-input-wrapper">
+                                <span class="dark-input-icon">🕔</span>
+                                <h:inputText id="frFin" value="#{infraBean.frHoraFin}"
+                                             styleClass="dark-input" placeholder="HH:mm (Ej: 09:00)" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <h:commandButton value="➕ Agregar Franja" action="#{infraBean.crearFranja}"
+                                     styleClass="aurora-btn" style="width:100%;justify-content:center;margin-top:8px;" />
+                </h:form>
+
+                <!-- Tabla de franjas -->
+                <div class="table-container" style="margin-top:18px;">
+                    <table class="aurora-table">
+                        <thead><tr><th>Día</th><th>Inicio</th><th>Fin</th><th>Acción</th></tr></thead>
+                        <tbody id="tbody-franjas">
+                            <tr><td colspan="4" style="text-align:center;color:rgba(255,255,255,0.4);">Cargando franjas…</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <h:outputText id="franjasData" value="#{infraBean.franjasJson}" style="display:none;" escape="false"/>
+
+                <h:form id="formDelFranja" prependId="false">
+                    <h:inputHidden id="franjaIdDel" value="#{infraBean.idBloqueSel}" />
+                    <h:commandButton id="btnDelFranja" style="display:none;" action="#{infraBean.eliminarFranja(infraBean.idBloqueSel)}" />
+                </h:form>
+
+                <h:form id="formRecargarFranjas" prependId="false" style="margin-top:10px;">
+                    <h:commandButton value="🔄 Recargar Franjas" action="#{infraBean.cargarFranjas}"
+                                     styleClass="aurora-btn-ghost aurora-btn-sm" />
+                </h:form>
+            </div>
+
+        </div><!-- /columns-2 -->
+
+    </div>
+
+    <script type="text/javascript">
+    //<![CDATA[
+    function esc(s)  { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+    function escA(s) { return String(s||'').replace(/'/g,"\\'"); }
+
+    function parseJSON(id) {
+        var el = document.getElementById(id);
+        if (!el) return [];
+        try { return JSON.parse(el.textContent || el.innerText || '[]'); } catch(e) { return []; }
+    }
+
+    /* --- Bloques --- */
+    function selBloque(id) {
+        document.getElementById('bloqueIdSel').value = id;
+        document.getElementById('btnSelBloque').click();
+    }
+    function delBloque(id) {
+        if (!confirm('¿Eliminar bloque ID ' + id + '? Esto eliminará sus aulas.')) return;
+        document.getElementById('bloqueIdSel').value = id;
+        document.getElementById('btnDelBloque').click();
+    }
+
+    function renderBloques() {
+        var data = parseJSON('bloquesData');
+        var el   = document.getElementById('lista-bloques');
+        if (!el) return;
+        if (!data || data.length === 0) { el.innerHTML = '<span style="color:rgba(255,255,255,0.4);">Sin bloques registrados.</span>'; return; }
+        var html = '';
+        for (var i = 0; i < data.length; i++) {
+            var b = data[i];
+            html += '<div class="academ-chip chip-azul">'
+                +   '<span class="chip-label" onclick="selBloque(' + b.id + ')" title="Ver aulas" style="cursor:pointer;">🏢 ' + esc(b.nombre||'') + '</span>'
+                +   '<button class="chip-del" onclick="delBloque(' + b.id + ')">✕</button>'
+                + '</div>';
+        }
+        el.innerHTML = html;
+    }
+
+    /* --- Aulas --- */
+    function delAula(id) {
+        if (!confirm('¿Eliminar aula ID ' + id + '?')) return;
+        document.getElementById('aulaIdDel').value = id;
+        document.getElementById('btnDelAula').click();
+    }
+
+    function renderAulas() {
+        var data  = parseJSON('aulasData');
+        var tbody = document.getElementById('tbody-aulas');
+        if (!tbody) return;
+        if (!data || data.length === 0) { tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:rgba(255,255,255,0.4);">Sin aulas en este bloque.</td></tr>'; return; }
+        var tipoClass = { 'LABORATORIO':'badge-teal','SALA_COMPUTO':'badge-purple','AUDITORIO':'badge-gold','SALON_ESTANDAR':'badge-info','SALA_ESTUDIO':'badge-info' };
+        var html = '';
+        for (var i = 0; i < data.length; i++) {
+            var a   = data[i];
+            var cls = tipoClass[a.tipoAula] || 'badge-info';
+            html += '<tr>'
+                + '<td>' + esc(a.nombre||'') + '</td>'
+                + '<td>' + esc(a.capacidad||'—') + '</td>'
+                + '<td><span class="badge ' + cls + '">' + esc(a.tipoAula||'') + '</span></td>'
+                + '<td><button class="aurora-btn-danger aurora-btn-sm" onclick="delAula(' + a.id + ')">🗑</button></td>'
+                + '</tr>';
+        }
+        tbody.innerHTML = html;
+    }
+
+    /* --- Franjas --- */
+    function delFranja(id) {
+        if (!confirm('¿Eliminar franja ID ' + id + '?')) return;
+        document.getElementById('franjaIdDel').value = id;
+        document.getElementById('btnDelFranja').click();
+    }
+
+    function renderFranjas() {
+        var data  = parseJSON('franjasData');
+        var tbody = document.getElementById('tbody-franjas');
+        if (!tbody) return;
+        if (!data || data.length === 0) { tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:rgba(255,255,255,0.4);">Sin franjas registradas.</td></tr>'; return; }
+        var diaLabel = {'LUNES':'Lun','MARTES':'Mar','MIERCOLES':'Mié','JUEVES':'Jue','VIERNES':'Vie','SABADO':'Sáb'};
+        var html = '';
+        for (var i = 0; i < data.length; i++) {
+            var f   = data[i];
+            var dia = diaLabel[f.dia] || esc(f.dia||'');
+            html += '<tr>'
+                + '<td><span class="badge badge-purple">' + dia + '</span></td>'
+                + '<td>' + esc(f.horaInicio||'') + '</td>'
+                + '<td>' + esc(f.horaFin||'') + '</td>'
+                + '<td><button class="aurora-btn-danger aurora-btn-sm" onclick="delFranja(' + f.id + ')">🗑</button></td>'
+                + '</tr>';
+        }
+        tbody.innerHTML = html;
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        renderBloques();
+        renderAulas();
+        renderFranjas();
+    });
+    //]]>
+    </script>
+
+    </ui:define>
+</ui:composition>
+</html>

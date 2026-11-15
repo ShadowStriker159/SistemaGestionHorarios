@@ -7,329 +7,209 @@
 
 <ui:composition template="/WEB-INF/templates/layout.xhtml">
 
-    <ui:define name="title">Estudiantes · Secretaria · Horarios UnBosque</ui:define>
+    <ui:define name="title">Estudiantes · Secretaría · Horarios UnBosque</ui:define>
     <ui:define name="page-title">Gestión de Estudiantes</ui:define>
     <ui:define name="breadcrumb">Secretaría / Estudiantes</ui:define>
     <ui:define name="user-avatar-letter">S</ui:define>
-    <ui:define name="user-name">Ana García López</ui:define>
-    <ui:define name="user-role">Secretaria Académica</ui:define>
+    <ui:define name="user-name">Secretaría Académica</ui:define>
+    <ui:define name="user-role">Administrador del Sistema</ui:define>
 
     <ui:define name="sidebar-nav">
         <span class="nav-section-title">Principal</span>
-        <a href="dashboard.xhtml" class="nav-item">
-            <div class="nav-icon">🏠</div> Dashboard
-        </a>
+        <a href="dashboard.xhtml" class="nav-item"><div class="nav-icon">🏠</div> Dashboard</a>
         <span class="nav-section-title">Gestión</span>
-        <a href="estudiantes.xhtml" class="nav-item active">
-            <div class="nav-icon">🎓</div> Estudiantes
-        </a>
-        <a href="docentes.xhtml" class="nav-item">
-            <div class="nav-icon">👨‍🏫</div> Docentes
-        </a>
-        <a href="cursos.xhtml" class="nav-item">
-            <div class="nav-icon">📚</div> Cursos y Grupos
-        </a>
-        <span class="nav-section-title">Más</span>
-        <a href="#" class="nav-item">
-            <div class="nav-icon">🏫</div> Aulas y Bloques
-        </a>
-        <a href="#" class="nav-item">
-            <div class="nav-icon">📊</div> Reportes
-        </a>
+        <a href="estudiantes.xhtml"     class="nav-item active"><div class="nav-icon">👨‍🎓</div> Estudiantes</a>
+        <a href="docentes.xhtml"        class="nav-item"><div class="nav-icon">👨‍🏫</div> Docentes</a>
+        <a href="cursos.xhtml"          class="nav-item"><div class="nav-icon">📚</div> Académico</a>
+        <a href="infraestructura.xhtml" class="nav-item"><div class="nav-icon">🏢</div> Infraestructura</a>
+        <a href="horarios.xhtml"        class="nav-item"><div class="nav-icon">📅</div> Horarios</a>
     </ui:define>
 
     <ui:define name="content">
+    <div id="estudiantes-page">
 
-        <div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:16px;">
-            <div>
-                <h1>Estudiantes 🎓</h1>
-                <p>Registro completo de estudiantes matriculados en el sistema</p>
+        <!-- Mensajes -->
+        <h:panelGroup rendered="#{not empty personasBean.mensajeError}">
+            <div class="aurora-alert aurora-alert-error">⚠️ <h:outputText value="#{personasBean.mensajeError}"/></div>
+        </h:panelGroup>
+        <h:panelGroup rendered="#{not empty personasBean.mensajeOk}">
+            <div class="aurora-alert aurora-alert-ok">✅ <h:outputText value="#{personasBean.mensajeOk}"/></div>
+        </h:panelGroup>
+
+        <!-- ========== FORMULARIO CREAR ESTUDIANTE ================ -->
+        <div class="nm-card" style="margin-bottom:24px;">
+            <div class="card-header-aurora">
+                <h2 class="card-title">➕ Registrar Nuevo Estudiante</h2>
             </div>
-            <button type="button" class="btn btn-primary" onclick="openModal('modal-nuevo-est')">
-                ＋ Nuevo Estudiante
-            </button>
+
+            <h:form id="formEstudiante" prependId="false">
+                <div class="form-grid-2">
+
+                    <div class="dark-form-group">
+                        <label class="dark-form-label" for="eId">Código Estudiantil *</label>
+                        <div class="dark-input-wrapper">
+                            <span class="dark-input-icon">🪪</span>
+                            <h:inputText id="eId" value="#{personasBean.eId}"
+                                         styleClass="dark-input" placeholder="Ej: 20240001" />
+                        </div>
+                    </div>
+
+                    <div class="dark-form-group">
+                        <label class="dark-form-label" for="eNombre">Nombre *</label>
+                        <div class="dark-input-wrapper">
+                            <span class="dark-input-icon">👤</span>
+                            <h:inputText id="eNombre" value="#{personasBean.eNombre}"
+                                         styleClass="dark-input" placeholder="Nombre" />
+                        </div>
+                    </div>
+
+                    <div class="dark-form-group">
+                        <label class="dark-form-label" for="eApellido">Apellido *</label>
+                        <div class="dark-input-wrapper">
+                            <span class="dark-input-icon">👤</span>
+                            <h:inputText id="eApellido" value="#{personasBean.eApellido}"
+                                         styleClass="dark-input" placeholder="Apellido" />
+                        </div>
+                    </div>
+
+                    <div class="dark-form-group">
+                        <label class="dark-form-label" for="eCorreo">Correo Institucional *</label>
+                        <div class="dark-input-wrapper">
+                            <span class="dark-input-icon">✉️</span>
+                            <h:inputText id="eCorreo" value="#{personasBean.eCorreo}"
+                                         styleClass="dark-input" placeholder="correo@unbosque.edu.co" />
+                        </div>
+                    </div>
+
+                    <div class="dark-form-group">
+                        <label class="dark-form-label" for="ePassword">Contraseña *</label>
+                        <div class="dark-input-wrapper">
+                            <span class="dark-input-icon">🔒</span>
+                            <h:inputSecret id="ePassword" value="#{personasBean.ePassword}"
+                                           styleClass="dark-input" placeholder="••••••••" redisplay="false" />
+                        </div>
+                    </div>
+
+                    <div class="dark-form-group">
+                        <label class="dark-form-label" for="eEstado">Estado *</label>
+                        <div class="dark-input-wrapper">
+                            <span class="dark-input-icon">🔘</span>
+                            <h:selectOneMenu id="eEstado" value="#{personasBean.eEstado}" styleClass="dark-input dark-select">
+                                <f:selectItem itemValue="ACTIVO"    itemLabel="Activo" />
+                                <f:selectItem itemValue="INACTIVO"  itemLabel="Inactivo" />
+                                <f:selectItem itemValue="GRADUADO"  itemLabel="Graduado" />
+                            </h:selectOneMenu>
+                        </div>
+                    </div>
+
+                </div>
+
+                <h:commandButton id="btnCrearEstudiante"
+                                 value="✅ Registrar Estudiante"
+                                 action="#{personasBean.crearEstudiante}"
+                                 styleClass="aurora-btn"
+                                 style="margin-top:12px;" />
+            </h:form>
         </div>
 
-        <!-- Toolbar -->
-        <div class="table-toolbar">
-            <div class="search-box">
-                <span class="search-icon">🔍</span>
-                <input id="search-est" type="text" placeholder="Buscar por nombre, código, carrera…"
-                       onkeyup="filterTable('tabla-estudiantes', this.value)" />
+        <!-- ========== TABLA DE ESTUDIANTES ====================== -->
+        <div class="nm-card">
+            <div class="card-header-aurora">
+                <h2 class="card-title">👨‍🎓 Estudiantes Registrados</h2>
+                <h:form id="formRecargarEst" prependId="false">
+                    <h:commandButton value="🔄 Recargar"
+                                     action="#{personasBean.cargarEstudiantes}"
+                                     styleClass="aurora-btn-ghost aurora-btn-sm" />
+                </h:form>
             </div>
-            <div class="d-flex gap-3">
-                <select class="form-control" style="width:auto;min-width:170px;" onchange="filterBySelect(this)">
-                    <option value="">Todos los estados</option>
-                    <option value="Activo">Activo</option>
-                    <option value="Inactivo">Inactivo</option>
-                    <option value="Prueba Académica">Prueba Académica</option>
-                </select>
-                <select class="form-control" style="width:auto;min-width:170px;">
-                    <option value="">Todas las carreras</option>
-                    <option>Ing. Sistemas</option>
-                    <option>Medicina</option>
-                    <option>Derecho</option>
-                    <option>Ing. Industrial</option>
-                    <option>Artes</option>
-                </select>
+
+            <div class="table-container">
+                <table class="aurora-table" id="tabla-estudiantes">
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Nombre</th>
+                            <th>Apellido</th>
+                            <th>Correo</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-estudiantes">
+                        <tr><td colspan="6" style="text-align:center;color:rgba(255,255,255,0.4);">Cargando datos del backend…</td></tr>
+                    </tbody>
+                </table>
             </div>
+
+            <h:outputText id="estudiantesData"
+                          value="#{personasBean.estudiantesJson}"
+                          style="display:none;" escape="false" />
         </div>
 
-        <!-- Table -->
-        <div class="nm-table-wrapper">
-            <table class="nm-table" id="tabla-estudiantes">
-                <thead>
-                    <tr>
-                        <th>Código</th>
-                        <th>Nombre Completo</th>
-                        <th>Correo</th>
-                        <th>Carrera</th>
-                        <th>Semestre</th>
-                        <th>Créditos</th>
-                        <th>Estado</th>
-                        <th style="text-align:center;">Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><code>20240123</code></td>
-                        <td><strong>Andrés Felipe Gómez</strong></td>
-                        <td>a.gomez@unbosque.edu.co</td>
-                        <td>Ing. Sistemas</td>
-                        <td>3</td>
-                        <td>62</td>
-                        <td><span class="badge badge-success">Activo</span></td>
-                        <td class="td-actions" style="justify-content:center;">
-                            <button type="button" class="btn-icon-only" title="Editar" onclick="editarEstudiante('20240123','Andrés Felipe Gómez')">✏️</button>
-                            <button type="button" class="btn-icon-only danger" title="Inactivar" onclick="cambiarEstado(this,'Inactivo')">⛔</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><code>20231045</code></td>
-                        <td><strong>Valentina Torres Cruz</strong></td>
-                        <td>v.torres@unbosque.edu.co</td>
-                        <td>Medicina</td>
-                        <td>5</td>
-                        <td>118</td>
-                        <td><span class="badge badge-success">Activo</span></td>
-                        <td class="td-actions" style="justify-content:center;">
-                            <button type="button" class="btn-icon-only" title="Editar">✏️</button>
-                            <button type="button" class="btn-icon-only danger" title="Inactivar" onclick="cambiarEstado(this,'Inactivo')">⛔</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><code>20220876</code></td>
-                        <td><strong>Santiago Moreno Leal</strong></td>
-                        <td>s.moreno@unbosque.edu.co</td>
-                        <td>Derecho</td>
-                        <td>7</td>
-                        <td>156</td>
-                        <td><span class="badge badge-warning">Prueba Académica</span></td>
-                        <td class="td-actions" style="justify-content:center;">
-                            <button type="button" class="btn-icon-only" title="Editar">✏️</button>
-                            <button type="button" class="btn-icon-only success" title="Activar" onclick="cambiarEstado(this,'Activo')">✅</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><code>20250011</code></td>
-                        <td><strong>Luisa Fernanda Ríos</strong></td>
-                        <td>l.rios@unbosque.edu.co</td>
-                        <td>Ing. Industrial</td>
-                        <td>1</td>
-                        <td>0</td>
-                        <td><span class="badge badge-success">Activo</span></td>
-                        <td class="td-actions" style="justify-content:center;">
-                            <button type="button" class="btn-icon-only" title="Editar">✏️</button>
-                            <button type="button" class="btn-icon-only danger" title="Inactivar" onclick="cambiarEstado(this,'Inactivo')">⛔</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><code>20210344</code></td>
-                        <td><strong>Daniel Arturo Suárez</strong></td>
-                        <td>d.suarez@unbosque.edu.co</td>
-                        <td>Artes</td>
-                        <td>9</td>
-                        <td>204</td>
-                        <td><span class="badge badge-neutral">Inactivo</span></td>
-                        <td class="td-actions" style="justify-content:center;">
-                            <button type="button" class="btn-icon-only" title="Editar">✏️</button>
-                            <button type="button" class="btn-icon-only success" title="Activar" onclick="cambiarEstado(this,'Activo')">✅</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><code>20241389</code></td>
-                        <td><strong>Camila Andrea Vega</strong></td>
-                        <td>c.vega@unbosque.edu.co</td>
-                        <td>Ing. Sistemas</td>
-                        <td>2</td>
-                        <td>30</td>
-                        <td><span class="badge badge-success">Activo</span></td>
-                        <td class="td-actions" style="justify-content:center;">
-                            <button type="button" class="btn-icon-only" title="Editar">✏️</button>
-                            <button type="button" class="btn-icon-only danger" title="Inactivar" onclick="cambiarEstado(this,'Inactivo')">⛔</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><code>20230567</code></td>
-                        <td><strong>Miguel Ángel Herrera</strong></td>
-                        <td>m.herrera@unbosque.edu.co</td>
-                        <td>Medicina</td>
-                        <td>4</td>
-                        <td>90</td>
-                        <td><span class="badge badge-success">Activo</span></td>
-                        <td class="td-actions" style="justify-content:center;">
-                            <button type="button" class="btn-icon-only" title="Editar">✏️</button>
-                            <button type="button" class="btn-icon-only danger" title="Inactivar" onclick="cambiarEstado(this,'Inactivo')">⛔</button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <p style="margin-top:12px;font-size:0.78rem;color:var(--text-muted);text-align:right;">Mostrando 7 de 842 estudiantes</p>
+        <!-- Form oculto para eliminar -->
+        <h:form id="formEliminarEst" prependId="false">
+            <h:inputHidden id="eliminarEstId" value="#{personasBean.eId}" />
+            <h:commandButton id="btnEliminarEst" value="eliminar"
+                             style="display:none;"
+                             action="#{personasBean.eliminarEstudiante(personasBean.eId)}" />
+        </h:form>
 
-    </ui:define>
-
-    <!-- Modal: Nuevo Estudiante -->
-    <ui:define name="scripts">
-    <div id="modal-nuevo-est" class="modal-overlay" onclick="closeModalOutside(event,'modal-nuevo-est')">
-        <div class="modal">
-            <div class="modal-header">
-                <span class="modal-title">➕ Nuevo Estudiante</span>
-                <button type="button" class="modal-close" onclick="closeModal('modal-nuevo-est')">✕</button>
-            </div>
-            <div class="modal-body">
-                <div class="form-row cols-2">
-                    <div class="form-group">
-                        <label class="form-label">Nombre</label>
-                        <input type="text" class="form-control" placeholder="Ej: Andrés Felipe" />
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Apellido</label>
-                        <input type="text" class="form-control" placeholder="Ej: Gómez Ruiz" />
-                    </div>
-                </div>
-                <div class="form-row cols-2">
-                    <div class="form-group">
-                        <label class="form-label">Código Estudiantil</label>
-                        <input type="text" class="form-control" placeholder="Ej: 20261001" />
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Correo Institucional</label>
-                        <input type="email" class="form-control" placeholder="nombre@unbosque.edu.co" />
-                    </div>
-                </div>
-                <div class="form-row cols-2">
-                    <div class="form-group">
-                        <label class="form-label">Carrera</label>
-                        <select class="form-control">
-                            <option value="">Seleccionar…</option>
-                            <option>Ing. Sistemas</option>
-                            <option>Medicina</option>
-                            <option>Derecho</option>
-                            <option>Ing. Industrial</option>
-                            <option>Artes</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Semestre que Cursa</label>
-                        <select class="form-control">
-                            <option>1</option><option>2</option><option>3</option>
-                            <option>4</option><option>5</option><option>6</option>
-                            <option>7</option><option>8</option><option>9</option><option>10</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-row cols-2">
-                    <div class="form-group">
-                        <label class="form-label">Créditos Aprobados</label>
-                        <input type="number" class="form-control" placeholder="0" min="0" />
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Estado</label>
-                        <select class="form-control">
-                            <option>Activo</option>
-                            <option>Inactivo</option>
-                            <option>Prueba Académica</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-ghost" onclick="closeModal('modal-nuevo-est')">Cancelar</button>
-                <button type="button" class="btn btn-primary" onclick="closeModal('modal-nuevo-est')">💾 Guardar Estudiante</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal: Editar Estudiante -->
-    <div id="modal-editar-est" class="modal-overlay" onclick="closeModalOutside(event,'modal-editar-est')">
-        <div class="modal">
-            <div class="modal-header">
-                <span class="modal-title" id="modal-editar-title">✏️ Editar Estudiante</span>
-                <button type="button" class="modal-close" onclick="closeModal('modal-editar-est')">✕</button>
-            </div>
-            <div class="modal-body">
-                <div class="form-row cols-2">
-                    <div class="form-group">
-                        <label class="form-label">Nombre</label>
-                        <input type="text" class="form-control" id="edit-nombre" />
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Apellido</label>
-                        <input type="text" class="form-control" id="edit-apellido" />
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Estado</label>
-                    <select class="form-control">
-                        <option>Activo</option>
-                        <option>Inactivo</option>
-                        <option>Prueba Académica</option>
-                    </select>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-ghost" onclick="closeModal('modal-editar-est')">Cancelar</button>
-                <button type="button" class="btn btn-primary" onclick="closeModal('modal-editar-est')">💾 Actualizar</button>
-            </div>
-        </div>
     </div>
 
     <script type="text/javascript">
     //<![CDATA[
-    function openModal(id) { document.getElementById(id).classList.add('open'); }
-    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-    function closeModalOutside(e, id) { if (e.target.id === id) closeModal(id); }
+    (function() {
+        function renderEstudiantes() {
+            var rawEl = document.getElementById('estudiantesData');
+            if (!rawEl) return;
+            var raw = rawEl.textContent || rawEl.innerText || '[]';
+            var data;
+            try { data = JSON.parse(raw); } catch(e) { data = []; }
 
-    function editarEstudiante(cod, nombre) {
-        var parts = nombre.split(' ');
-        document.getElementById('edit-nombre').value = parts[0] + ' ' + (parts[1] || '');
-        document.getElementById('edit-apellido').value = (parts[2] || '') + ' ' + (parts[3] || '');
-        document.getElementById('modal-editar-title').textContent = '✏️ Editar: ' + nombre;
-        openModal('modal-editar-est');
-    }
+            var tbody = document.getElementById('tbody-estudiantes');
+            if (!tbody) return;
 
-    function cambiarEstado(btn, nuevoEstado) {
-        var row = btn.closest('tr');
-        var badge = row.querySelector('.badge');
-        if (nuevoEstado === 'Activo') {
-            badge.textContent = 'Activo';
-            badge.className = 'badge badge-success';
-        } else if (nuevoEstado === 'Inactivo') {
-            badge.textContent = 'Inactivo';
-            badge.className = 'badge badge-neutral';
+            if (!data || data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:rgba(255,255,255,0.4);">No hay estudiantes registrados aún.</td></tr>';
+                return;
+            }
+
+            var estadoClase = { 'ACTIVO': 'badge-green', 'INACTIVO': 'badge-red', 'GRADUADO': 'badge-gold' };
+            var html = '';
+            for (var i = 0; i < data.length; i++) {
+                var e = data[i];
+                var cls = estadoClase[e.estadoEstudiante] || 'badge-info';
+                html += '<tr>'
+                    + '<td><span class="badge badge-info">' + escHtml(e.id || '') + '</span></td>'
+                    + '<td>' + escHtml(e.nombre   || '') + '</td>'
+                    + '<td>' + escHtml(e.apellido || '') + '</td>'
+                    + '<td>' + escHtml(e.correo   || '') + '</td>'
+                    + '<td><span class="badge ' + cls + '">' + escHtml(e.estadoEstudiante || '') + '</span></td>'
+                    + '<td><button class="aurora-btn-danger aurora-btn-sm" '
+                    +     'onclick="confirmarEliminarEst(\'' + escAttr(e.id || '') + '\')">'
+                    +     '🗑 Eliminar</button></td>'
+                    + '</tr>';
+            }
+            tbody.innerHTML = html;
         }
-    }
 
-    function filterTable(tableId, query) {
-        var rows = document.querySelectorAll('#' + tableId + ' tbody tr');
-        var q = query.toLowerCase();
-        rows.forEach(function(row) {
-            row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
-        });
-    }
+        function confirmarEliminarEst(id) {
+            if (!confirm('¿Eliminar al estudiante con código: ' + id + '?')) return;
+            document.getElementById('eliminarEstId').value = id;
+            document.getElementById('btnEliminarEst').click();
+        }
+
+        function escHtml(s) {
+            return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+        }
+        function escAttr(s) { return String(s).replace(/'/g,"\\'"); }
+
+        window.confirmarEliminarEst = confirmarEliminarEst;
+        document.addEventListener('DOMContentLoaded', renderEstudiantes);
+    })();
     //]]>
     </script>
+
     </ui:define>
 
 </ui:composition>

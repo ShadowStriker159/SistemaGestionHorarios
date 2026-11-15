@@ -1,0 +1,212 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+<ui:composition template="/WEB-INF/templates/layout.xhtml">
+
+    <ui:define name="title">Horarios · Secretaría · Horarios UnBosque</ui:define>
+    <ui:define name="page-title">Generación de Horarios</ui:define>
+    <ui:define name="breadcrumb">Secretaría / Horarios</ui:define>
+    <ui:define name="user-avatar-letter">S</ui:define>
+    <ui:define name="user-name">Secretaría Académica</ui:define>
+    <ui:define name="user-role">Administrador del Sistema</ui:define>
+
+    <ui:define name="sidebar-nav">
+        <span class="nav-section-title">Principal</span>
+        <a href="dashboard.xhtml"       class="nav-item"><div class="nav-icon">🏠</div> Dashboard</a>
+        <span class="nav-section-title">Gestión</span>
+        <a href="estudiantes.xhtml"     class="nav-item"><div class="nav-icon">👨‍🎓</div> Estudiantes</a>
+        <a href="docentes.xhtml"        class="nav-item"><div class="nav-icon">👨‍🏫</div> Docentes</a>
+        <a href="cursos.xhtml"          class="nav-item"><div class="nav-icon">📚</div> Académico</a>
+        <a href="infraestructura.xhtml" class="nav-item"><div class="nav-icon">🏢</div> Infraestructura</a>
+        <a href="horarios.xhtml"        class="nav-item active"><div class="nav-icon">📅</div> Horarios</a>
+    </ui:define>
+
+    <ui:define name="content">
+    <div id="horarios-page">
+
+        <!-- Mensajes -->
+        <h:panelGroup rendered="#{not empty infraBean.mensajeError}">
+            <div class="aurora-alert aurora-alert-error">⚠️ <h:outputText value="#{infraBean.mensajeError}"/></div>
+        </h:panelGroup>
+        <h:panelGroup rendered="#{not empty infraBean.mensajeOk}">
+            <div class="aurora-alert aurora-alert-ok">✅ <h:outputText value="#{infraBean.mensajeOk}"/></div>
+        </h:panelGroup>
+
+        <!-- =========================================================
+             Panel: Generar Horario
+             ========================================================= -->
+        <div class="nm-card" style="margin-bottom:24px;">
+            <div class="card-header-aurora">
+                <h2 class="card-title">⚡ Generar Horario Automático</h2>
+            </div>
+
+            <p style="color:rgba(255,255,255,0.6);margin-bottom:20px;line-height:1.6;">
+                El sistema asignará franjas horarias y aulas a todos los grupos de la facultad seleccionada,
+                respetando disponibilidad de docentes, aulas y restricciones de cruces de horario.
+            </p>
+
+            <h:form id="formGenerar" prependId="false">
+                <div class="inline-form" style="align-items:flex-end;">
+                    <div class="dark-form-group" style="flex:1;margin:0;">
+                        <label class="dark-form-label" for="idFac">ID de Facultad</label>
+                        <div class="dark-input-wrapper">
+                            <span class="dark-input-icon">🏛</span>
+                            <h:inputText id="idFac" value="#{infraBean.idFacultadGenerar}"
+                                         styleClass="dark-input" placeholder="Ej: 1" />
+                        </div>
+                    </div>
+                    <h:commandButton value="⚡ Generar Horario"
+                                     action="#{infraBean.generarHorario}"
+                                     styleClass="aurora-btn"
+                                     style="margin-left:12px;" />
+                    <h:commandButton value="🔄 Recargar Lista"
+                                     action="#{infraBean.cargarHorarios}"
+                                     styleClass="aurora-btn-ghost"
+                                     style="margin-left:8px;" />
+                </div>
+            </h:form>
+
+            <div class="horario-info-boxes" style="margin-top:20px;">
+                <div class="info-box info-box-blue">
+                    <div class="info-box-icon">📋</div>
+                    <div class="info-box-text">
+                        <div class="info-box-label">¿Qué hace el generador?</div>
+                        <div class="info-box-desc">Asigna secciones a grupos sin cruces de docente ni aula</div>
+                    </div>
+                </div>
+                <div class="info-box info-box-teal">
+                    <div class="info-box-icon">✅</div>
+                    <div class="info-box-text">
+                        <div class="info-box-label">Restricciones aplicadas</div>
+                        <div class="info-box-desc">Disponibilidad docente · Capacidad de aulas · Sin conflictos de horario</div>
+                    </div>
+                </div>
+                <div class="info-box info-box-purple">
+                    <div class="info-box-icon">⚠️</div>
+                    <div class="info-box-text">
+                        <div class="info-box-label">Antes de generar</div>
+                        <div class="info-box-desc">Asegúrate de tener bloques, aulas, franjas y grupos creados</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- =========================================================
+             Panel: Lista de Horarios
+             ========================================================= -->
+        <div class="nm-card">
+            <div class="card-header-aurora">
+                <h2 class="card-title">📅 Horarios Generados</h2>
+            </div>
+
+            <!-- Filtro por día -->
+            <div class="horario-filter-bar" style="margin-bottom:16px;">
+                <button class="filter-chip filter-chip-active" onclick="filtrarDia('TODOS', this)">Todos</button>
+                <button class="filter-chip" onclick="filtrarDia('LUNES',     this)">Lunes</button>
+                <button class="filter-chip" onclick="filtrarDia('MARTES',    this)">Martes</button>
+                <button class="filter-chip" onclick="filtrarDia('MIERCOLES', this)">Miércoles</button>
+                <button class="filter-chip" onclick="filtrarDia('JUEVES',    this)">Jueves</button>
+                <button class="filter-chip" onclick="filtrarDia('VIERNES',   this)">Viernes</button>
+                <button class="filter-chip" onclick="filtrarDia('SABADO',    this)">Sábado</button>
+            </div>
+
+            <div class="table-container">
+                <table class="aurora-table" id="tabla-horarios">
+                    <thead>
+                        <tr>
+                            <th>Grupo</th>
+                            <th>Curso</th>
+                            <th>Docente</th>
+                            <th>Día</th>
+                            <th>Hora Inicio</th>
+                            <th>Hora Fin</th>
+                            <th>Aula</th>
+                            <th>Bloque</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-horarios">
+                        <tr>
+                            <td colspan="8" style="text-align:center;color:rgba(255,255,255,0.4);">
+                                Cargando horarios del backend…
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h:outputText id="horariosData" value="#{infraBean.horariosJson}" style="display:none;" escape="false"/>
+        </div>
+
+    </div>
+
+    <script type="text/javascript">
+    //<![CDATA[
+    var _todosHorarios = [];
+
+    function esc(s) {
+        return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function filtrarDia(dia, btn) {
+        // Actualizar botones activos
+        var chips = document.querySelectorAll('.filter-chip');
+        for (var i = 0; i < chips.length; i++) chips[i].classList.remove('filter-chip-active');
+        btn.classList.add('filter-chip-active');
+        // Filtrar
+        var filtrado = (dia === 'TODOS') ? _todosHorarios
+            : _todosHorarios.filter(function(h) { return h.dia === dia || (h.franjaHoraria &amp;&amp; h.franjaHoraria.dia === dia); });
+        renderTablaHorarios(filtrado);
+    }
+
+    function renderTablaHorarios(data) {
+        var tbody = document.getElementById('tbody-horarios');
+        if (!tbody) return;
+        if (!data || data.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:rgba(255,255,255,0.4);">No hay horarios generados aún. Usa el botón "Generar Horario".</td></tr>';
+            return;
+        }
+        var diaColors = { LUNES:'badge-blue', MARTES:'badge-teal', MIERCOLES:'badge-purple', JUEVES:'badge-gold', VIERNES:'badge-green', SABADO:'badge-info' };
+        var html = '';
+        for (var i = 0; i < data.length; i++) {
+            var h    = data[i];
+            // Los campos dependen del HorarioDTO del backend
+            var franja = h.franjaHoraria || {};
+            var dia    = franja.dia    || h.dia    || '—';
+            var inicio = franja.horaInicio || h.horaInicio || '—';
+            var fin    = franja.horaFin    || h.horaFin    || '—';
+            var aula   = (h.aula   &amp;&amp; h.aula.nombre)   ? h.aula.nombre   : (h.nombreAula   || '—');
+            var bloque = (h.bloque &amp;&amp; h.bloque.nombre) ? h.bloque.nombre : (h.nombreBloque || '—');
+            var grupo  = h.nombreGrupo || (h.grupo &amp;&amp; h.grupo.nombre) || h.idGrupo || '—';
+            var curso  = h.nombreCurso || (h.curso &amp;&amp; h.curso.nombre) || '—';
+            var doc    = h.nombreDocente || (h.docente &amp;&amp; (h.docente.nombre + ' ' + (h.docente.apellido||''))) || '—';
+            var cls    = diaColors[dia] || 'badge-info';
+            html += '<tr>'
+                + '<td><span class="badge badge-info">' + esc(grupo)  + '</span></td>'
+                + '<td>' + esc(curso)  + '</td>'
+                + '<td>' + esc(doc)    + '</td>'
+                + '<td><span class="badge ' + cls + '">' + esc(dia) + '</span></td>'
+                + '<td><strong>' + esc(inicio) + '</strong></td>'
+                + '<td><strong>' + esc(fin)    + '</strong></td>'
+                + '<td>' + esc(aula)   + '</td>'
+                + '<td>' + esc(bloque) + '</td>'
+                + '</tr>';
+        }
+        tbody.innerHTML = html;
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var rawEl = document.getElementById('horariosData');
+        if (!rawEl) return;
+        try { _todosHorarios = JSON.parse(rawEl.textContent || rawEl.innerText || '[]'); } catch(e) { _todosHorarios = []; }
+        renderTablaHorarios(_todosHorarios);
+    });
+    //]]>
+    </script>
+
+    </ui:define>
+</ui:composition>
+</html>
