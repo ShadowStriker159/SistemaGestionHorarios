@@ -12,17 +12,17 @@ import co.edu.unbosque.service.EstudianteService;
 import co.edu.unbosque.service.FacultadService;
 import co.edu.unbosque.service.GrupoService;
 import com.google.gson.JsonParseException;
-import com.google.gson.reflect.TypeToken;
 import jakarta.annotation.PostConstruct;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 
 import java.io.Serializable;
-import java.lang.reflect.Type;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @Named("estudiantePortalBean")
@@ -62,9 +62,7 @@ public class EstudiantePortalBean implements Serializable {
 	public void cargarDatos() {
 		mensajeError = "";
 		try {
-			estudiante = estudianteService.listarTodos().stream()
-					.filter(item -> Objects.equals(item.getId(), idEstudiante)).findFirst()
-					.orElseThrow(() -> new IllegalStateException("No se encontró el estudiante asociado a la sesión."));
+			estudiante = estudianteService.obtener(idEstudiante);
 			if (estudiante.getIdPlanEstudios() == null) {
 				cursosCarrera = new ArrayList<>();
 				gruposInscritos = new ArrayList<>();
@@ -72,31 +70,22 @@ public class EstudiantePortalBean implements Serializable {
 				return;
 			}
 
-			Type tipoCursos = new TypeToken<List<CursoDTO>>() {
-			}.getType();
-			List<CursoDTO> cursos = ApiClient.gson()
-					.fromJson(facultadService.listarCursosPorPlan(estudiante.getIdPlanEstudios()), tipoCursos);
-			if (cursos == null) {
-				throw new IllegalStateException("El backend devolvió una lista de cursos nula.");
-			}
+			int idPlan = estudiante.getIdPlanEstudios();
+			cursosCarrera = ApiClient.parseList(facultadService.listarCursosPorPlan(idPlan), CursoDTO.class);
+			List<GrupoDTO> grupos = ApiClient.parseList(facultadService.listarGruposPorPlan(idPlan), GrupoDTO.class);
 
-			cursosCarrera = cursos;
+			Map<Integer, List<GrupoDTO>> porCurso = new HashMap<>();
 			gruposInscritos = new ArrayList<>();
-			Type tipoGrupos = new TypeToken<List<GrupoDTO>>() {
-			}.getType();
+			for (GrupoDTO grupo : grupos) {
+				if (grupo.getCurso() != null) {
+					porCurso.computeIfAbsent(grupo.getCurso().getIdCurso(), k -> new ArrayList<>()).add(grupo);
+				}
+				if (estaInscrito(grupo)) {
+					gruposInscritos.add(grupo);
+				}
+			}
 			for (CursoDTO curso : cursosCarrera) {
-				List<GrupoDTO> grupos = ApiClient.gson()
-						.fromJson(facultadService.listarGruposPorCurso(curso.getIdCurso()), tipoGrupos);
-				if (grupos == null) {
-					throw new IllegalStateException(
-							"El backend devolvió una lista nula de grupos para " + curso.getNombreCurso() + ".");
-				}
-				curso.setGrupos(grupos);
-				for (GrupoDTO grupo : grupos) {
-					if (estaInscrito(grupo)) {
-						gruposInscritos.add(grupo);
-					}
-				}
+				curso.setGrupos(porCurso.getOrDefault(curso.getIdCurso(), new ArrayList<>()));
 			}
 		} catch (ApiClient.ApiException e) {
 			cursosCarrera = new ArrayList<>();

@@ -76,7 +76,7 @@
             <div class="chip-list" id="lista-facultades">
                 <span style="color:rgba(255,255,255,0.4);">Cargando facultades…</span>
             </div>
-            <h:outputText id="facultadesData" value="#{academicoBean.facultadesJson}" style="display:none;" escape="false"/>
+            <h:outputText id="facultadesData" value="#{academicoBean.facultadesJson}" style="display:none;" escape="true"/>
 
             <!-- Acciones ocultas -->
             <h:form id="formAccFacultad" prependId="false">
@@ -106,7 +106,7 @@
                 </div>
             </h:form>
             <div class="chip-list" id="lista-carreras"><span style="color:rgba(255,255,255,0.4);">Selecciona una facultad para ver sus carreras.</span></div>
-            <h:outputText id="carrerasData" value="#{academicoBean.carrerasJson}" style="display:none;" escape="false"/>
+            <h:outputText id="carrerasData" value="#{academicoBean.carrerasJson}" style="display:none;" escape="true"/>
             <h:form id="formAccCarrera" prependId="false">
                 <h:inputHidden id="carIdSel" value="#{academicoBean.idCarreraSel}" />
                 <h:inputHidden id="carreraSeleccionada" value="#{academicoBean.carreraSeleccionada}" />
@@ -133,7 +133,7 @@
                 </div>
             </h:form>
             <div class="chip-list" id="lista-planes"><span style="color:rgba(255,255,255,0.4);">—</span></div>
-            <h:outputText id="planesData" value="#{academicoBean.planesJson}" style="display:none;" escape="false"/>
+            <h:outputText id="planesData" value="#{academicoBean.planesJson}" style="display:none;" escape="true"/>
             <h:form id="formAccPlan" prependId="false">
                 <h:inputHidden id="planIdSel" value="#{academicoBean.idPlanSel}" />
                 <h:inputHidden id="planIdDel" value="#{academicoBean.idPlanEliminarSel}" />
@@ -194,7 +194,7 @@
                     <tbody id="tbody-cursos"><tr><td colspan="4" style="text-align:center;color:rgba(255,255,255,0.4);">—</td></tr></tbody>
                 </table>
             </div>
-            <h:outputText id="cursosData" value="#{academicoBean.cursosJson}" style="display:none;" escape="false"/>
+            <h:outputText id="cursosData" value="#{academicoBean.cursosJson}" style="display:none;" escape="true"/>
             <h:form id="formAccCurso" prependId="false">
                 <h:inputHidden id="cursoIdSel" value="#{academicoBean.idCursoSel}" />
                 <h:inputHidden id="cursoNombreSel" value="#{academicoBean.cursoSeleccionado}" />
@@ -244,7 +244,7 @@
                     <tbody id="tbody-grupos"><tr><td colspan="3" style="text-align:center;color:rgba(255,255,255,0.4);">—</td></tr></tbody>
                 </table>
             </div>
-            <h:outputText id="gruposData"   value="#{academicoBean.gruposJson}"   style="display:none;" escape="false"/>
+            <h:outputText id="gruposData"   value="#{academicoBean.gruposJson}"   style="display:none;" escape="true"/>
             <h:form id="formDelGrupo" prependId="false">
                 <h:inputHidden id="grupoIdDel" value="#{academicoBean.idGrupoSel}" />
                 <h:commandButton id="btnDelGrupo" style="display:none;" action="#{academicoBean.eliminarGrupo(academicoBean.idGrupoSel)}" />

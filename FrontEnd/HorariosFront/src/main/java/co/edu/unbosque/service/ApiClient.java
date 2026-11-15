@@ -19,7 +19,8 @@ import java.time.LocalTime;
 @ApplicationScoped
 public class ApiClient {
 
-	public static final String BASE_URL = "http://localhost:8087/api/horarios";
+	/** Configurable con -Dhorarios.api.url=... o variable de entorno HORARIOS_API_URL. */
+	public static final String BASE_URL = resolverBaseUrl();
 	private static final int TIMEOUT_MS = 8000;
 
 	private static final Gson GSON = new GsonBuilder()
@@ -39,6 +40,18 @@ public class ApiClient {
 				}
 			}.nullSafe()).create();
 
+	private static String resolverBaseUrl() {
+		String url = System.getProperty("horarios.api.url");
+		if (url == null || url.isBlank()) {
+			url = System.getenv("HORARIOS_API_URL");
+		}
+		if (url == null || url.isBlank()) {
+			url = "http://localhost:8087/api/horarios";
+		}
+		url = url.trim();
+		return url.endsWith("/") ? url.substring(0, url.length() - 1) : url;
+	}
+
 	// Métodos HTTP
 
 	/** GET → retorna el body como String (JSON) */
@@ -48,6 +61,22 @@ public class ApiClient {
 			throw new ApiException(response);
 		}
 		return response.getBody();
+	}
+
+	/** GET → lista tipada de DTOs; falla si el backend devuelve null. */
+	public <T> java.util.List<T> getList(String path, Class<T> elemento) {
+		return parseList(get(path), elemento);
+	}
+
+	/** Convierte un JSON de arreglo en una lista tipada. */
+	public static <T> java.util.List<T> parseList(String json, Class<T> elemento) {
+		java.lang.reflect.Type tipo = com.google.gson.reflect.TypeToken
+				.getParameterized(java.util.List.class, elemento).getType();
+		java.util.List<T> lista = GSON.fromJson(json, tipo);
+		if (lista == null) {
+			throw new com.google.gson.JsonParseException("El backend devolvió una lista nula");
+		}
+		return lista;
 	}
 
 	// POST con body JSON //

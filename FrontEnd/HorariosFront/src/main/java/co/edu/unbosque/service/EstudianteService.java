@@ -26,6 +26,14 @@ public class EstudianteService {
 				"El backend devolvió una lista de estudiantes nula");
 	}
 
+	public EstudianteDTO obtener(String id) {
+		EstudianteDTO estudiante = ApiClient.gson().fromJson(api.get(BASE + "/" + id), EstudianteDTO.class);
+		if (estudiante == null) {
+			throw new IllegalStateException("El backend devolvió un estudiante nulo.");
+		}
+		return estudiante;
+	}
+
 	public ApiResponse crear(EstudianteDTO dto) {
 		String body = ApiClient.gson().toJson(dto);
 		return api.post(BASE, body);

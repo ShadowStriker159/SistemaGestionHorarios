@@ -74,7 +74,7 @@ public class LoginBean implements Serializable {
 		} else if (res.isCredencialesInvalidas()) {
 			return error("ID, nombre o contraseña incorrectos.");
 		} else if (res.isErrorConexion()) {
-			return error("No se pudo conectar al backend. ¿Está activo en puerto 8080?");
+			return error("No se pudo conectar al backend. Verifica que el servicio esté activo.");
 		} else {
 			return error("Error del servidor (HTTP " + res.getHttpCode() + "): " + res.getMensaje());
 		}

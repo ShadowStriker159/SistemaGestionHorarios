@@ -101,6 +101,11 @@ public class FacultadService {
 		return api.get("/planes/" + idPlan + "/cursos");
 	}
 
+	/** Todos los grupos de los cursos de un plan, en una sola petición. */
+	public String listarGruposPorPlan(int idPlan) {
+		return api.get("/planes/" + idPlan + "/grupos");
+	}
+
 	public ApiResponse crearCurso(int idPlan, String nombre, int creditos, int intensidadHoraria, int semestre,
 			String aulaRequerida) {
 		CursoDTO dto = new CursoDTO();

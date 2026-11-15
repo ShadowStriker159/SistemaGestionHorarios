@@ -73,7 +73,7 @@
                     <div class="chip-list" id="lista-bloques">
                         <span style="color:rgba(255,255,255,0.4);">Cargando bloques…</span>
                     </div>
-                    <h:outputText id="bloquesData" value="#{infraBean.bloquesJson}" style="display:none;" escape="false"/>
+                    <h:outputText id="bloquesData" value="#{infraBean.bloquesJson}" style="display:none;" escape="true"/>
 
                     <h:form id="formAccBloque" prependId="false">
                         <h:inputHidden id="bloqueIdSel" value="#{infraBean.idBloqueSel}" />
@@ -137,7 +137,7 @@
                             </tbody>
                         </table>
                     </div>
-                    <h:outputText id="aulasData" value="#{infraBean.aulasJson}" style="display:none;" escape="false"/>
+                    <h:outputText id="aulasData" value="#{infraBean.aulasJson}" style="display:none;" escape="true"/>
 
                     <h:form id="formDelAula" prependId="false">
                         <h:inputHidden id="aulaNumeroDel" value="#{infraBean.numeroAulaSel}" />
@@ -215,7 +215,7 @@
                         </tbody>
                     </table>
                 </div>
-                <h:outputText id="franjasData" value="#{infraBean.franjasJson}" style="display:none;" escape="false"/>
+                <h:outputText id="franjasData" value="#{infraBean.franjasJson}" style="display:none;" escape="true"/>
 
                 <h:form id="formDelFranja" prependId="false">
                     <h:inputHidden id="franjaIdDel" value="#{infraBean.idFranjaSel}" />
