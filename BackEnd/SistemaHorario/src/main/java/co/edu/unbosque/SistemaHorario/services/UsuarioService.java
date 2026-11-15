@@ -58,8 +58,6 @@ public class UsuarioService {
         this.administradorRepository = administradorRepository;
     }
 
-    // ---------- Paso 1: login (valida credenciales y envía el código) ----------
-
     public boolean iniciarLoginEstudiante(EstudianteDTO dto) {
         Optional<Estudiante> encontrado = estudianteRepository.findById(dto.getId());
         return encontrado
@@ -93,8 +91,6 @@ public class UsuarioService {
                 .orElse(false);
     }
 
-    // ---------- Paso 2: verificación del código ----------
-
     public Optional<UsuarioSesionDTO> verificarCodigo(String rol, String id, String codigo) {
         if (rol == null || id == null || codigo == null) {
             return Optional.empty();
@@ -106,7 +102,6 @@ public class UsuarioService {
             return Optional.empty();
         }
 
-        // Expirado o demasiados intentos: se invalida el código
         if (Instant.now().isAfter(pendiente.expira)
                 || pendiente.intentos.incrementAndGet() > MAX_INTENTOS) {
             codigosPendientes.remove(llave);
@@ -117,7 +112,6 @@ public class UsuarioService {
             return Optional.empty();
         }
 
-        // Código correcto: se consume (un solo uso)
         codigosPendientes.remove(llave);
         return construirSesion(rol.toLowerCase(), id);
     }
@@ -136,8 +130,6 @@ public class UsuarioService {
             default -> Optional.empty();
         };
     }
-
-    // ---------- Auxiliares ----------
 
     private boolean credencialesValidas(String nombreGuardado, String passwordGuardada,
                                         String nombreIngresado, String passwordIngresada) {
@@ -167,4 +159,4 @@ public class UsuarioService {
     private String llave(String rol, String id) {
         return rol.toLowerCase() + ":" + id;
     }
-}	
+}

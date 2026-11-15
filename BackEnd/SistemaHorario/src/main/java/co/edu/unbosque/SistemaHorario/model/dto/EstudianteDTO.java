@@ -7,19 +7,24 @@ public class EstudianteDTO {
     private String apellido;
     private String correo;
     private String password;
+    private Integer semestreCursa;
     private String estadoEstudiante;
+    private Integer creditosAprobados;
 
     public EstudianteDTO() {
     }
 
     public EstudianteDTO(String id, String nombre, String apellido, String correo,
-                         String password, String estadoEstudiante) {
+                         String password, Integer semestreCursa,
+                         String estadoEstudiante, Integer creditosAprobados) {
         this.id = id;
         this.nombre = nombre;
         this.apellido = apellido;
         this.correo = correo;
         this.password = password;
+        this.semestreCursa = semestreCursa;
         this.estadoEstudiante = estadoEstudiante;
+        this.creditosAprobados = creditosAprobados;
     }
 
     public String getId() {
@@ -68,5 +73,21 @@ public class EstudianteDTO {
 
     public void setEstadoEstudiante(String estadoEstudiante) {
         this.estadoEstudiante = estadoEstudiante;
+    }
+
+    public Integer getSemestreCursa() {
+        return semestreCursa;
+    }
+
+    public void setSemestreCursa(Integer semestreCursa) {
+        this.semestreCursa = semestreCursa;
+    }
+
+    public Integer getCreditosAprobados() {
+        return creditosAprobados;
+    }
+
+    public void setCreditosAprobados(Integer creditosAprobados) {
+        this.creditosAprobados = creditosAprobados;
     }
 }

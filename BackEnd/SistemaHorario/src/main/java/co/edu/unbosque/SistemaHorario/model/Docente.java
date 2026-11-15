@@ -22,7 +22,12 @@ public class Docente extends Persona {
     @Column(name = "tipo_vinculacion")
     private TipoVinculacion tipoVinculacion;
 
-    @OneToMany(mappedBy = "docente", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ManyToMany
+    @JoinTable(
+            name = "docente_franja",
+            joinColumns = @JoinColumn(name = "id_docente", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "id_franja")
+    )
     private List<FranjaHoraria> disponibilidad = new ArrayList<>();
 
     public Docente() {

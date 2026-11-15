@@ -3,7 +3,7 @@ package co.edu.unbosque.SistemaHorario.model.dto;
 public class VerificacionDTO {
 
 	private String id;
-	private String rol; 
+	private String rol;
 	private String codigo;
 
 	public VerificacionDTO() {
