@@ -1,20 +1,29 @@
 package co.edu.unbosque.service;
 
+import co.edu.unbosque.model.HorarioDTO;
 import co.edu.unbosque.service.ApiClient.ApiResponse;
+import com.google.gson.reflect.TypeToken;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
-/**
- * HorarioService
- * Conecta con:
- *   GET  /api/horarios/listar
- *   POST /api/horarios/generar?idFacultad={id}
- */
+import java.lang.reflect.Type;
+import java.util.List;
+import java.util.Objects;
+
+@ApplicationScoped
 public class HorarioService {
 
-    public String listarHorarios() {
-        return ApiClient.get("/listar");
-    }
+	@Inject
+	private ApiClient api;
 
-    public ApiResponse generarHorario(int idFacultad) {
-        return ApiClient.post("/generar?idFacultad=" + idFacultad, "{}");
-    }
+	public List<HorarioDTO> listarHorarios() {
+		Type tipo = new TypeToken<List<HorarioDTO>>() {
+		}.getType();
+		return Objects.requireNonNull(ApiClient.gson().fromJson(api.get("/listar"), tipo),
+				"El backend devolvió una lista de horarios nula");
+	}
+
+	public ApiResponse generarHorario(int idFacultad) {
+		return api.post("/generar?idFacultad=" + idFacultad, "{}");
+	}
 }

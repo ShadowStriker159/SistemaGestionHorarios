@@ -1,154 +1,167 @@
 package co.edu.unbosque.service;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonToken;
+import com.google.gson.stream.JsonWriter;
+import jakarta.enterprise.context.ApplicationScoped;
+
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalTime;
 
-/**
- * Cliente HTTP genérico para comunicarse con el backend Spring Boot (SGPHU).
- * Todos los Services del frontend lo usan en lugar de duplicar código HTTP.
- *
- * BASE_URL apunta al contexto del backend. Ajusta el puerto si es necesario.
- */
+@ApplicationScoped
 public class ApiClient {
 
-    public static final String BASE_URL = "http://localhost:8080/api/horarios";
+	public static final String BASE_URL = "http://localhost:8087/api/horarios";
+	private static final int TIMEOUT_MS = 8000;
 
-    private static final int TIMEOUT_CONN  = 5000;
-    private static final int TIMEOUT_READ  = 8000;
+	private static final Gson GSON = new GsonBuilder()
+			.registerTypeAdapter(LocalTime.class, new TypeAdapter<LocalTime>() {
+				@Override
+				public void write(JsonWriter out, LocalTime value) throws IOException {
+					out.value(value.toString());
+				}
 
-    // ----------------------------------------------------------------
-    //  Métodos públicos
-    // ----------------------------------------------------------------
+				@Override
+				public LocalTime read(JsonReader in) throws IOException {
+					if (in.peek() == JsonToken.NULL) {
+						in.nextNull();
+						return null;
+					}
+					return LocalTime.parse(in.nextString());
+				}
+			}.nullSafe()).create();
 
-    /** GET → retorna el body como String (JSON) */
-    public static String get(String path) {
-        return ejecutar("GET", path, null);
-    }
+	// Métodos HTTP
 
-    /** POST con body JSON → retorna body de la respuesta */
-    public static ApiResponse post(String path, String jsonBody) {
-        String body  = ejecutar("POST", path, jsonBody);
-        int    code  = lastCode.get();
-        return new ApiResponse(code, body);
-    }
+	/** GET → retorna el body como String (JSON) */
+	public String get(String path) {
+		ApiResponse response = ejecutar("GET", path, null);
+		if (!response.isOk()) {
+			throw new ApiException(response);
+		}
+		return response.getBody();
+	}
 
-    /** DELETE → retorna body de la respuesta */
-    public static ApiResponse delete(String path) {
-        String body = ejecutar("DELETE", path, null);
-        int    code = lastCode.get();
-        return new ApiResponse(code, body);
-    }
+	// POST con body JSON //
+	public ApiResponse post(String path, String jsonBody) {
+		return ejecutar("POST", path, jsonBody);
+	}
 
-    // ----------------------------------------------------------------
-    //  Estado del último código HTTP (ThreadLocal para seguridad)
-    // ----------------------------------------------------------------
-    private static final ThreadLocal<Integer> lastCode = ThreadLocal.withInitial(() -> 0);
+	// PUT con body JSON //
+	public ApiResponse put(String path, String jsonBody) {
+		return ejecutar("PUT", path, jsonBody);
+	}
 
-    // ----------------------------------------------------------------
-    //  Implementación
-    // ----------------------------------------------------------------
+	// DELETE//
+	public ApiResponse delete(String path) {
+		return ejecutar("DELETE", path, null);
+	}
 
-    private static String ejecutar(String method, String path, String jsonBody) {
-        HttpURLConnection conn = null;
-        try {
-            URL url = new URL(BASE_URL + path);
-            conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod(method);
-            conn.setConnectTimeout(TIMEOUT_CONN);
-            conn.setReadTimeout(TIMEOUT_READ);
-            conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
-            conn.setRequestProperty("Accept", "application/json, text/plain");
+	// Gson helpers expuestos para los services
 
-            if (jsonBody != null) {
-                conn.setDoOutput(true);
-                byte[] bytes = jsonBody.getBytes(StandardCharsets.UTF_8);
-                conn.setRequestProperty("Content-Length", String.valueOf(bytes.length));
-                try (OutputStream os = conn.getOutputStream()) {
-                    os.write(bytes); os.flush();
-                }
-            }
+	public static Gson gson() {
+		return GSON;
+	}
 
-            int code = conn.getResponseCode();
-            lastCode.set(code);
-            InputStream stream = (code >= 200 && code < 300)
-                    ? conn.getInputStream() : conn.getErrorStream();
-            if (stream == null) return "";
-            return new String(stream.readAllBytes(), StandardCharsets.UTF_8);
+	public static String esc(String v) {
+		if (v == null)
+			return "";
+		return v.replace("\\", "\\\\").replace("\"", "\\\"");
+	}
 
-        } catch (java.net.ConnectException ce) {
-            lastCode.set(-1);
-            return "{\"error\":\"No se pudo conectar al backend: " + BASE_URL + "\"}";
-        } catch (Exception e) {
-            lastCode.set(-2);
-            return "{\"error\":\"" + escapar(e.getMessage()) + "\"}";
-        } finally {
-            if (conn != null) conn.disconnect();
-        }
-    }
+	// Implementación interna
 
-    private static String escapar(String s) {
-        if (s == null) return "";
-        return s.replace("\\", "\\\\").replace("\"", "\\\"");
-    }
+	private ApiResponse ejecutar(String method, String path, String jsonBody) {
+		HttpURLConnection conn = null;
+		try {
+			URL url = new URL(BASE_URL + path);
+			conn = (HttpURLConnection) url.openConnection();
+			conn.setRequestMethod(method);
+			conn.setConnectTimeout(TIMEOUT_MS);
+			conn.setReadTimeout(TIMEOUT_MS);
+			conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+			conn.setRequestProperty("Accept", "application/json, text/plain");
 
-    // ----------------------------------------------------------------
-    //  Helpers de serialización JSON mínima (sin librerías externas)
-    //  Para los campos más comunes de los DTOs del SGPHU.
-    // ----------------------------------------------------------------
+			if (jsonBody != null) {
+				conn.setDoOutput(true);
+				byte[] bytes = jsonBody.getBytes(StandardCharsets.UTF_8);
+				conn.setRequestProperty("Content-Length", String.valueOf(bytes.length));
+				try (OutputStream os = conn.getOutputStream()) {
+					os.write(bytes);
+					os.flush();
+				}
+			}
 
-    /** Extrae el valor de un campo JSON simple: "campo":"valor" o "campo":123 */
-    public static String extraerCampo(String json, String campo) {
-        if (json == null || campo == null) return "";
-        String patron = "\"" + campo + "\"";
-        int idx = json.indexOf(patron);
-        if (idx < 0) return "";
-        int colon = json.indexOf(':', idx + patron.length());
-        if (colon < 0) return "";
-        int start = colon + 1;
-        while (start < json.length() && json.charAt(start) == ' ') start++;
-        if (start >= json.length()) return "";
-        char primer = json.charAt(start);
-        if (primer == '"') {
-            int end = json.indexOf('"', start + 1);
-            return end < 0 ? "" : json.substring(start + 1, end);
-        } else {
-            int end = start;
-            while (end < json.length() && ",}]".indexOf(json.charAt(end)) < 0) end++;
-            return json.substring(start, end).trim();
-        }
-    }
+			int code = conn.getResponseCode();
+			InputStream stream = (code >= 200 && code < 300) ? conn.getInputStream() : conn.getErrorStream();
+			String body = stream == null ? "" : new String(stream.readAllBytes(), StandardCharsets.UTF_8);
+			return new ApiResponse(code, body);
 
-    /** Escapa un valor para incluirlo dentro de un JSON string */
-    public static String esc(String v) {
-        return escapar(v == null ? "" : v);
-    }
+		} catch (java.net.ConnectException e) {
+			return new ApiResponse(-1, "No se pudo conectar al backend: " + BASE_URL);
+		} catch (IOException e) {
+			return new ApiResponse(-2, "Error de comunicación con el backend: " + e.getMessage());
+		} finally {
+			if (conn != null)
+				conn.disconnect();
+		}
+	}
 
-    // ----------------------------------------------------------------
-    //  Clase resultado
-    // ----------------------------------------------------------------
+	// Clase de respuesta
 
-    public static class ApiResponse {
-        private final int    code;
-        private final String body;
+	public static class ApiException extends RuntimeException {
+		private final int code;
 
-        public ApiResponse(int code, String body) {
-            this.code = code;
-            this.body = body == null ? "" : body;
-        }
+		public ApiException(ApiResponse response) {
+			super(response.getCode() < 0 ? response.getBody()
+					: "El backend respondió HTTP " + response.getCode() + ": " + response.getBody());
+			this.code = response.getCode();
+		}
 
-        public boolean isOk()       { return code >= 200 && code < 300; }
-        public boolean isConflict() { return code == 409; }
-        public boolean isNotFound() { return code == 404; }
-        public boolean isError()    { return code < 0; }
-        public int     getCode()    { return code; }
-        public String  getBody()    { return body; }
+		public int getCode() {
+			return code;
+		}
+	}
 
-        @Override
-        public String toString() {
-            return "ApiResponse{code=" + code + ", body='" + body + "'}";
-        }
-    }
+	public static class ApiResponse {
+		private final int code;
+		private final String body;
+
+		public ApiResponse(int code, String body) {
+			this.code = code;
+			this.body = body == null ? "" : body;
+		}
+
+		public boolean isOk() {
+			return code >= 200 && code < 300;
+		}
+
+		public boolean isConflict() {
+			return code == 409;
+		}
+
+		public boolean isNotFound() {
+			return code == 404;
+		}
+
+		public boolean isError() {
+			return code < 0;
+		}
+
+		public int getCode() {
+			return code;
+		}
+
+		public String getBody() {
+			return body;
+		}
+	}
 }

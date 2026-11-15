@@ -1,440 +1,194 @@
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="es">
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
 
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<meta name="description"
-	content="Sistema de Gestión Académica — Universidad El Bosque." />
-<title>Ingresar · Horarios UnBosque</title>
+<h:head>
+    <title>Ingresar · Sistema de Horarios UnBosque</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="crossorigin" />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&amp;display=swap"
+          rel="stylesheet" />
+    <link rel="stylesheet" type="text/css"
+          href="#{request.contextPath}/css/aurora.css" />
+    <link rel="stylesheet" type="text/css"
+          href="#{request.contextPath}/css/login.css" />
+</h:head>
 
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com"
-	crossorigin="anonymous" />
-<link
-	href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap"
-	rel="stylesheet" />
+<h:body styleClass="login-page-body lg-body">
+    <div class="lg-shell">
 
-<!-- Rutas relativas: ajusta si tus CSS están en otra carpeta -->
-<link rel="stylesheet" type="text/css" href="css/neomorphism.css" />
-<link rel="stylesheet" type="text/css" href="css/aurora.css" />
-</head>
+        <aside class="lg-hero">
+            <div class="lg-brand">
+                <div class="lg-mark">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"
+                         fill="currentColor" aria-hidden="true">
+                        <path d="M16 3 22 12h-3l6 8h-6.5v7h-5v-7H7l6-8h-3z" />
+                    </svg>
+                </div>
+                <div>
+                    <span class="lg-brand-name">UnBosque</span>
+                    <span class="lg-brand-sub">Sistema de Gestión de Horarios</span>
+                </div>
+            </div>
 
-<body>
-	<div class="aurora-scene">
+            <div class="lg-hero-copy">
+                <p class="lg-eyebrow">Gestión académica</p>
+                <h1 class="lg-headline">Cada clase, <em>en su lugar</em> y a su hora.</h1>
+                <p class="lg-lead">
+                    Consulta, organiza y administra los horarios de toda la universidad
+                    desde un solo lugar.
+                </p>
+            </div>
 
-		<!-- Blobs aurora animados -->
-		<div class="aurora-blob blob-1"></div>
-		<div class="aurora-blob blob-2"></div>
-		<div class="aurora-blob blob-3"></div>
-		<div class="aurora-blob blob-4"></div>
-		<div class="aurora-blob blob-5"></div>
-		<div class="stars"></div>
+            <div class="lg-board" aria-hidden="true">
+                <div class="lg-board-days">
+                    <span>&#160;</span>
+                    <div>
+                        <span>Lun</span><span>Mar</span><span>Mié</span><span>Jue</span><span>Vie</span>
+                    </div>
+                </div>
+                <div class="lg-board-grid">
+                    <div class="lg-board-hours">
+                        <span>7</span><span>8</span><span>9</span><span>10</span>
+                        <span>11</span><span>12</span><span>13</span><span>14</span>
+                    </div>
+                    <div class="lg-board-cols">
+                        <div class="lg-block em" style="grid-column: 1; grid-row: 1/span 2;">
+                            Cálculo II<small>Aula 204</small>
+                        </div>
+                        <div class="lg-block am" style="grid-column: 1; grid-row: 5/span 2;">
+                            Bioética<small>Aula 110</small>
+                        </div>
+                        <div class="lg-block in" style="grid-column: 2; grid-row: 2/span 2;">
+                            Anatomía<small>Lab 3</small>
+                        </div>
+                        <div class="lg-block em" style="grid-column: 2; grid-row: 6/span 2;">
+                            Inglés<small>Aula 302</small>
+                        </div>
+                        <div class="lg-block am" style="grid-column: 3; grid-row: 1/span 2;">
+                            Física<small>Aula 207</small>
+                        </div>
+                        <div class="lg-block in" style="grid-column: 3; grid-row: 4/span 3;">
+                            Laboratorio<small>Lab 1</small>
+                        </div>
+                        <div class="lg-block em" style="grid-column: 4; grid-row: 3/span 2;">
+                            Estadística<small>Aula 118</small>
+                        </div>
+                        <div class="lg-block am" style="grid-column: 4; grid-row: 6/span 2;">
+                            Ética<small>Aula 104</small>
+                        </div>
+                        <div class="lg-block in" style="grid-column: 5; grid-row: 1/span 3;">
+                            Seminario<small>Auditorio</small>
+                        </div>
+                        <div class="lg-now">&#160;</div>
+                    </div>
+                </div>
+            </div>
 
-		<div class="aurora-card-wrapper">
-			<div class="aurora-card">
+            <p class="lg-hero-foot">Universidad El Bosque · Bogotá, Colombia</p>
+        </aside>
 
-				<!-- Encabezado / Brand -->
-				<div class="aurora-brand">
-					<div class="aurora-logo-ring">🎓</div>
-					<div class="aurora-brand-text">
-						<div class="brand-name">UnBosque</div>
-						<div class="brand-sub">Sistema de Gestión Académica</div>
-					</div>
-				</div>
+        <main class="lg-panel">
+            <div class="lg-form-wrap">
 
-				<!-- Indicador de pasos -->
-				<div class="step-indicator">
-					<div class="step-item active" id="stepItem1">
-						<div class="step-dot" id="stepDot1">1</div>
-						<div class="step-label">Credenciales</div>
-					</div>
-					<div class="step-connector">
-						<div class="step-connector-fill" id="stepFill"></div>
-					</div>
-					<div class="step-item" id="stepItem2">
-						<div class="step-dot">2</div>
-						<div class="step-label">Verificación</div>
-					</div>
-				</div>
+                <p:messages id="msgs" showDetail="true" closable="true" />
 
-				<!-- ===========================================================
-             PASO 1 — Credenciales
-             =========================================================== -->
-				<div id="paso1">
+                <h:panelGroup id="loginSteps" layout="block">
+                    <h:panelGroup id="panelPaso1" layout="block"
+                                  rendered="#{loginBean.paso1}">
+                        <p class="lg-step">Paso 1 de 2</p>
+                        <h2 class="lg-title">Bienvenido</h2>
+                        <p class="lg-subtitle">Ingresa tus credenciales para continuar.</p>
 
-					<div class="step-title">Bienvenido de nuevo 👋</div>
-					<div class="step-subtitle">Selecciona tu rol e ingresa tus
-						datos para continuar</div>
+                        <h:form id="formLogin" prependId="false">
+                            <div class="lg-field">
+                                <label class="lg-label">Ingresas como</label>
+                                <p:selectOneButton value="#{loginBean.rol}"
+                                                   styleClass="rol-selector">
+                                    <f:selectItem itemValue="administrador"
+                                                  itemLabel="Administrador" />
+                                    <f:selectItem itemValue="docente" itemLabel="Docente" />
+                                    <f:selectItem itemValue="estudiante" itemLabel="Estudiante" />
+                                </p:selectOneButton>
+                            </div>
 
-					<!-- Mensaje de error (visual) -->
-					<div class="aurora-error" id="error1" style="display: none;">
-						⚠️ <span id="error1-texto"></span>
-					</div>
+                            <div class="lg-field">
+                                <label class="lg-label" for="inpId">Identificación o código</label>
+                                <p:inputText id="inpId" value="#{loginBean.id}"
+                                             styleClass="lg-input"
+                                             placeholder="Ej: 1234567890"
+                                             required="true" />
+                            </div>
 
-					<!-- Selector de rol -->
-					<div style="margin-bottom: 20px;">
-						<label class="dark-form-label">Ingresa como</label>
-						<div class="aurora-role-selector">
+                            <div class="lg-field">
+                                <label class="lg-label" for="inpNombre">Nombre</label>
+                                <p:inputText id="inpNombre" value="#{loginBean.nombre}"
+                                             styleClass="lg-input"
+                                             placeholder="Tu nombre como está en el sistema"
+                                             required="true" />
+                            </div>
 
-							<div>
-								<input type="radio" name="rol-visual" id="rol-admin"
-									class="aurora-role-option" value="administrador"
-									checked="checked" /> <label for="rol-admin"
-									class="aurora-role-label"> <span
-									class="aurora-role-emoji">👩‍💼</span> <span
-									class="aurora-role-name">Secretaria</span>
-								</label>
-							</div>
+                            <div class="lg-field">
+                                <label class="lg-label" for="inpPass">Contraseña</label>
+                                <p:password id="inpPass" value="#{loginBean.password}"
+                                            styleClass="lg-input"
+                                            placeholder="••••••••"
+                                            feedback="false"
+                                            toggleMask="true"
+                                            required="true" />
+                            </div>
 
-							<div>
-								<input type="radio" name="rol-visual" id="rol-docente"
-									class="aurora-role-option" value="docente" /> <label
-									for="rol-docente" class="aurora-role-label"> <span
-									class="aurora-role-emoji">👨‍🏫</span> <span
-									class="aurora-role-name">Docente</span>
-								</label>
-							</div>
+                            <p:commandButton value="Continuar"
+                                             action="#{loginBean.iniciarLogin}"
+                                             styleClass="lg-cta"
+                                             process="@form"
+                                             update="msgs loginSteps" />
+                        </h:form>
 
-							<div>
-								<input type="radio" name="rol-visual" id="rol-estudiante"
-									class="aurora-role-option" value="estudiante" /> <label
-									for="rol-estudiante" class="aurora-role-label"> <span
-									class="aurora-role-emoji">👨‍🎓</span> <span
-									class="aurora-role-name">Estudiante</span>
-								</label>
-							</div>
+                        <p class="lg-help">
+                            ¿Problemas para ingresar? Comunícate con la Secretaría Académica.
+                        </p>
+                    </h:panelGroup>
 
-						</div>
-					</div>
+                    <h:panelGroup id="panelPaso2" layout="block"
+                                  rendered="#{loginBean.paso2}">
+                        <p class="lg-step">Paso 2 de 2</p>
+                        <h2 class="lg-title">Revisa tu correo</h2>
+                        <p class="lg-subtitle">
+                            Te enviamos un código de 6 dígitos a tu correo institucional.
+                        </p>
 
-					<!-- Correo -->
-					<div class="dark-form-group">
-						<label class="dark-form-label" for="inp-correo">Correo
-							electrónico</label>
-						<div class="dark-input-wrapper">
-							<span class="dark-input-icon">✉️</span> <input type="email"
-								id="inp-correo" class="dark-input"
-								placeholder="tucorreo@unbosque.edu.co" autocomplete="email" />
-						</div>
-					</div>
+                        <h:form id="formOtp" prependId="false">
+                            <div class="lg-field">
+                                <label class="lg-label">Código de verificación</label>
+                                <p:inputText value="#{loginBean.otpCode}"
+                                             maxlength="6"
+                                             styleClass="lg-input lg-otp"
+                                             placeholder="······"
+                                             required="true" />
+                            </div>
 
-					<!-- Contraseña -->
-					<div class="dark-form-group">
-						<label class="dark-form-label" for="inp-password">Contraseña</label>
-						<div class="dark-input-wrapper">
-							<span class="dark-input-icon">🔒</span> <input type="password"
-								id="inp-password" class="dark-input" placeholder="••••••••••"
-								style="padding-right: 44px;" autocomplete="current-password" />
-							<span class="dark-input-eye" id="eye-icon"
-								onclick="togglePassword('inp-password','eye-icon')"
-								title="Mostrar / ocultar">👁</span>
-						</div>
-					</div>
+                            <p:commandButton value="Verificar e ingresar"
+                                             action="#{loginBean.verificarOtp}"
+                                             styleClass="lg-cta"
+                                             process="@form"
+                                             update="msgs loginSteps" />
 
-					<!-- Botón Continuar -->
-					<button type="button" id="btnContinuar" class="aurora-btn"
-						onclick="continuarPaso1()"
-						style="width: 100%; justify-content: center; margin-top: 8px;">
-						Continuar →</button>
-
-					<div class="aurora-bottom-note" style="margin-top: 20px;">
-						<a href="#">Política de privacidad</a> · <a href="#">Soporte
-							técnico</a>
-					</div>
-
-				</div>
-
-				<!-- ===========================================================
-             PASO 2 — Verificación del código
-             =========================================================== -->
-				<div id="paso2" style="display: none;">
-
-					<div class="step-title">Verifica tu identidad 🔐</div>
-					<div class="step-subtitle">Revisa tu correo: te enviamos un
-						código de 6 dígitos. El código vence en 5 minutos.</div>
-
-					<!-- Panel de aviso de correo -->
-					<div class="email-hint-panel">
-						<div class="email-hint-icon">✉️</div>
-						<div class="email-hint-text">
-							<div class="email-hint-label">Código enviado a</div>
-							<div class="email-hint-addr" id="correo-destino">tucorreo@unbosque.edu.co</div>
-						</div>
-					</div>
-
-					<!-- Mensaje de error (visual) -->
-					<div class="aurora-error" id="error2" style="display: none;">
-						⚠️ <span id="error2-texto"></span>
-					</div>
-
-					<!-- Cajas OTP (6 dígitos) -->
-					<div>
-						<label class="dark-form-label"
-							style="text-align: center; display: block; margin-bottom: 4px;">
-							Código de verificación </label>
-						<div class="otp-grid">
-							<input type="text" class="otp-box" id="otp-0" maxlength="1"
-								inputmode="numeric" onkeyup="otpKeyUp(event,0)"
-								onkeydown="otpKeyDown(event,0)" /> <input type="text"
-								class="otp-box" id="otp-1" maxlength="1" inputmode="numeric"
-								onkeyup="otpKeyUp(event,1)" onkeydown="otpKeyDown(event,1)" />
-							<input type="text" class="otp-box" id="otp-2" maxlength="1"
-								inputmode="numeric" onkeyup="otpKeyUp(event,2)"
-								onkeydown="otpKeyDown(event,2)" /> <input type="text"
-								class="otp-box" id="otp-3" maxlength="1" inputmode="numeric"
-								onkeyup="otpKeyUp(event,3)" onkeydown="otpKeyDown(event,3)" />
-							<input type="text" class="otp-box" id="otp-4" maxlength="1"
-								inputmode="numeric" onkeyup="otpKeyUp(event,4)"
-								onkeydown="otpKeyDown(event,4)" /> <input type="text"
-								class="otp-box" id="otp-5" maxlength="1" inputmode="numeric"
-								onkeyup="otpKeyUp(event,5)" onkeydown="otpKeyDown(event,5)" />
-						</div>
-					</div>
-
-					<!-- Botón Verificar -->
-					<button type="button" id="btnVerificar" class="aurora-btn"
-						onclick="verificarCodigo()"
-						style="width: 100%; justify-content: center; margin-top: 12px;">
-						Verificar e Ingresar 🔓</button>
-
-					<!-- Botón Volver -->
-					<button type="button" id="btnVolver" class="aurora-btn-ghost"
-						onclick="irAPaso(1)"
-						style="width: 100%; justify-content: center; margin-top: 10px;">
-						← Volver al paso anterior</button>
-
-				</div>
-
-			</div>
-			<!-- /aurora-card -->
-		</div>
-		<!-- /aurora-card-wrapper -->
-
-	</div>
-	<!-- /aurora-scene -->
-
-	<script type="text/javascript">
-		//<![CDATA[
-
-		/* -------------------------------------------------------
-		 Utilidades visuales
-		 ------------------------------------------------------- */
-		function mostrarError(idContenedor, idTexto, texto) {
-			document.getElementById(idTexto).textContent = texto;
-			var c = document.getElementById(idContenedor);
-			c.style.display = 'block';
-			c.classList.add('show');
-		}
-
-		function ocultarError(idContenedor) {
-			var c = document.getElementById(idContenedor);
-			c.style.display = 'none';
-			c.classList.remove('show');
-		}
-
-		function rolSeleccionado() {
-			var r = document.querySelector('input[name="rol-visual"]:checked');
-			return r ? r.value : 'administrador';
-		}
-
-		/* -------------------------------------------------------
-		 Cambio de paso (solo visual)
-		 ------------------------------------------------------- */
-		function irAPaso(n) {
-			var paso1 = document.getElementById('paso1');
-			var paso2 = document.getElementById('paso2');
-			var item1 = document.getElementById('stepItem1');
-			var item2 = document.getElementById('stepItem2');
-			var fill = document.getElementById('stepFill');
-			var dot1 = document.getElementById('stepDot1');
-
-			if (n === 2) {
-				paso1.style.display = 'none';
-				paso2.style.display = 'block';
-				item1.className = 'step-item done';
-				item2.className = 'step-item active';
-				fill.className = 'step-connector-fill done';
-				dot1.textContent = '✓';
-				limpiarOtp();
-				document.getElementById('otp-0').focus();
-			} else {
-				paso2.style.display = 'none';
-				paso1.style.display = 'block';
-				item1.className = 'step-item active';
-				item2.className = 'step-item';
-				fill.className = 'step-connector-fill';
-				dot1.textContent = '1';
-				ocultarError('error2');
-				document.getElementById('inp-correo').focus();
-			}
-		}
-
-		/* -------------------------------------------------------
-		 Paso 1: validación visual y avance
-		 ------------------------------------------------------- */
-		function continuarPaso1() {
-			ocultarError('error1');
-
-			var correo = document.getElementById('inp-correo').value.trim();
-			var pass = document.getElementById('inp-password').value;
-
-			if (correo === '' || correo.indexOf('@') < 1) {
-				mostrarError('error1', 'error1-texto',
-						'Por favor ingresa un correo válido.');
-				return;
-			}
-			if (pass === '') {
-				mostrarError('error1', 'error1-texto',
-						'Por favor ingresa tu contraseña.');
-				return;
-			}
-
-			/* AQUÍ se conectará luego con el backend (login). Por ahora solo avanza. */
-			document.getElementById('correo-destino').textContent = correo;
-			irAPaso(2);
-		}
-
-		/* -------------------------------------------------------
-		 Paso 2: validación visual del código
-		 ------------------------------------------------------- */
-		function obtenerCodigo() {
-			var codigo = '';
-			for (var i = 0; i < 6; i++) {
-				codigo += document.getElementById('otp-' + i).value;
-			}
-			return codigo;
-		}
-
-		function limpiarOtp() {
-			for (var i = 0; i < 6; i++) {
-				var b = document.getElementById('otp-' + i);
-				b.value = '';
-				b.classList.remove('filled');
-			}
-		}
-
-		/* Panel de destino según el rol (rutas relativas a esta página) */
-		var DASHBOARDS = {
-			administrador : 'secretaria/dashboard.xhtml',
-			docente : 'docente/dashboard.xhtml',
-			estudiante : 'estudiante/dashboard.xhtml'
-		};
-
-		function verificarCodigo() {
-			ocultarError('error2');
-
-			var codigo = obtenerCodigo();
-			if (codigo.length === 0) {
-				mostrarError('error2', 'error2-texto',
-						'Ingresa el código que llegó a tu correo.');
-				return;
-			}
-
-			/* TEMPORAL: se acepta cualquier código.
-			   AQUÍ se conectará luego con el backend (verificar) antes de redirigir. */
-			window.location.href = DASHBOARDS[rolSeleccionado()]
-					|| DASHBOARDS.administrador;
-		}
-
-		/* -------------------------------------------------------
-		 Mostrar / ocultar contraseña
-		 ------------------------------------------------------- */
-		function togglePassword(inputId, iconId) {
-			var inp = document.getElementById(inputId);
-			var icon = document.getElementById(iconId);
-			if (!inp)
-				return;
-			if (inp.type === 'password') {
-				inp.type = 'text';
-				if (icon)
-					icon.textContent = '🙈';
-			} else {
-				inp.type = 'password';
-				if (icon)
-					icon.textContent = '👁';
-			}
-		}
-
-		/* -------------------------------------------------------
-		 OTP — navegación entre cajas
-		 ------------------------------------------------------- */
-		function otpKeyUp(e, idx) {
-			var box = document.getElementById('otp-' + idx);
-			var val = box.value.replace(/[^0-9]/g, '');
-			box.value = val;
-			box.classList.toggle('filled', val !== '');
-
-			if (val.length > 1) {
-				var digits = val.split('');
-				for (var i = 0; i < 6 && i < digits.length; i++) {
-					var b = document.getElementById('otp-' + (idx + i));
-					if (b) {
-						b.value = digits[i];
-						b.classList.add('filled');
-					}
-				}
-				var nxt = Math.min(idx + digits.length, 5);
-				document.getElementById('otp-' + nxt).focus();
-			} else if (val && idx < 5) {
-				document.getElementById('otp-' + (idx + 1)).focus();
-			}
-		}
-
-		function otpKeyDown(e, idx) {
-			if (e.key === 'Backspace') {
-				var box = document.getElementById('otp-' + idx);
-				if (!box.value && idx > 0) {
-					var prev = document.getElementById('otp-' + (idx - 1));
-					prev.value = '';
-					prev.classList.remove('filled');
-					prev.focus();
-				}
-			}
-			if (e.key === 'ArrowLeft' && idx > 0) {
-				document.getElementById('otp-' + (idx - 1)).focus();
-				e.preventDefault();
-			}
-			if (e.key === 'ArrowRight' && idx < 5) {
-				document.getElementById('otp-' + (idx + 1)).focus();
-				e.preventDefault();
-			}
-		}
-
-		/* Pegar código con Ctrl+V en las cajas OTP */
-		document.addEventListener('paste', function(e) {
-			var focused = document.activeElement;
-			if (!focused || !focused.classList.contains('otp-box'))
-				return;
-			e.preventDefault();
-			var texto = (e.clipboardData || window.clipboardData).getData(
-					'text').replace(/\D/g, '').substring(0, 6);
-			for (var i = 0; i < 6; i++) {
-				var b = document.getElementById('otp-' + i);
-				if (b) {
-					b.value = texto[i] || '';
-					b.classList.toggle('filled', !!texto[i]);
-				}
-			}
-		});
-
-		/* Enter avanza en cada paso */
-		document.addEventListener('keydown', function(e) {
-			if (e.key !== 'Enter')
-				return;
-			if (document.getElementById('paso1').style.display !== 'none') {
-				continuarPaso1();
-			} else {
-				verificarCodigo();
-			}
-		});
-
-		/* Enfocar el primer campo al cargar */
-		window.addEventListener('load', function() {
-			document.getElementById('inp-correo').focus();
-		});
-		//]]>
-	</script>
-
-</body>
+                            <p:commandButton value="Volver"
+                                             action="#{loginBean.volverPaso1}"
+                                             styleClass="lg-ghost"
+                                             immediate="true"
+                                             update="msgs loginSteps" />
+                        </h:form>
+                    </h:panelGroup>
+                </h:panelGroup>
+            </div>
+        </main>
+    </div>
+</h:body>
 </html>

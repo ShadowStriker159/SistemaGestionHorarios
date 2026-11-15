@@ -1,32 +1,36 @@
 package co.edu.unbosque.service;
 
+import co.edu.unbosque.model.Categoria;
+import co.edu.unbosque.model.DiaSemana;
+import co.edu.unbosque.model.FranjaHorariaDTO;
 import co.edu.unbosque.service.ApiClient.ApiResponse;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
-/**
- * FranjaService
- * Conecta con:
- *   GET    /api/horarios/franjas
- *   POST   /api/horarios/franjas   body: { horaInicio, horaFin, dia }
- *   DELETE /api/horarios/franjas/{id}
- */
+import java.time.LocalTime;
+
+@ApplicationScoped
 public class FranjaService {
 
-    private static final String BASE = "/franjas";
+	private static final String BASE = "/franjas";
 
-    public String listarTodas() {
-        return ApiClient.get(BASE);
-    }
+	@Inject
+	private ApiClient api;
 
-    public ApiResponse crear(String horaInicio, String horaFin, String dia) {
-        String body = "{"
-            + "\"horaInicio\":\"" + ApiClient.esc(horaInicio) + "\","
-            + "\"horaFin\":\""    + ApiClient.esc(horaFin)    + "\","
-            + "\"dia\":\""        + ApiClient.esc(dia)        + "\""
-            + "}";
-        return ApiClient.post(BASE, body);
-    }
+	public String listarTodas() {
+		return api.get(BASE);
+	}
 
-    public ApiResponse eliminar(int id) {
-        return ApiClient.delete(BASE + "/" + id);
-    }
+	public ApiResponse crear(String horaInicio, String horaFin, String diaSemana, String categoria) {
+		FranjaHorariaDTO dto = new FranjaHorariaDTO();
+		dto.setHoraInicio(LocalTime.parse(horaInicio));
+		dto.setHoraFin(LocalTime.parse(horaFin));
+		dto.setDiaSemana(DiaSemana.valueOf(diaSemana));
+		dto.setCategoria(Categoria.valueOf(categoria));
+		return api.post(BASE, ApiClient.gson().toJson(dto));
+	}
+
+	public ApiResponse eliminar(int id) {
+		return api.delete(BASE + "/" + id);
+	}
 }

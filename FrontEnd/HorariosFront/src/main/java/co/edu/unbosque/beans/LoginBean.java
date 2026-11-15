@@ -1,163 +1,231 @@
 package co.edu.unbosque.beans;
 
+import co.edu.unbosque.model.UsuarioSesionDTO;
 import co.edu.unbosque.service.LoginService;
 import co.edu.unbosque.service.LoginService.LoginResult;
+import co.edu.unbosque.util.AutorizacionFilter;
 
-import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.ExternalContext;
 import jakarta.faces.context.FacesContext;
-import jakarta.faces.view.ViewScoped;
+import jakarta.inject.Inject;
 import jakarta.inject.Named;
+import jakarta.servlet.http.HttpServletRequest;
 
 import java.io.IOException;
 import java.io.Serializable;
 
-/**
- * LoginBean — Autenticación en dos pasos real con el backend SGPHU.
- *
- * PASO 1: id + nombre + password → POST /api/horarios/login/{rol}
- *         Backend valida y envía OTP al correo registrado.
- *
- * PASO 2: codigo 6 dígitos → POST /api/horarios/login/verificar
- *         Backend valida OTP y retorna UsuarioSesionDTO si es correcto.
- */
 @Named("loginBean")
-@ViewScoped
+@SessionScoped
 public class LoginBean implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    private LoginService loginService;
+	@Inject
+	private LoginService loginService;
 
-    // ---- Paso 1 ----
-    private String id       = "";
-    private String nombre   = "";
-    private String password = "";
-    private String rol      = "administrador";
+	// Paso 1
+	private String id = "";
+	private String nombre = "";
+	private String password = "";
+	private String rol = "administrador";
 
-    // ---- Paso 2 ----
-    private String otpCode  = "";
+	// Paso 2
+	private String otpCode = "";
 
-    // ---- Estado ----
-    private int    paso         = 1;
-    private String mensajeError = "";
+	// Estado
+	private int paso = 1;
+	private String mensajeError = "";
+	private UsuarioSesionDTO usuarioSesion;
 
-    @PostConstruct
-    public void init() {
-        loginService = new LoginService();
-    }
+	// PASO 1
 
-    // ================================================================
-    //  PASO 1
-    // ================================================================
-    public String iniciarLogin() {
-        mensajeError = "";
+	public String iniciarLogin() {
+		mensajeError = "";
+		usuarioSesion = null;
+		FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("usuarioSesion");
 
-        if (isBlank(id))       { return error("Por favor ingresa tu número de identificación."); }
-        if (isBlank(nombre))   { return error("Por favor ingresa tu nombre."); }
-        if (isBlank(password)) { return error("Por favor ingresa tu contraseña."); }
+		if (isBlank(id)) {
+			return error("Ingresa tu número de identificación.");
+		}
+		if (isBlank(nombre)) {
+			return error("Ingresa tu nombre.");
+		}
+		if (isBlank(password)) {
+			return error("Ingresa tu contraseña.");
+		}
 
-        LoginResult res;
-        try {
-            res = switch (rolKey()) {
-                case "docente"    -> loginService.loginDocente(id.trim(), nombre.trim(), password);
-                case "estudiante" -> loginService.loginEstudiante(id.trim(), nombre.trim(), password);
-                default           -> loginService.loginAdministrador(id.trim(), nombre.trim(), password);
-            };
-        } catch (Exception e) {
-            return error("Error inesperado: " + e.getMessage());
-        }
+		LoginResult res;
+		try {
+			if ("docente".equals(rolKey()))
+				res = loginService.loginDocente(id.trim(), nombre.trim(), password);
+			else if ("estudiante".equals(rolKey()))
+				res = loginService.loginEstudiante(id.trim(), nombre.trim(), password);
+			else
+				res = loginService.loginAdministrador(id.trim(), nombre.trim(), password);
+		} catch (Exception e) {
+			return error("Error inesperado: " + e.getMessage());
+		}
 
-        if (res.isExito()) {
-            otpCode = ""; paso = 2;
-        } else if (res.isCredencialesInvalidas()) {
-            return error("Datos incorrectos. Verifica tu ID, nombre y contraseña.");
-        } else if (res.isErrorConexion()) {
-            return error("No se pudo conectar al servidor backend. Asegúrate de que esté activo.");
-        } else {
-            return error("Error del servidor (HTTP " + res.getHttpCode() + "): " + res.getMensaje());
-        }
-        return null;
-    }
+		if (res.isExito()) {
+			otpCode = "";
+			paso = 2;
+		} else if (res.isCredencialesInvalidas()) {
+			return error("ID, nombre o contraseña incorrectos.");
+		} else if (res.isErrorConexion()) {
+			return error("No se pudo conectar al backend. ¿Está activo en puerto 8080?");
+		} else {
+			return error("Error del servidor (HTTP " + res.getHttpCode() + "): " + res.getMensaje());
+		}
+		return null;
+	}
 
-    // ================================================================
-    //  PASO 2
-    // ================================================================
-    public String verificarOtp() {
-        mensajeError = "";
-        String codigo = otpCode == null ? "" : otpCode.trim();
+	// PASO 2
 
-        if (codigo.length() != 6 || !codigo.matches("[0-9]{6}")) {
-            return error("Ingresa el código de 6 dígitos que llegó a tu correo.");
-        }
+	public String verificarOtp() {
+		mensajeError = "";
+		String codigo = otpCode == null ? "" : otpCode.trim();
 
-        LoginResult res;
-        try {
-            res = loginService.verificarOtp(rolKey(), id.trim(), codigo);
-        } catch (Exception e) {
-            return error("Error al verificar: " + e.getMessage());
-        }
+		if (codigo.length() != 6 || !codigo.matches("[0-9]{6}")) {
+			return error("Ingresa el código de 6 dígitos enviado a tu correo.");
+		}
 
-        if (res.isExito()) {
-            redirigir();
-        } else if (res.isCredencialesInvalidas()) {
-            return error("Código incorrecto o expirado. Solicita uno nuevo.");
-        } else if (res.isErrorConexion()) {
-            return error("No se pudo verificar el código. Error de red.");
-        } else {
-            return error("Error al verificar (HTTP " + res.getHttpCode() + "): " + res.getMensaje());
-        }
-        return null;
-    }
+		LoginResult res;
+		try {
+			res = loginService.verificarOtp(rolKey(), id.trim(), codigo);
+		} catch (Exception e) {
+			return error("Error al verificar: " + e.getMessage());
+		}
 
-    public String volverPaso1() {
-        paso = 1; otpCode = ""; mensajeError = ""; return null;
-    }
+		if (res.isExito()) {
+			usuarioSesion = res.getUsuarioSesion();
+			if (usuarioSesion == null || !AutorizacionFilter.rolValido(usuarioSesion.getRol())) {
+				usuarioSesion = null;
+				return error("El backend no devolvió un rol válido para la sesión.");
+			}
+			if (!AutorizacionFilter.normalizarRol(rolKey())
+					.equals(AutorizacionFilter.normalizarRol(usuarioSesion.getRol()))) {
+				usuarioSesion = null;
+				return error("El rol verificado no coincide con el rol seleccionado para iniciar sesión.");
+			}
+			ExternalContext ext = FacesContext.getCurrentInstance().getExternalContext();
+			HttpServletRequest request = (HttpServletRequest) ext.getRequest();
+			if (request.getSession(false) != null) {
+				request.changeSessionId();
+			}
+			ext.getSessionMap().put("usuarioSesion", usuarioSesion);
+			redirigir();
+		} else if (res.isCredencialesInvalidas()) {
+			return error("Código incorrecto o expirado.");
+		} else if (res.isErrorConexion()) {
+			return error("Error de red al verificar.");
+		} else {
+			return error("Error (HTTP " + res.getHttpCode() + ")");
+		}
+		return null;
+	}
 
-    // ================================================================
-    //  Helpers
-    // ================================================================
-    private void redirigir() {
-        ExternalContext ext = FacesContext.getCurrentInstance().getExternalContext();
-        String base = ext.getRequestContextPath();
-        String dest = switch (rolKey()) {
-            case "docente"    -> base + "/docente/dashboard.xhtml";
-            case "estudiante" -> base + "/estudiante/dashboard.xhtml";
-            default           -> base + "/secretaria/dashboard.xhtml";
-        };
-        try { ext.redirect(dest); }
-        catch (IOException e) { error("Error al redirigir: " + e.getMessage()); }
-    }
+	public String volverPaso1() {
+		paso = 1;
+		otpCode = "";
+		mensajeError = "";
+		return null;
+	}
 
-    private String error(String msg) {
-        mensajeError = msg;
-        FacesContext.getCurrentInstance().addMessage(null,
-                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", msg));
-        return null;
-    }
+	// Helpers
 
-    private String rolKey() {
-        return rol == null ? "administrador" : rol.toLowerCase();
-    }
+	private void redirigir() {
+		ExternalContext ext = FacesContext.getCurrentInstance().getExternalContext();
+		String dest = ext.getRequestContextPath() + AutorizacionFilter.paginaInicio(rolKey());
+		try {
+			ext.redirect(dest);
+		} catch (IOException e) {
+			error("Error al redirigir: " + e.getMessage());
+		}
+	}
 
-    private boolean isBlank(String s) { return s == null || s.trim().isEmpty(); }
+	private String error(String msg) {
+		mensajeError = msg;
+		FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", msg));
+		return null;
+	}
 
-    // ---- Getters / Setters ----
-    public String getId()                   { return id; }
-    public void   setId(String id)          { this.id = id; }
-    public String getNombre()               { return nombre; }
-    public void   setNombre(String n)       { this.nombre = n; }
-    public String getPassword()             { return password; }
-    public void   setPassword(String p)     { this.password = p; }
-    public String getRol()                  { return rol; }
-    public void   setRol(String r)          { this.rol = r; }
-    public String getOtpCode()              { return otpCode; }
-    public void   setOtpCode(String c)      { this.otpCode = c; }
-    public int    getPaso()                 { return paso; }
-    public void   setPaso(int p)            { this.paso = p; }
-    public String getMensajeError()         { return mensajeError; }
-    public void   setMensajeError(String m) { this.mensajeError = m; }
-    public boolean isPaso1()                { return paso == 1; }
-    public boolean isPaso2()                { return paso == 2; }
+	private String rolKey() {
+		return rol == null ? "administrador" : rol.toLowerCase();
+	}
+
+	private boolean isBlank(String s) {
+		return s == null || s.trim().isEmpty();
+	}
+
+	// Getters / Setters
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public String getNombre() {
+		return nombre;
+	}
+
+	public void setNombre(String n) {
+		this.nombre = n;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String p) {
+		this.password = p;
+	}
+
+	public String getRol() {
+		return rol;
+	}
+
+	public void setRol(String r) {
+		this.rol = r;
+	}
+
+	public String getOtpCode() {
+		return otpCode;
+	}
+
+	public void setOtpCode(String c) {
+		this.otpCode = c;
+	}
+
+	public int getPaso() {
+		return paso;
+	}
+
+	public void setPaso(int p) {
+		this.paso = p;
+	}
+
+	public String getMensajeError() {
+		return mensajeError;
+	}
+
+	public void setMensajeError(String m) {
+		this.mensajeError = m;
+	}
+
+	public UsuarioSesionDTO getUsuarioSesion() {
+		return usuarioSesion;
+	}
+
+	public boolean isPaso1() {
+		return paso == 1;
+	}
+
+	public boolean isPaso2() {
+		return paso == 2;
+	}
 }

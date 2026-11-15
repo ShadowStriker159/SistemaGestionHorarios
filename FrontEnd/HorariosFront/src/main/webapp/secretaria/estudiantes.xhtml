@@ -6,211 +6,219 @@
       xmlns:f="http://xmlns.jcp.org/jsf/core">
 
 <ui:composition template="/WEB-INF/templates/layout.xhtml">
-
     <ui:define name="title">Estudiantes · Secretaría · Horarios UnBosque</ui:define>
     <ui:define name="page-title">Gestión de Estudiantes</ui:define>
     <ui:define name="breadcrumb">Secretaría / Estudiantes</ui:define>
-    <ui:define name="user-avatar-letter">S</ui:define>
-    <ui:define name="user-name">Secretaría Académica</ui:define>
-    <ui:define name="user-role">Administrador del Sistema</ui:define>
+    <ui:define name="user-avatar-letter">#{empty sessionScope.usuarioSesion ? 'S' : sessionScope.usuarioSesion.nombre.substring(0,1)}</ui:define>
+    <ui:define name="user-name">#{empty sessionScope.usuarioSesion ? 'Secretaría Académica' : sessionScope.usuarioSesion.nombre.concat(' ').concat(sessionScope.usuarioSesion.apellido)}</ui:define>
+    <ui:define name="user-role">Secretaría Académica</ui:define>
 
     <ui:define name="sidebar-nav">
         <span class="nav-section-title">Principal</span>
         <a href="dashboard.xhtml" class="nav-item"><div class="nav-icon">🏠</div> Dashboard</a>
-        <span class="nav-section-title">Gestión</span>
-        <a href="estudiantes.xhtml"     class="nav-item active"><div class="nav-icon">👨‍🎓</div> Estudiantes</a>
-        <a href="docentes.xhtml"        class="nav-item"><div class="nav-icon">👨‍🏫</div> Docentes</a>
-        <a href="cursos.xhtml"          class="nav-item"><div class="nav-icon">📚</div> Académico</a>
-        <a href="infraestructura.xhtml" class="nav-item"><div class="nav-icon">🏢</div> Infraestructura</a>
-        <a href="horarios.xhtml"        class="nav-item"><div class="nav-icon">📅</div> Horarios</a>
+        <span class="nav-section-title">Gestión de Personas</span>
+        <a href="estudiantes.xhtml" class="nav-item active"><div class="nav-icon">👨‍🎓</div> Estudiantes</a>
+        <a href="docentes.xhtml" class="nav-item"><div class="nav-icon">👨‍🏫</div> Docentes</a>
+        <span class="nav-section-title">Estructura Académica</span>
+        <a href="cursos.xhtml" class="nav-item"><div class="nav-icon">📚</div> Facultades y Cursos</a>
+        <span class="nav-section-title">Espacios y Horarios</span>
+        <a href="infraestructura.xhtml" class="nav-item"><div class="nav-icon">🏢</div> Bloques y Aulas</a>
+        <a href="horarios.xhtml" class="nav-item"><div class="nav-icon">📅</div> Generar Horario</a>
+    </ui:define>
+
+    <ui:define name="head-extra">
+        <link rel="stylesheet" type="text/css" href="#{request.contextPath}/css/secretaria-personas.css" />
     </ui:define>
 
     <ui:define name="content">
-    <div id="estudiantes-page">
-
-        <!-- Mensajes -->
-        <h:panelGroup rendered="#{not empty personasBean.mensajeError}">
-            <div class="aurora-alert aurora-alert-error">⚠️ <h:outputText value="#{personasBean.mensajeError}"/></div>
-        </h:panelGroup>
-        <h:panelGroup rendered="#{not empty personasBean.mensajeOk}">
-            <div class="aurora-alert aurora-alert-ok">✅ <h:outputText value="#{personasBean.mensajeOk}"/></div>
-        </h:panelGroup>
-
-        <!-- ========== FORMULARIO CREAR ESTUDIANTE ================ -->
-        <div class="nm-card" style="margin-bottom:24px;">
-            <div class="card-header-aurora">
-                <h2 class="card-title">➕ Registrar Nuevo Estudiante</h2>
+        <div class="page-header people-page-header">
+            <div>
+                <h1>Estudiantes 🎓</h1>
+                <p>Registro de estudiantes consultado desde el sistema académico.</p>
             </div>
-
-            <h:form id="formEstudiante" prependId="false">
-                <div class="form-grid-2">
-
-                    <div class="dark-form-group">
-                        <label class="dark-form-label" for="eId">Código Estudiantil *</label>
-                        <div class="dark-input-wrapper">
-                            <span class="dark-input-icon">🪪</span>
-                            <h:inputText id="eId" value="#{personasBean.eId}"
-                                         styleClass="dark-input" placeholder="Ej: 20240001" />
-                        </div>
-                    </div>
-
-                    <div class="dark-form-group">
-                        <label class="dark-form-label" for="eNombre">Nombre *</label>
-                        <div class="dark-input-wrapper">
-                            <span class="dark-input-icon">👤</span>
-                            <h:inputText id="eNombre" value="#{personasBean.eNombre}"
-                                         styleClass="dark-input" placeholder="Nombre" />
-                        </div>
-                    </div>
-
-                    <div class="dark-form-group">
-                        <label class="dark-form-label" for="eApellido">Apellido *</label>
-                        <div class="dark-input-wrapper">
-                            <span class="dark-input-icon">👤</span>
-                            <h:inputText id="eApellido" value="#{personasBean.eApellido}"
-                                         styleClass="dark-input" placeholder="Apellido" />
-                        </div>
-                    </div>
-
-                    <div class="dark-form-group">
-                        <label class="dark-form-label" for="eCorreo">Correo Institucional *</label>
-                        <div class="dark-input-wrapper">
-                            <span class="dark-input-icon">✉️</span>
-                            <h:inputText id="eCorreo" value="#{personasBean.eCorreo}"
-                                         styleClass="dark-input" placeholder="correo@unbosque.edu.co" />
-                        </div>
-                    </div>
-
-                    <div class="dark-form-group">
-                        <label class="dark-form-label" for="ePassword">Contraseña *</label>
-                        <div class="dark-input-wrapper">
-                            <span class="dark-input-icon">🔒</span>
-                            <h:inputSecret id="ePassword" value="#{personasBean.ePassword}"
-                                           styleClass="dark-input" placeholder="••••••••" redisplay="false" />
-                        </div>
-                    </div>
-
-                    <div class="dark-form-group">
-                        <label class="dark-form-label" for="eEstado">Estado *</label>
-                        <div class="dark-input-wrapper">
-                            <span class="dark-input-icon">🔘</span>
-                            <h:selectOneMenu id="eEstado" value="#{personasBean.eEstado}" styleClass="dark-input dark-select">
-                                <f:selectItem itemValue="ACTIVO"    itemLabel="Activo" />
-                                <f:selectItem itemValue="INACTIVO"  itemLabel="Inactivo" />
-                                <f:selectItem itemValue="GRADUADO"  itemLabel="Graduado" />
-                            </h:selectOneMenu>
-                        </div>
-                    </div>
-
-                </div>
-
-                <h:commandButton id="btnCrearEstudiante"
-                                 value="✅ Registrar Estudiante"
-                                 action="#{personasBean.crearEstudiante}"
-                                 styleClass="aurora-btn"
-                                 style="margin-top:12px;" />
+            <h:form id="studentCreateAction" prependId="false" style="display:inline;">
+                <h:commandButton value="＋ Nuevo estudiante" action="#{personasBean.mostrarFormularioEstudiante}" styleClass="btn btn-primary" />
             </h:form>
         </div>
 
-        <!-- ========== TABLA DE ESTUDIANTES ====================== -->
-        <div class="nm-card">
-            <div class="card-header-aurora">
-                <h2 class="card-title">👨‍🎓 Estudiantes Registrados</h2>
-                <h:form id="formRecargarEst" prependId="false">
-                    <h:commandButton value="🔄 Recargar"
-                                     action="#{personasBean.cargarEstudiantes}"
-                                     styleClass="aurora-btn-ghost aurora-btn-sm" />
-                </h:form>
+        <h:form id="studentRegistration" prependId="false">
+            <section id="studentForm" class="nm-card people-form"
+                     style="#{personasBean.mostrarFormularioEstudiante ? 'display:block;' : 'display:none;'}">
+                <div class="people-form-heading">
+                    <h2>#{personasBean.editandoEstudiante ? 'Actualizar estudiante' : 'Registrar estudiante'}</h2>
+                    <h:commandButton value="×" title="Cerrar formulario" styleClass="people-icon-button"
+                                     action="#{personasBean.cancelarEdicionEstudiante}" immediate="true" />
+                </div>
+                <div class="people-form-grid">
+                    <div class="people-form-field">
+                        <label for="studentId">Código estudiantil *</label>
+                        <h:inputText id="studentId" value="#{personasBean.estudianteForm.id}" required="true"
+                                     readonly="#{personasBean.editandoEstudiante}" requiredMessage="Ingresa el código estudiantil." />
+                    </div>
+                    <div class="people-form-field">
+                        <label for="studentName">Nombre *</label>
+                        <h:inputText id="studentName" value="#{personasBean.estudianteForm.nombre}" required="true" requiredMessage="Ingresa el nombre." />
+                    </div>
+                    <div class="people-form-field">
+                        <label for="studentLastName">Apellido *</label>
+                        <h:inputText id="studentLastName" value="#{personasBean.estudianteForm.apellido}" required="true" requiredMessage="Ingresa el apellido." />
+                    </div>
+                    <div class="people-form-field">
+                        <label for="studentEmail">Correo institucional *</label>
+                        <h:inputText id="studentEmail" value="#{personasBean.estudianteForm.correo}" required="true" requiredMessage="Ingresa el correo." />
+                    </div>
+                    <div class="people-form-field">
+                        <label for="studentPassword">#{personasBean.editandoEstudiante ? 'Contraseña (opcional; déjala vacía para conservarla)' : 'Contraseña *'}</label>
+                        <div class="people-password-control">
+                            <h:inputSecret id="studentPassword" value="#{personasBean.estudianteForm.password}"
+                                           required="#{not personasBean.editandoEstudiante}"
+                                           requiredMessage="Ingresa la contraseña para el nuevo estudiante." />
+                            <button type="button" class="people-password-toggle"
+                                    aria-label="Mostrar contraseña" aria-pressed="false"
+                                    onclick="togglePasswordVisibility('studentPassword', this)">Mostrar</button>
+                        </div>
+                    </div>
+                    <div class="people-form-field">
+                        <label for="studentSemester">Semestre que cursa *</label>
+                        <h:inputText id="studentSemester" value="#{personasBean.estudianteForm.semestreCursa}" type="number" min="1" required="true" requiredMessage="Ingresa el semestre." />
+                    </div>
+                    <div class="people-form-field">
+                        <label for="studentCredits">Créditos aprobados *</label>
+                        <h:inputText id="studentCredits" value="#{personasBean.estudianteForm.creditosAprobados}" type="number" min="0" required="true" requiredMessage="Ingresa los créditos aprobados." />
+                    </div>
+                    <h:panelGroup layout="block" styleClass="people-form-field"
+                                  rendered="#{not personasBean.editandoEstudiante}">
+                        <label for="studentCareer">Carrera *</label>
+                        <h:selectOneMenu id="studentCareer" value="#{personasBean.estudianteForm.idCarrera}"
+                                         required="true" requiredMessage="Selecciona la carrera del estudiante.">
+                            <f:selectItem itemValue="#{null}" itemLabel="Selecciona una carrera" noSelectionOption="true" />
+                            <f:selectItems value="#{personasBean.carrerasDisponibles}" var="carrera"
+                                           itemValue="#{carrera.idCarrera}" itemLabel="#{carrera.nombreCarrera}" />
+                            <f:ajax event="valueChange" execute="@this"
+                                    listener="#{personasBean.cargarPlanesEstudiante}"
+                                    render="studentPlanContainer" />
+                        </h:selectOneMenu>
+                    </h:panelGroup>
+                    <h:panelGroup id="studentPlanContainer" layout="block" styleClass="people-form-field"
+                                  rendered="#{not personasBean.editandoEstudiante}">
+                        <label for="studentPlan">Plan de estudios *</label>
+                        <h:selectOneMenu id="studentPlan" value="#{personasBean.estudianteForm.idPlanEstudios}"
+                                         required="true" requiredMessage="Selecciona un plan de estudios.">
+                            <f:selectItem itemValue="#{null}" itemLabel="Selecciona un plan" noSelectionOption="true" />
+                            <f:selectItems value="#{personasBean.planesDisponibles}" var="plan"
+                                           itemValue="#{plan.idPlanEstudios}" itemLabel="#{plan.nombrePlanEstudios}" />
+                        </h:selectOneMenu>
+                    </h:panelGroup>
+                    <div class="people-form-field">
+                        <label for="studentStatus">Estado *</label>
+                        <h:selectOneMenu id="studentStatus" value="#{personasBean.estudianteForm.estadoEstudiante}" required="true" requiredMessage="Selecciona el estado.">
+                            <f:selectItem itemValue="ACTIVO" itemLabel="Activo" />
+                            <f:selectItem itemValue="INACTIVO" itemLabel="Inactivo" />
+                            <f:selectItem itemValue="PRUEBA_ACADEMICA" itemLabel="Prueba académica" />
+                        </h:selectOneMenu>
+                    </div>
+                </div>
+                <div class="people-form-actions">
+                    <h:commandButton value="#{personasBean.editandoEstudiante ? 'Guardar cambios' : 'Registrar estudiante'}"
+                                     action="#{personasBean.guardarEstudiante}" styleClass="btn btn-primary" />
+                    <h:commandButton value="Cancelar" action="#{personasBean.cancelarEdicionEstudiante}" styleClass="btn btn-nm" immediate="true" />
+                </div>
+            </section>
+        </h:form>
+
+        <h:form id="formEstudiantes" prependId="false">
+            <h:messages id="messages" styleClass="people-messages"
+                        infoClass="people-message-success" errorClass="people-message-error"
+                        fatalClass="people-message-error" warnClass="people-message-warning" />
+            <div class="people-toolbar">
+                <label class="people-search">
+                    <span class="people-search-icon" aria-hidden="true">⌕</span>
+                    <input id="studentSearch" type="search" placeholder="Buscar por nombre, código o correo..." oninput="filterPeopleTable('studentsTable')" />
+                </label>
+                <div class="people-filters">
+                    <select id="studentStatusFilter" class="people-filter" aria-label="Filtrar por estado" onchange="filterPeopleTable('studentsTable')">
+                        <option value="">Todos los estados</option>
+                        <option value="ACTIVO">Activo</option>
+                        <option value="INACTIVO">Inactivo</option>
+                        <option value="PRUEBA_ACADEMICA">Prueba académica</option>
+                    </select>
+                    <h:commandButton value="↻ Recargar" action="#{personasBean.recargarEstudiantes}" styleClass="btn btn-nm" />
+                </div>
             </div>
 
-            <div class="table-container">
-                <table class="aurora-table" id="tabla-estudiantes">
+            <div class="people-table-wrap">
+                <table id="studentsTable" class="people-table"
+                       data-search-input="studentSearch"
+                       data-status-filter="studentStatusFilter"
+                       data-count-label="studentCount"
+                       data-page-label="studentPage"
+                       data-previous-button="studentPrevious"
+                       data-next-button="studentNext">
                     <thead>
                         <tr>
                             <th>Código</th>
-                            <th>Nombre</th>
-                            <th>Apellido</th>
+                            <th>Nombre completo</th>
                             <th>Correo</th>
+                            <th>Carrera</th>
+                            <th>Semestre</th>
+                            <th>Créditos</th>
                             <th>Estado</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
-                    <tbody id="tbody-estudiantes">
-                        <tr><td colspan="6" style="text-align:center;color:rgba(255,255,255,0.4);">Cargando datos del backend…</td></tr>
+                    <tbody>
+                        <ui:repeat value="#{personasBean.estudiantes}" var="estudiante">
+                            <tr data-record="true" data-status="#{estudiante.estadoEstudiante}">
+                                <td><span class="people-code"><h:outputText value="#{estudiante.id}" /></span></td>
+                                <td>
+                                    <div class="people-identity">
+                                        <span class="people-avatar"><h:outputText value="#{estudiante.nombre.substring(0,1)}#{estudiante.apellido.substring(0,1)}" /></span>
+                                        <span class="people-name"><h:outputText value="#{estudiante.nombre} #{estudiante.apellido}" /></span>
+                                    </div>
+                                </td>
+                                <td><h:outputText value="#{estudiante.correo}" /></td>
+                                <td><h:outputText value="#{empty estudiante.nombreCarrera ? 'Sin carrera' : estudiante.nombreCarrera}" /></td>
+                                <td><h:outputText value="#{estudiante.semestreCursa}" /></td>
+                                <td><h:outputText value="#{estudiante.creditosAprobados}" /></td>
+                                <td>
+                                    <span class="#{estudiante.estadoEstudiante == 'ACTIVO' ? 'people-badge people-badge-active' : (estudiante.estadoEstudiante == 'PRUEBA_ACADEMICA' ? 'people-badge people-badge-warning' : 'people-badge people-badge-neutral')}">
+                                        <h:outputText value="#{personasBean.formatearEtiqueta(estudiante.estadoEstudiante)}" />
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="people-actions">
+                                        <h:commandButton value="✎" title="Actualizar estudiante"
+                                                         styleClass="people-icon-button people-edit-button"
+                                                         action="#{personasBean.editarEstudiante(estudiante)}" />
+                                        <h:commandButton value="−" title="Eliminar estudiante" styleClass="people-icon-button"
+                                                         action="#{personasBean.eliminarEstudiante(estudiante)}"
+                                                         onclick="return confirm('¿Eliminar este estudiante?');" />
+                                    </div>
+                                </td>
+                            </tr>
+                        </ui:repeat>
+                        <tr data-empty="true">
+                            <td colspan="8" class="people-table-empty">
+                                <h:outputText value="#{empty personasBean.estudiantes ? 'No hay estudiantes registrados.' : 'No se encontraron estudiantes con esos filtros.'}" />
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
 
-            <h:outputText id="estudiantesData"
-                          value="#{personasBean.estudiantesJson}"
-                          style="display:none;" escape="false" />
-        </div>
-
-        <!-- Form oculto para eliminar -->
-        <h:form id="formEliminarEst" prependId="false">
-            <h:inputHidden id="eliminarEstId" value="#{personasBean.eId}" />
-            <h:commandButton id="btnEliminarEst" value="eliminar"
-                             style="display:none;"
-                             action="#{personasBean.eliminarEstudiante(personasBean.eId)}" />
+            <div class="people-table-footer">
+                <span id="studentCount">Mostrando 0 de #{personasBean.estudiantes.size()}</span>
+                <div class="people-pagination">
+                    <button id="studentPrevious" type="button" class="people-page-button" aria-label="Página anterior" onclick="changePeoplePage('studentsTable',-1)">‹</button>
+                    <span id="studentPage">1 / 1</span>
+                    <button id="studentNext" type="button" class="people-page-button" aria-label="Página siguiente" onclick="changePeoplePage('studentsTable',1)">›</button>
+                </div>
+            </div>
         </h:form>
-
-    </div>
-
-    <script type="text/javascript">
-    //<![CDATA[
-    (function() {
-        function renderEstudiantes() {
-            var rawEl = document.getElementById('estudiantesData');
-            if (!rawEl) return;
-            var raw = rawEl.textContent || rawEl.innerText || '[]';
-            var data;
-            try { data = JSON.parse(raw); } catch(e) { data = []; }
-
-            var tbody = document.getElementById('tbody-estudiantes');
-            if (!tbody) return;
-
-            if (!data || data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:rgba(255,255,255,0.4);">No hay estudiantes registrados aún.</td></tr>';
-                return;
-            }
-
-            var estadoClase = { 'ACTIVO': 'badge-green', 'INACTIVO': 'badge-red', 'GRADUADO': 'badge-gold' };
-            var html = '';
-            for (var i = 0; i < data.length; i++) {
-                var e = data[i];
-                var cls = estadoClase[e.estadoEstudiante] || 'badge-info';
-                html += '<tr>'
-                    + '<td><span class="badge badge-info">' + escHtml(e.id || '') + '</span></td>'
-                    + '<td>' + escHtml(e.nombre   || '') + '</td>'
-                    + '<td>' + escHtml(e.apellido || '') + '</td>'
-                    + '<td>' + escHtml(e.correo   || '') + '</td>'
-                    + '<td><span class="badge ' + cls + '">' + escHtml(e.estadoEstudiante || '') + '</span></td>'
-                    + '<td><button class="aurora-btn-danger aurora-btn-sm" '
-                    +     'onclick="confirmarEliminarEst(\'' + escAttr(e.id || '') + '\')">'
-                    +     '🗑 Eliminar</button></td>'
-                    + '</tr>';
-            }
-            tbody.innerHTML = html;
-        }
-
-        function confirmarEliminarEst(id) {
-            if (!confirm('¿Eliminar al estudiante con código: ' + id + '?')) return;
-            document.getElementById('eliminarEstId').value = id;
-            document.getElementById('btnEliminarEst').click();
-        }
-
-        function escHtml(s) {
-            return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-        }
-        function escAttr(s) { return String(s).replace(/'/g,"\\'"); }
-
-        window.confirmarEliminarEst = confirmarEliminarEst;
-        document.addEventListener('DOMContentLoaded', renderEstudiantes);
-    })();
-    //]]>
-    </script>
-
     </ui:define>
 
+    <ui:define name="scripts">
+        <script type="text/javascript" src="#{request.contextPath}/js/secretaria-personas.js"></script>
+    </ui:define>
 </ui:composition>
 </html>

@@ -2,40 +2,40 @@ package co.edu.unbosque.model;
 
 public class AreaDTO {
 
-    private Integer idArea;
-    private String nombreArea;
-    private String descripcion;
+	private Integer idArea;
+	private String nombreArea;
+	private String descripcion;
 
-    public AreaDTO() {
-    }
+	public AreaDTO() {
+	}
 
-    public AreaDTO(Integer idArea, String nombreArea, String descripcion) {
-        this.idArea = idArea;
-        this.nombreArea = nombreArea;
-        this.descripcion = descripcion;
-    }
+	public AreaDTO(Integer idArea, String nombreArea, String descripcion) {
+		this.idArea = idArea;
+		this.nombreArea = nombreArea;
+		this.descripcion = descripcion;
+	}
 
-    public Integer getIdArea() {
-        return idArea;
-    }
+	public Integer getIdArea() {
+		return idArea;
+	}
 
-    public void setIdArea(Integer idArea) {
-        this.idArea = idArea;
-    }
+	public void setIdArea(Integer idArea) {
+		this.idArea = idArea;
+	}
 
-    public String getNombreArea() {
-        return nombreArea;
-    }
+	public String getNombreArea() {
+		return nombreArea;
+	}
 
-    public void setNombreArea(String nombreArea) {
-        this.nombreArea = nombreArea;
-    }
+	public void setNombreArea(String nombreArea) {
+		this.nombreArea = nombreArea;
+	}
 
-    public String getDescripcion() {
-        return descripcion;
-    }
+	public String getDescripcion() {
+		return descripcion;
+	}
 
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
-    }
+	public void setDescripcion(String descripcion) {
+		this.descripcion = descripcion;
+	}
 }

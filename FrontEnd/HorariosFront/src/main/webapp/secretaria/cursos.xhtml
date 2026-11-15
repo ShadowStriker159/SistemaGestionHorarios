@@ -10,19 +10,25 @@
     <ui:define name="title">Estructura Académica · Secretaría · Horarios UnBosque</ui:define>
     <ui:define name="page-title">Gestión Académica</ui:define>
     <ui:define name="breadcrumb">Secretaría / Académico</ui:define>
-    <ui:define name="user-avatar-letter">S</ui:define>
-    <ui:define name="user-name">Secretaría Académica</ui:define>
-    <ui:define name="user-role">Administrador del Sistema</ui:define>
+    <ui:define name="user-avatar-letter">#{empty sessionScope.usuarioSesion ? 'S' : sessionScope.usuarioSesion.nombre.substring(0,1)}</ui:define>
+    <ui:define name="user-name">#{empty sessionScope.usuarioSesion ? 'Secretaría Académica' : sessionScope.usuarioSesion.nombre.concat(' ').concat(sessionScope.usuarioSesion.apellido)}</ui:define>
+    <ui:define name="user-role">Secretaría Académica</ui:define>
 
     <ui:define name="sidebar-nav">
         <span class="nav-section-title">Principal</span>
         <a href="dashboard.xhtml" class="nav-item"><div class="nav-icon">🏠</div> Dashboard</a>
-        <span class="nav-section-title">Gestión</span>
+        <span class="nav-section-title">Gestión de Personas</span>
         <a href="estudiantes.xhtml"     class="nav-item"><div class="nav-icon">👨‍🎓</div> Estudiantes</a>
         <a href="docentes.xhtml"        class="nav-item"><div class="nav-icon">👨‍🏫</div> Docentes</a>
-        <a href="cursos.xhtml"          class="nav-item active"><div class="nav-icon">📚</div> Académico</a>
-        <a href="infraestructura.xhtml" class="nav-item"><div class="nav-icon">🏢</div> Infraestructura</a>
-        <a href="horarios.xhtml"        class="nav-item"><div class="nav-icon">📅</div> Horarios</a>
+        <span class="nav-section-title">Estructura Académica</span>
+        <a href="cursos.xhtml"          class="nav-item active"><div class="nav-icon">📚</div> Facultades y Cursos</a>
+        <span class="nav-section-title">Espacios y Horarios</span>
+        <a href="infraestructura.xhtml" class="nav-item"><div class="nav-icon">🏢</div> Bloques y Aulas</a>
+        <a href="horarios.xhtml"        class="nav-item"><div class="nav-icon">📅</div> Generar Horario</a>
+    </ui:define>
+
+    <ui:define name="head-extra">
+        <link rel="stylesheet" type="text/css" href="#{request.contextPath}/css/secretaria-academico.css" />
     </ui:define>
 
     <ui:define name="content">
@@ -36,21 +42,30 @@
             <div class="aurora-alert aurora-alert-ok">✅ <h:outputText value="#{academicoBean.mensajeOk}"/></div>
         </h:panelGroup>
 
-        <!-- =========================================================
-             NIVEL 1: FACULTADES
-             ========================================================= -->
+        <section class="academico-guide" aria-labelledby="academico-guide-title">
+            <h1 id="academico-guide-title">Configura la estructura académica</h1>
+            <p>Avanza en orden. Después de agregar cada elemento, haz clic en su nombre para abrir el siguiente nivel:</p>
+            <ol>
+                <li>Agrega una facultad y haz clic en su nombre.</li>
+                <li>Agrega una carrera y haz clic en su nombre.</li>
+                <li>Agrega un plan de estudios y haz clic en su nombre.</li>
+                <li>Registra los cursos y pulsa <strong>Grupos</strong> para asignar docente y cupos.</li>
+            </ol>
+        </section>
+
+
         <div class="nm-card" style="margin-bottom:20px;">
             <div class="card-header-aurora">
                 <h2 class="card-title">🏛 Facultades</h2>
             </div>
 
-            <!-- Crear facultad -->
+      
             <h:form id="formFacultad" prependId="false">
-                <div class="inline-form">
+                <div class="inline-form academico-inline-form">
                     <div class="dark-input-wrapper" style="flex:1;">
                         <span class="dark-input-icon">🏛</span>
-                        <h:inputText id="fNombre" value="#{academicoBean.fNombre}"
-                                     styleClass="dark-input" placeholder="Nombre de la facultad" />
+                        <h:inputText id="fNombre" value="#{academicoBean.nombreFacultad}"
+                                     styleClass="dark-input" placeholder="Ej.: Facultad de Ingeniería" />
                     </div>
                     <h:commandButton value="➕ Agregar" action="#{academicoBean.crearFacultad}"
                                      styleClass="aurora-btn aurora-btn-sm" />
@@ -66,80 +81,53 @@
             <!-- Acciones ocultas -->
             <h:form id="formAccFacultad" prependId="false">
                 <h:inputHidden id="facIdSel"   value="#{academicoBean.idFacultadSel}" />
+                <h:inputHidden id="facNombreSel" value="#{academicoBean.facultadSeleccionada}" />
                 <h:commandButton id="btnSelFac" style="display:none;" action="#{academicoBean.seleccionarFacultad(academicoBean.idFacultadSel)}" />
                 <h:commandButton id="btnDelFac" style="display:none;" action="#{academicoBean.eliminarFacultad(academicoBean.idFacultadSel)}" />
             </h:form>
         </div>
 
-        <!-- =========================================================
-             NIVEL 2: ÁREAS y CARRERAS de la facultad seleccionada
-             ========================================================= -->
-        <div class="columns-2" id="sec-areas-carreras" style="display:none;">
 
-            <!-- Áreas -->
-            <div class="nm-card">
-                <div class="card-header-aurora">
-                    <h3 class="card-title">📁 Áreas</h3>
-                </div>
-                <h:form id="formArea" prependId="false">
-                    <div class="inline-form">
-                        <div class="dark-input-wrapper" style="flex:1;">
-                            <span class="dark-input-icon">📁</span>
-                            <h:inputText id="aNombre" value="#{academicoBean.aNombre}"
-                                         styleClass="dark-input" placeholder="Nombre del área" />
-                        </div>
-                        <h:commandButton value="➕" action="#{academicoBean.crearArea}" styleClass="aurora-btn aurora-btn-sm" />
-                    </div>
-                </h:form>
-                <div class="chip-list" id="lista-areas"><span style="color:rgba(255,255,255,0.4);">—</span></div>
-                <h:outputText id="areasData" value="#{academicoBean.areasJson}" style="display:none;" escape="false"/>
-                <h:form id="formDelArea" prependId="false">
-                    <h:inputHidden id="areaIdDel" value="#{academicoBean.idFacultadSel}" />
-                    <h:commandButton id="btnDelArea" style="display:none;" action="#{academicoBean.eliminarArea(academicoBean.idFacultadSel)}" />
-                </h:form>
+        <div class="nm-card academico-level-card" id="sec-carreras"
+             data-selected="#{academicoBean.idFacultadSel gt 0}" style="display:none;">
+            <div class="card-header-aurora">
+                <h3 class="card-title">🎓 Carreras de la facultad seleccionada</h3>
             </div>
-
-            <!-- Carreras -->
-            <div class="nm-card">
-                <div class="card-header-aurora">
-                    <h3 class="card-title">🎓 Carreras</h3>
-                </div>
-                <h:form id="formCarrera" prependId="false">
-                    <div class="inline-form">
-                        <div class="dark-input-wrapper" style="flex:1;">
-                            <span class="dark-input-icon">🎓</span>
-                            <h:inputText id="cNombre" value="#{academicoBean.cNombre}"
-                                         styleClass="dark-input" placeholder="Nombre de la carrera" />
-                        </div>
-                        <h:commandButton value="➕" action="#{academicoBean.crearCarrera}" styleClass="aurora-btn aurora-btn-sm" />
+            <p class="academico-context">Estás agregando una carrera a: <strong><h:outputText value="#{academicoBean.facultadSeleccionada}" /></strong></p>
+            <p class="academico-hint">Agrega el nombre del programa. Luego haz clic en su nombre para crear el plan de estudios.</p>
+            <h:form id="formCarrera" prependId="false">
+                <div class="inline-form academico-inline-form">
+                    <div class="dark-input-wrapper" style="flex:1;">
+                        <span class="dark-input-icon">🎓</span>
+                        <h:inputText id="cNombre" value="#{academicoBean.nombreCarrera}"
+                                     styleClass="dark-input" placeholder="Ej.: Ingeniería de Sistemas" />
                     </div>
-                </h:form>
-                <div class="chip-list" id="lista-carreras"><span style="color:rgba(255,255,255,0.4);">—</span></div>
-                <h:outputText id="carrerasData" value="#{academicoBean.carrerasJson}" style="display:none;" escape="false"/>
-                <h:form id="formAccCarrera" prependId="false">
-                    <h:inputHidden id="carIdSel" value="#{academicoBean.idCarreraSel}" />
-                    <h:commandButton id="btnSelCar" style="display:none;" action="#{academicoBean.seleccionarCarrera(academicoBean.idCarreraSel)}" />
-                    <h:commandButton id="btnDelCar" style="display:none;" action="#{academicoBean.eliminarCarrera(academicoBean.idCarreraSel)}" />
-                </h:form>
-            </div>
+                    <h:commandButton value="➕ Agregar carrera" action="#{academicoBean.crearCarrera}" styleClass="aurora-btn aurora-btn-sm" />
+                </div>
+            </h:form>
+            <div class="chip-list" id="lista-carreras"><span style="color:rgba(255,255,255,0.4);">Selecciona una facultad para ver sus carreras.</span></div>
+            <h:outputText id="carrerasData" value="#{academicoBean.carrerasJson}" style="display:none;" escape="false"/>
+            <h:form id="formAccCarrera" prependId="false">
+                <h:inputHidden id="carIdSel" value="#{academicoBean.idCarreraSel}" />
+                <h:inputHidden id="carreraSeleccionada" value="#{academicoBean.carreraSeleccionada}" />
+                <h:commandButton id="btnSelCar" style="display:none;" action="#{academicoBean.seleccionarCarrera(academicoBean.idCarreraSel)}" />
+                <h:commandButton id="btnDelCar" style="display:none;" action="#{academicoBean.eliminarCarrera(academicoBean.idCarreraSel)}" />
+            </h:form>
         </div>
 
-        <!-- =========================================================
-             NIVEL 3: PLANES DE ESTUDIO
-             ========================================================= -->
-        <div class="nm-card" id="sec-planes" style="display:none;margin-top:20px;">
+
+        <div class="nm-card" id="sec-planes" data-selected="#{academicoBean.idCarreraSel gt 0}"
+             style="display:none;margin-top:20px;">
             <div class="card-header-aurora">
                 <h3 class="card-title">📋 Planes de Estudio</h3>
             </div>
+            <p class="academico-context">Estás agregando un plan a la carrera: <strong><h:outputText value="#{academicoBean.carreraSeleccionada}" /></strong></p>
+            <p class="academico-hint">Crea el plan vigente para esta carrera. Haz clic en el nombre del plan para agregar cursos.</p>
             <h:form id="formPlan" prependId="false">
-                <div class="inline-form">
+                <div class="inline-form academico-inline-form">
                     <div class="dark-input-wrapper" style="flex:2;">
                         <span class="dark-input-icon">📋</span>
-                        <h:inputText id="pNombre" value="#{academicoBean.pNombre}" styleClass="dark-input" placeholder="Nombre del plan" />
-                    </div>
-                    <div class="dark-input-wrapper" style="flex:1;">
-                        <span class="dark-input-icon">📅</span>
-                        <h:inputText id="pAnio"   value="#{academicoBean.pAnio}"   styleClass="dark-input" placeholder="Año (Ej: 2024)" />
+                        <h:inputText id="pNombre" value="#{academicoBean.nombrePlan}" styleClass="dark-input" placeholder="Ej.: Plan de estudios 2026" />
                     </div>
                     <h:commandButton value="➕" action="#{academicoBean.crearPlan}" styleClass="aurora-btn aurora-btn-sm" />
                 </div>
@@ -148,27 +136,54 @@
             <h:outputText id="planesData" value="#{academicoBean.planesJson}" style="display:none;" escape="false"/>
             <h:form id="formAccPlan" prependId="false">
                 <h:inputHidden id="planIdSel" value="#{academicoBean.idPlanSel}" />
+                <h:inputHidden id="planIdDel" value="#{academicoBean.idPlanEliminarSel}" />
+                <h:inputHidden id="planNombreSel" value="#{academicoBean.planSeleccionado}" />
                 <h:commandButton id="btnSelPlan" style="display:none;" action="#{academicoBean.seleccionarPlan(academicoBean.idPlanSel)}" />
-                <h:commandButton id="btnDelPlan" style="display:none;" action="#{academicoBean.eliminarPlan(academicoBean.idPlanSel)}" />
+                <h:commandButton id="btnDelPlan" style="display:none;" action="#{academicoBean.eliminarPlan(academicoBean.idPlanEliminarSel)}" />
             </h:form>
         </div>
 
-        <!-- =========================================================
-             NIVEL 4: CURSOS
-             ========================================================= -->
-        <div class="nm-card" id="sec-cursos" style="display:none;margin-top:20px;">
+
+        <div class="nm-card" id="sec-cursos" data-selected="#{academicoBean.idPlanSel gt 0}"
+             style="display:none;margin-top:20px;">
             <div class="card-header-aurora">
                 <h3 class="card-title">📚 Cursos del Plan</h3>
             </div>
+            <p class="academico-context">Estás agregando un curso al plan: <strong><h:outputText value="#{academicoBean.planSeleccionado}" /></strong></p>
+            <p class="academico-hint">Registra cada asignatura. Créditos, horas semanales y semestre deben ser números positivos.</p>
             <h:form id="formCurso" prependId="false">
-                <div class="inline-form">
+                <div class="inline-form academico-inline-form">
                     <div class="dark-input-wrapper" style="flex:2;">
                         <span class="dark-input-icon">📚</span>
-                        <h:inputText id="cuNombre"   value="#{academicoBean.cuNombre}"   styleClass="dark-input" placeholder="Nombre del curso" />
+                        <h:inputText id="cuNombre" value="#{academicoBean.cuNombre}" styleClass="dark-input"
+                                     placeholder="Asignatura. Ej.: Bases de datos" title="Nombre de la asignatura" />
                     </div>
                     <div class="dark-input-wrapper" style="flex:1;">
                         <span class="dark-input-icon">⭐</span>
-                        <h:inputText id="cuCreditos" value="#{academicoBean.cuCreditos}" styleClass="dark-input" placeholder="Créditos" />
+                        <h:inputText id="cuCreditos" value="#{academicoBean.cuCreditos}" styleClass="dark-input"
+                                     placeholder="Créditos. Ej.: 3" title="Número de créditos del curso" />
+                    </div>
+                    <div class="dark-input-wrapper" style="flex:1;">
+                        <span class="dark-input-icon">⏱</span>
+                        <h:inputText id="cuIntensidad" value="#{academicoBean.cuIntensidad}" styleClass="dark-input"
+                                     placeholder="Horas/semana. Ej.: 4" title="Horas de clase por semana, solo número" />
+                    </div>
+                    <div class="dark-input-wrapper" style="flex:1;">
+                        <span class="dark-input-icon">📖</span>
+                        <h:inputText id="cuSemestre" value="#{academicoBean.cuSemestre}" styleClass="dark-input"
+                                     placeholder="Semestre. Ej.: 2" title="Número del semestre en que se cursa" />
+                    </div>
+                    <div class="dark-input-wrapper" style="flex:1;">
+                        <span class="dark-input-icon">🏷</span>
+                        <h:selectOneMenu id="cuAulaRequerida" value="#{academicoBean.cuAulaRequerida}"
+                                         styleClass="dark-input dark-select" title="Tipo de aula requerida para la clase">
+                            <f:selectItem itemValue="GRUPAL" itemLabel="Grupal" />
+                            <f:selectItem itemValue="INDIVIDUAL" itemLabel="Individual" />
+                            <f:selectItem itemValue="SISTEMAS" itemLabel="Sistemas" />
+                            <f:selectItem itemValue="ARTES" itemLabel="Artes" />
+                            <f:selectItem itemValue="MEDICINA" itemLabel="Medicina" />
+                            <f:selectItem itemValue="DERECHO" itemLabel="Derecho" />
+                        </h:selectOneMenu>
                     </div>
                     <h:commandButton value="➕" action="#{academicoBean.crearCurso}" styleClass="aurora-btn aurora-btn-sm" />
                 </div>
@@ -182,35 +197,46 @@
             <h:outputText id="cursosData" value="#{academicoBean.cursosJson}" style="display:none;" escape="false"/>
             <h:form id="formAccCurso" prependId="false">
                 <h:inputHidden id="cursoIdSel" value="#{academicoBean.idCursoSel}" />
+                <h:inputHidden id="cursoNombreSel" value="#{academicoBean.cursoSeleccionado}" />
                 <h:commandButton id="btnSelCurso" style="display:none;" action="#{academicoBean.seleccionarCurso(academicoBean.idCursoSel)}" />
                 <h:commandButton id="btnDelCurso" style="display:none;" action="#{academicoBean.eliminarCurso(academicoBean.idCursoSel)}" />
             </h:form>
         </div>
 
-        <!-- =========================================================
-             NIVEL 5: GRUPOS del curso
-             ========================================================= -->
-        <div class="nm-card" id="sec-grupos" style="display:none;margin-top:20px;">
+
+        <div class="nm-card" id="sec-grupos" data-selected="#{academicoBean.idCursoSel gt 0}"
+             style="display:none;margin-top:20px;">
             <div class="card-header-aurora">
                 <h3 class="card-title">👥 Grupos del Curso</h3>
             </div>
+            <p class="academico-context">Estás creando un grupo para el curso: <strong><h:outputText value="#{academicoBean.cursoSeleccionado}" /></strong></p>
+            <p class="academico-hint">En el curso, pulsa <strong>Grupos</strong>. Después selecciona un docente e ingresa primero el cupo máximo y luego el mínimo.</p>
             <h:form id="formGrupo" prependId="false">
-                <div class="inline-form">
-                    <div class="dark-input-wrapper" style="flex:2;">
-                        <span class="dark-input-icon">👥</span>
-                        <h:inputText id="gNombre" value="#{academicoBean.gNombre}" styleClass="dark-input" placeholder="Ej: Grupo A" />
-                    </div>
+                <div class="inline-form academico-inline-form">
                     <div class="dark-input-wrapper" style="flex:2;">
                         <span class="dark-input-icon">👨‍🏫</span>
-                        <h:selectOneMenu id="gDocente" value="#{academicoBean.gIdDocente}" styleClass="dark-input dark-select"
-                                         onchange="document.getElementById('gIdDocente').value=this.value">
+                        <h:selectOneMenu id="gDocente" value="#{academicoBean.idDocenteGrupo}"
+                                         styleClass="dark-input dark-select" title="Docente responsable del grupo">
                             <f:selectItem itemValue="" itemLabel="— Selecciona docente —" />
+                            <f:selectItems value="#{academicoBean.docentesDisponibles}" />
+                            <f:ajax execute="@this" render="docenteAvailability" />
                         </h:selectOneMenu>
-                        <!-- Input hidden backup -->
-                        <h:inputHidden id="gIdDocente" value="#{academicoBean.gIdDocente}" />
+                    </div>
+                    <div class="dark-input-wrapper" style="flex:1;">
+                        <span class="dark-input-icon">👥</span>
+                        <h:inputText id="gCupoMaximo" value="#{academicoBean.cupoMaximoGrupo}" styleClass="dark-input"
+                                     placeholder="Cupo máximo. Ej.: 30" title="Cantidad máxima de estudiantes" />
+                    </div>
+                    <div class="dark-input-wrapper" style="flex:1;">
+                        <span class="dark-input-icon">👥</span>
+                        <h:inputText id="gCupoMinimo" value="#{academicoBean.cupoMinimoGrupo}" styleClass="dark-input"
+                                     placeholder="Cupo mínimo. Ej.: 10" title="Cantidad mínima de estudiantes" />
                     </div>
                     <h:commandButton value="➕" action="#{academicoBean.crearGrupo}" styleClass="aurora-btn aurora-btn-sm" />
                 </div>
+                <h:panelGroup id="docenteAvailability" layout="block" styleClass="academico-hint">
+                    <h:outputText value="#{academicoBean.disponibilidadDocenteSeleccionado}" />
+                </h:panelGroup>
             </h:form>
             <div class="table-container" style="margin-top:12px;">
                 <table class="aurora-table">
@@ -219,10 +245,9 @@
                 </table>
             </div>
             <h:outputText id="gruposData"   value="#{academicoBean.gruposJson}"   style="display:none;" escape="false"/>
-            <h:outputText id="docentesData2" value="#{academicoBean.docentesJson}" style="display:none;" escape="false"/>
             <h:form id="formDelGrupo" prependId="false">
-                <h:inputHidden id="grupoIdDel" value="#{academicoBean.idCursoSel}" />
-                <h:commandButton id="btnDelGrupo" style="display:none;" action="#{academicoBean.eliminarGrupo(academicoBean.idCursoSel)}" />
+                <h:inputHidden id="grupoIdDel" value="#{academicoBean.idGrupoSel}" />
+                <h:commandButton id="btnDelGrupo" style="display:none;" action="#{academicoBean.eliminarGrupo(academicoBean.idGrupoSel)}" />
             </h:form>
         </div>
 
@@ -230,16 +255,17 @@
 
     <script type="text/javascript">
     //<![CDATA[
-    /* ============================================================
+    /* 
        Renderizado dinámico de la jerarquía académica desde JSON
-       ============================================================ */
+       = */
 
     function esc(s)  { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
     function escA(s) { return String(s||'').replace(/'/g,"\\'"); }
 
-    // ---- Helpers de postback ----
+
     function selFacultad(id) {
         document.getElementById('facIdSel').value  = id;
+        document.getElementById('facNombreSel').value = findLabel('facultadesData', 'idFacultad', 'nombreFacultad', id);
         document.getElementById('btnSelFac').click();
     }
     function delFacultad(id) {
@@ -249,6 +275,7 @@
     }
     function selCarrera(id) {
         document.getElementById('carIdSel').value = id;
+        document.getElementById('carreraSeleccionada').value = findLabel('carrerasData', 'idCarrera', 'nombreCarrera', id);
         document.getElementById('btnSelCar').click();
     }
     function delCarrera(id) {
@@ -256,22 +283,19 @@
         document.getElementById('carIdSel').value = id;
         document.getElementById('btnDelCar').click();
     }
-    function delArea(id) {
-        if (!confirm('¿Eliminar área con ID ' + id + '?')) return;
-        document.getElementById('areaIdDel').value = id;
-        document.getElementById('btnDelArea').click();
-    }
     function selPlan(id) {
         document.getElementById('planIdSel').value = id;
+        document.getElementById('planNombreSel').value = findLabel('planesData', 'idPlanEstudios', 'nombrePlanEstudios', id);
         document.getElementById('btnSelPlan').click();
     }
     function delPlan(id) {
         if (!confirm('¿Eliminar plan con ID ' + id + '?')) return;
-        document.getElementById('planIdSel').value = id;
+        document.getElementById('planIdDel').value = id;
         document.getElementById('btnDelPlan').click();
     }
     function selCurso(id) {
         document.getElementById('cursoIdSel').value = id;
+        document.getElementById('cursoNombreSel').value = findLabel('cursosData', 'idCurso', 'nombreCurso', id);
         document.getElementById('btnSelCurso').click();
     }
     function delCurso(id) {
@@ -295,8 +319,11 @@
             var item = data[i];
             var label = esc(item[labelKey] || '');
             var id    = item[idKey];
+            var labelHtml = onSel
+                ? '<button type="button" class="chip-label chip-select" onclick="' + onSel + '(' + id + ')" title="Haz clic para avanzar">' + label + '</button>'
+                : '<span class="chip-label">' + label + '</span>';
             html += '<div class="academ-chip ' + (extraClass||'') + '">'
-                +   '<span class="chip-label" onclick="' + onSel + '(' + id + ')" style="cursor:pointer;" title="Ver detalle">' + label + '</span>'
+                +   labelHtml
                 +   '<button class="chip-del" onclick="' + onDel + '(' + id + ')" title="Eliminar">✕</button>'
                 + '</div>';
         }
@@ -306,7 +333,18 @@
     function parseJSON(elId) {
         var el = document.getElementById(elId);
         if (!el) return [];
-        try { return JSON.parse(el.textContent || el.innerText || '[]'); } catch(e) { return []; }
+        try { return JSON.parse(el.textContent || el.innerText || '[]'); }
+        catch(e) { console.error('No se pudo interpretar el JSON de ' + elId, e); return []; }
+    }
+
+    function findLabel(jsonId, idKey, labelKey, selectedId) {
+        var records = parseJSON(jsonId);
+        for (var i = 0; i < records.length; i++) {
+            if (String(records[i][idKey]) === String(selectedId)) {
+                return records[i][labelKey] || '';
+            }
+        }
+        return '';
     }
 
     // ---- Render tabla cursos ----
@@ -318,10 +356,10 @@
         for (var i = 0; i < data.length; i++) {
             var c = data[i];
             html += '<tr>'
-                + '<td>' + esc(c.nombre||'') + '</td>'
+                + '<td>' + esc(c.nombreCurso||'') + '</td>'
                 + '<td><span class="badge badge-teal">' + esc(c.creditos||'') + ' cr.</span></td>'
-                + '<td><button class="aurora-btn-ghost aurora-btn-sm" onclick="selCurso(' + c.id + ')">👥 Grupos</button></td>'
-                + '<td><button class="aurora-btn-danger aurora-btn-sm" onclick="delCurso(' + c.id + ')">🗑</button></td>'
+                + '<td><button class="aurora-btn-ghost aurora-btn-sm" onclick="selCurso(' + c.idCurso + ')">👥 Grupos</button></td>'
+                + '<td><button class="aurora-btn-danger aurora-btn-sm" onclick="delCurso(' + c.idCurso + ')">🗑</button></td>'
                 + '</tr>';
         }
         tbody.innerHTML = html;
@@ -335,58 +373,44 @@
         var html = '';
         for (var i = 0; i < data.length; i++) {
             var g = data[i];
+            var docente = g.docente ? (g.docente.nombre + ' ' + g.docente.apellido) : '—';
             html += '<tr>'
-                + '<td>' + esc(g.nombre||g.id||'') + '</td>'
-                + '<td>' + esc(g.docenteNombre||g.idDocente||'—') + '</td>'
-                + '<td><button class="aurora-btn-danger aurora-btn-sm" onclick="delGrupo(' + g.id + ')">🗑</button></td>'
+                + '<td>' + esc(g.idGrupo||'') + '</td>'
+                + '<td>' + esc(docente) + '</td>'
+                + '<td><button class="aurora-btn-danger aurora-btn-sm" onclick="delGrupo(' + g.idGrupo + ')">🗑</button></td>'
                 + '</tr>';
         }
         tbody.innerHTML = html;
-    }
-
-    // ---- Poblar select de docentes para crear grupo ----
-    function poblarSelectDocentes() {
-        var docentes = parseJSON('docentesData2');
-        var sel = document.getElementById('gDocente');
-        if (!sel || docentes.length === 0) return;
-        var html = '<option value="">— Selecciona docente —</option>';
-        for (var i = 0; i < docentes.length; i++) {
-            var d = docentes[i];
-            html += '<option value="' + esc(d.id||'') + '">' + esc((d.nombre||'') + ' ' + (d.apellido||'')) + '</option>';
-        }
-        sel.innerHTML = html;
     }
 
     // ---- Init al cargar página ----
     document.addEventListener('DOMContentLoaded', function() {
         // Facultades
         var facs = parseJSON('facultadesData');
-        renderChips('lista-facultades', facs, 'nombre', 'id', 'selFacultad', 'delFacultad', 'chip-azul');
+        renderChips('lista-facultades', facs, 'nombreFacultad', 'idFacultad', 'selFacultad', 'delFacultad', 'chip-azul');
 
-        // Si hay áreas → mostrar sección
-        var areas = parseJSON('areasData');
-        if (areas.length > 0 || document.getElementById('sec-areas-carreras').dataset.show) {
-            document.getElementById('sec-areas-carreras').style.display = 'grid';
-        }
-        renderChips('lista-areas',    areas,            'nombre', 'id', 'selFacultad', 'delArea',    'chip-teal');
+        var careerSection = document.getElementById('sec-carreras');
+        if (careerSection.dataset.selected === 'true') careerSection.style.display = 'block';
 
         var cars = parseJSON('carrerasData');
-        if (cars.length > 0) document.getElementById('sec-areas-carreras').style.display = 'grid';
-        renderChips('lista-carreras', cars,             'nombre', 'id', 'selCarrera',  'delCarrera', 'chip-purple');
+        if (cars.length > 0) careerSection.style.display = 'block';
+        renderChips('lista-carreras', cars, 'nombreCarrera', 'idCarrera', 'selCarrera', 'delCarrera', 'chip-purple');
 
         var plans = parseJSON('planesData');
-        if (plans.length > 0) document.getElementById('sec-planes').style.display = 'block';
-        renderChips('lista-planes',   plans,            'nombre', 'id', 'selPlan',     'delPlan',    'chip-gold');
+        var planSection = document.getElementById('sec-planes');
+        if (plans.length > 0 || planSection.dataset.selected === 'true') planSection.style.display = 'block';
+        renderChips('lista-planes', plans, 'nombrePlanEstudios', 'idPlanEstudios', 'selPlan', 'delPlan', 'chip-gold');
 
         var cursos = parseJSON('cursosData');
-        if (cursos.length > 0) document.getElementById('sec-cursos').style.display = 'block';
+        var courseSection = document.getElementById('sec-cursos');
+        if (cursos.length > 0 || courseSection.dataset.selected === 'true') courseSection.style.display = 'block';
         renderCursos(cursos);
 
         var grupos = parseJSON('gruposData');
-        if (grupos.length > 0) document.getElementById('sec-grupos').style.display = 'block';
+        var groupSection = document.getElementById('sec-grupos');
+        if (grupos.length > 0 || groupSection.dataset.selected === 'true') groupSection.style.display = 'block';
         renderGrupos(grupos);
 
-        poblarSelectDocentes();
     });
     //]]>
     </script>

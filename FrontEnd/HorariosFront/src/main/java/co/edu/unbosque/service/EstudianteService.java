@@ -1,36 +1,42 @@
 package co.edu.unbosque.service;
 
+import co.edu.unbosque.model.EstudianteDTO;
 import co.edu.unbosque.service.ApiClient.ApiResponse;
+import com.google.gson.reflect.TypeToken;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
-/**
- * EstudianteService
- * Conecta con:
- *   GET    /api/horarios/estudiantes
- *   POST   /api/horarios/estudiantes  body: { id, nombre, apellido, correo, password, estadoEstudiante }
- *   DELETE /api/horarios/estudiantes/{id}
- */
+import java.lang.reflect.Type;
+import java.util.List;
+import java.util.Objects;
+
+@ApplicationScoped
 public class EstudianteService {
 
-    private static final String BASE = "/estudiantes";
+	@Inject
+	private ApiClient api;
 
-    public String listarTodos() {
-        return ApiClient.get(BASE);
-    }
+	private static final String BASE = "/estudiantes";
 
-    public ApiResponse crear(String id, String nombre, String apellido,
-                             String correo, String password, String estado) {
-        String body = "{"
-            + "\"id\":\""                + ApiClient.esc(id)       + "\","
-            + "\"nombre\":\""            + ApiClient.esc(nombre)   + "\","
-            + "\"apellido\":\""          + ApiClient.esc(apellido) + "\","
-            + "\"correo\":\""            + ApiClient.esc(correo)   + "\","
-            + "\"password\":\""          + ApiClient.esc(password) + "\","
-            + "\"estadoEstudiante\":\"" + ApiClient.esc(estado)   + "\""
-            + "}";
-        return ApiClient.post(BASE, body);
-    }
+	public List<EstudianteDTO> listarTodos() {
+		String json = api.get(BASE);
+		Type tipo = new TypeToken<List<EstudianteDTO>>() {
+		}.getType();
+		return Objects.requireNonNull(ApiClient.gson().fromJson(json, tipo),
+				"El backend devolvió una lista de estudiantes nula");
+	}
 
-    public ApiResponse eliminar(String id) {
-        return ApiClient.delete(BASE + "/" + ApiClient.esc(id));
-    }
+	public ApiResponse crear(EstudianteDTO dto) {
+		String body = ApiClient.gson().toJson(dto);
+		return api.post(BASE, body);
+	}
+
+	public ApiResponse actualizar(String id, EstudianteDTO dto) {
+		String body = ApiClient.gson().toJson(dto);
+		return api.put(BASE + "/" + id, body);
+	}
+
+	public ApiResponse eliminar(String id) {
+		return api.delete(BASE + "/" + id);
+	}
 }

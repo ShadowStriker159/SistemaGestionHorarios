@@ -1,0 +1,53 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+<ui:composition template="/WEB-INF/templates/layout.xhtml">
+    <ui:define name="title">Mi Disponibilidad · Docente · Horarios UnBosque</ui:define>
+    <ui:define name="page-title">Mi Disponibilidad</ui:define>
+    <ui:define name="breadcrumb">Docente / Mi Disponibilidad</ui:define>
+    <ui:define name="user-avatar-letter">#{docentePortalBean.iniciales}</ui:define>
+    <ui:define name="user-name">#{docentePortalBean.nombreCompleto}</ui:define>
+    <ui:define name="user-role">Disponibilidad docente</ui:define>
+    <ui:define name="sidebar-nav">
+        <span class="nav-section-title">Mi Panel</span>
+        <a href="dashboard.xhtml" class="nav-item"><div class="nav-icon">🏠</div> Mis Grupos</a>
+        <span class="nav-section-title">Información</span>
+        <a href="perfil.xhtml" class="nav-item"><div class="nav-icon">👤</div> Mi Perfil</a>
+        <a href="disponibilidad.xhtml" class="nav-item active"><div class="nav-icon">📅</div> Mi Disponibilidad</a>
+    </ui:define>
+    <ui:define name="content">
+        <h:panelGroup layout="block" rendered="#{not empty docentePortalBean.mensajeError}">
+            <div class="aurora-alert aurora-alert-error">⚠️ <h:outputText value="#{docentePortalBean.mensajeError}" /></div>
+        </h:panelGroup>
+        <h:panelGroup layout="block" rendered="#{not empty docentePortalBean.mensajeOk}">
+            <div class="aurora-alert aurora-alert-ok">✓ <h:outputText value="#{docentePortalBean.mensajeOk}" /></div>
+        </h:panelGroup>
+        <div class="page-header">
+            <h1>Mi Disponibilidad 📅</h1>
+            <p>Selecciona las franjas en las que puedes dictar clases. La selección se guarda en el sistema y se usa al generar horarios.</p>
+        </div>
+        <h:form id="availabilityForm">
+            <div class="nm-card">
+                <h:panelGroup layout="block" rendered="#{empty docentePortalBean.opcionesFranjas}">
+                    <p>No hay franjas disponibles registradas. Solicita a Secretaría que configure las franjas horarias.</p>
+                </h:panelGroup>
+                <h:panelGroup layout="block" rendered="#{not empty docentePortalBean.opcionesFranjas}">
+                    <h:selectManyCheckbox id="selectedSlots"
+                                          value="#{docentePortalBean.franjasSeleccionadas}"
+                                          layout="pageDirection"
+                                          styleClass="teacher-availability-options">
+                        <f:selectItems value="#{docentePortalBean.opcionesFranjas}" />
+                    </h:selectManyCheckbox>
+                    <p class="infra-hint">Marca una o más franjas y guárdalas. La franja global configurada por Secretaría no queda asignada a tu perfil hasta que la selecciones aquí.</p>
+                    <h:commandButton value="Guardar disponibilidad"
+                                     action="#{docentePortalBean.guardarDisponibilidad}"
+                                     styleClass="aurora-btn" />
+                </h:panelGroup>
+            </div>
+        </h:form>
+    </ui:define>
+</ui:composition>
+</html>

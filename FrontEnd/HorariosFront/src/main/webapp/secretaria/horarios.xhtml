@@ -17,12 +17,18 @@
     <ui:define name="sidebar-nav">
         <span class="nav-section-title">Principal</span>
         <a href="dashboard.xhtml"       class="nav-item"><div class="nav-icon">🏠</div> Dashboard</a>
-        <span class="nav-section-title">Gestión</span>
+        <span class="nav-section-title">Gestión de Personas</span>
         <a href="estudiantes.xhtml"     class="nav-item"><div class="nav-icon">👨‍🎓</div> Estudiantes</a>
         <a href="docentes.xhtml"        class="nav-item"><div class="nav-icon">👨‍🏫</div> Docentes</a>
-        <a href="cursos.xhtml"          class="nav-item"><div class="nav-icon">📚</div> Académico</a>
-        <a href="infraestructura.xhtml" class="nav-item"><div class="nav-icon">🏢</div> Infraestructura</a>
-        <a href="horarios.xhtml"        class="nav-item active"><div class="nav-icon">📅</div> Horarios</a>
+        <span class="nav-section-title">Estructura Académica</span>
+        <a href="cursos.xhtml"          class="nav-item"><div class="nav-icon">📚</div> Facultades y Cursos</a>
+        <span class="nav-section-title">Espacios y Horarios</span>
+        <a href="infraestructura.xhtml" class="nav-item"><div class="nav-icon">🏢</div> Bloques y Aulas</a>
+        <a href="horarios.xhtml"        class="nav-item active"><div class="nav-icon">📅</div> Generar Horario</a>
+    </ui:define>
+
+    <ui:define name="head-extra">
+        <link rel="stylesheet" type="text/css" href="#{request.contextPath}/css/secretaria-horarios.css" />
     </ui:define>
 
     <ui:define name="content">
@@ -50,24 +56,26 @@
             </p>
 
             <h:form id="formGenerar" prependId="false">
-                <div class="inline-form" style="align-items:flex-end;">
-                    <div class="dark-form-group" style="flex:1;margin:0;">
-                        <label class="dark-form-label" for="idFac">ID de Facultad</label>
+                <div class="horario-generate-form">
+                    <div class="dark-form-group">
+                        <label class="dark-form-label" for="idFac">Facultad</label>
                         <div class="dark-input-wrapper">
                             <span class="dark-input-icon">🏛</span>
-                            <h:inputText id="idFac" value="#{infraBean.idFacultadGenerar}"
-                                         styleClass="dark-input" placeholder="Ej: 1" />
+                            <h:selectOneMenu id="idFac" value="#{infraBean.idFacultadGenerar}"
+                                             styleClass="dark-input dark-select">
+                                <f:selectItem itemValue="0" itemLabel="— Selecciona una facultad —" />
+                                <f:selectItems value="#{infraBean.facultadesDisponibles}" />
+                            </h:selectOneMenu>
                         </div>
                     </div>
                     <h:commandButton value="⚡ Generar Horario"
                                      action="#{infraBean.generarHorario}"
                                      styleClass="aurora-btn"
-                                     style="margin-left:12px;" />
-                    <h:commandButton value="🔄 Recargar Lista"
-                                     action="#{infraBean.cargarHorarios}"
-                                     styleClass="aurora-btn-ghost"
-                                     style="margin-left:8px;" />
+                                     disabled="#{empty infraBean.facultadesDisponibles}" />
                 </div>
+                <h:panelGroup rendered="#{empty infraBean.facultadesDisponibles}">
+                    <p class="horario-no-faculties">No hay facultades disponibles. Registra una en “Facultades y Cursos” antes de generar horarios.</p>
+                </h:panelGroup>
             </h:form>
 
             <div class="horario-info-boxes" style="margin-top:20px;">
@@ -158,7 +166,7 @@
         btn.classList.add('filter-chip-active');
         // Filtrar
         var filtrado = (dia === 'TODOS') ? _todosHorarios
-            : _todosHorarios.filter(function(h) { return h.dia === dia || (h.franjaHoraria &amp;&amp; h.franjaHoraria.dia === dia); });
+            : _todosHorarios.filter(function(h) { return h.dia === dia; });
         renderTablaHorarios(filtrado);
     }
 
@@ -173,16 +181,14 @@
         var html = '';
         for (var i = 0; i < data.length; i++) {
             var h    = data[i];
-            // Los campos dependen del HorarioDTO del backend
-            var franja = h.franjaHoraria || {};
-            var dia    = franja.dia    || h.dia    || '—';
-            var inicio = franja.horaInicio || h.horaInicio || '—';
-            var fin    = franja.horaFin    || h.horaFin    || '—';
-            var aula   = (h.aula   &amp;&amp; h.aula.nombre)   ? h.aula.nombre   : (h.nombreAula   || '—');
-            var bloque = (h.bloque &amp;&amp; h.bloque.nombre) ? h.bloque.nombre : (h.nombreBloque || '—');
-            var grupo  = h.nombreGrupo || (h.grupo &amp;&amp; h.grupo.nombre) || h.idGrupo || '—';
-            var curso  = h.nombreCurso || (h.curso &amp;&amp; h.curso.nombre) || '—';
-            var doc    = h.nombreDocente || (h.docente &amp;&amp; (h.docente.nombre + ' ' + (h.docente.apellido||''))) || '—';
+            var dia    = h.dia || '—';
+            var inicio = h.horaInicial || '—';
+            var fin    = h.horaFinal || '—';
+            var aula   = h.espacioFisico || '—';
+            var bloque = h.bloque || '—';
+            var grupo  = h.grupo || '—';
+            var curso  = h.materia || '—';
+            var doc    = h.nombreDocente || '—';
             var cls    = diaColors[dia] || 'badge-info';
             html += '<tr>'
                 + '<td><span class="badge badge-info">' + esc(grupo)  + '</span></td>'
@@ -201,7 +207,8 @@
     document.addEventListener('DOMContentLoaded', function() {
         var rawEl = document.getElementById('horariosData');
         if (!rawEl) return;
-        try { _todosHorarios = JSON.parse(rawEl.textContent || rawEl.innerText || '[]'); } catch(e) { _todosHorarios = []; }
+        try { _todosHorarios = JSON.parse(rawEl.textContent || rawEl.innerText || '[]'); }
+        catch(e) { console.error('No se pudo interpretar la lista de horarios.', e); _todosHorarios = []; }
         renderTablaHorarios(_todosHorarios);
     });
     //]]>

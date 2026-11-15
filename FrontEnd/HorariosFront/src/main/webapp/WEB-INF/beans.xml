@@ -5,4 +5,10 @@
                            https://jakarta.ee/xml/ns/jakartaee/beans_4_0.xsd"
        version="4.0"
        bean-discovery-mode="all">
+  <!--
+    WildFly 37 trae CDI 4.0 nativamente (Weld 5.x integrado).
+    Con bean-discovery-mode="all" WildFly escanea todos los beans
+    sin necesidad de añadir Weld como dependencia en el pom.xml.
+    NUNCA agregues weld-servlet-shaded al pom cuando despliegas en WildFly.
+  -->
 </beans>

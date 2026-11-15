@@ -1,48 +1,64 @@
 package co.edu.unbosque.service;
 
+import co.edu.unbosque.model.AulaDTO;
+import co.edu.unbosque.model.BloqueDTO;
+import co.edu.unbosque.model.TipoAula;
 import co.edu.unbosque.service.ApiClient.ApiResponse;
+import com.google.gson.reflect.TypeToken;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
-/**
- * BloqueService
- * Conecta con:
- *   GET    /api/horarios/bloques
- *   POST   /api/horarios/bloques              body: { nombre }
- *   DELETE /api/horarios/bloques/{id}
- *   GET    /api/horarios/bloques/{id}/aulas
- *   POST   /api/horarios/bloques/{id}/aulas   body: { nombre, capacidad, tipoAula }
- *   DELETE /api/horarios/aulas/{id}
- */
+import java.lang.reflect.Type;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Objects;
+
+@ApplicationScoped
 public class BloqueService {
 
-    private static final String BASE = "/bloques";
+	private static final String BASE = "/bloques";
 
-    public String listarBloques() {
-        return ApiClient.get(BASE);
-    }
+	@Inject
+	private ApiClient api;
 
-    public ApiResponse crearBloque(String nombre) {
-        String body = "{\"nombre\":\"" + ApiClient.esc(nombre) + "\"}";
-        return ApiClient.post(BASE, body);
-    }
+	public String listarBloques() {
+		return api.get(BASE);
+	}
 
-    public ApiResponse eliminarBloque(int id) {
-        return ApiClient.delete(BASE + "/" + id);
-    }
+	public ApiResponse crearBloque(String nombre) {
+		BloqueDTO dto = new BloqueDTO();
+		dto.setNombreBloque(nombre);
+		dto.setEtiquetaBloque(nombre);
+		dto.setUbicacion("Universidad");
+		return api.post(BASE, ApiClient.gson().toJson(dto));
+	}
 
-    public String listarAulas(int idBloque) {
-        return ApiClient.get(BASE + "/" + idBloque + "/aulas");
-    }
+	public ApiResponse eliminarBloque(int id) {
+		return api.delete(BASE + "/" + id);
+	}
 
-    public ApiResponse crearAula(int idBloque, String nombre, String capacidad, String tipoAula) {
-        String body = "{"
-            + "\"nombre\":\""    + ApiClient.esc(nombre)    + "\","
-            + "\"capacidad\":"   + (capacidad.isEmpty() ? "0" : ApiClient.esc(capacidad)) + ","
-            + "\"tipoAula\":\"" + ApiClient.esc(tipoAula)  + "\""
-            + "}";
-        return ApiClient.post(BASE + "/" + idBloque + "/aulas", body);
-    }
+	public String listarAulas(int idBloque) {
+		Type tipo = new TypeToken<List<AulaDTO>>() {
+		}.getType();
+		List<AulaDTO> aulas = Objects.requireNonNull(ApiClient.gson().fromJson(api.get("/aulas"), tipo),
+				"El backend devolvió una lista de aulas nula");
+		return ApiClient.gson()
+				.toJson(aulas.stream().filter(
+						aula -> aula.getBloque() != null && Objects.equals(aula.getBloque().getIdBloque(), idBloque))
+						.toList());
+	}
 
-    public ApiResponse eliminarAula(int id) {
-        return ApiClient.delete("/aulas/" + id);
-    }
+	public ApiResponse crearAula(int idBloque, String numeroAula, int capacidad, String tipoAula) {
+		AulaDTO dto = new AulaDTO();
+		dto.setNumeroAula(numeroAula);
+		dto.setCapacidad(capacidad);
+		dto.setTipoAula(TipoAula.valueOf(tipoAula));
+		return api.post(BASE + "/" + idBloque + "/aulas", ApiClient.gson().toJson(dto));
+	}
+
+	public ApiResponse eliminarAula(int idBloque, String numeroAula) {
+		String segmento = URLEncoder.encode(numeroAula, StandardCharsets.UTF_8).replace("+", "%20");
+		return api.delete("/aulas/" + idBloque + "/" + segmento);
+	}
 }

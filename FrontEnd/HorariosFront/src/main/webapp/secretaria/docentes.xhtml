@@ -6,229 +6,284 @@
       xmlns:f="http://xmlns.jcp.org/jsf/core">
 
 <ui:composition template="/WEB-INF/templates/layout.xhtml">
-
     <ui:define name="title">Docentes · Secretaría · Horarios UnBosque</ui:define>
     <ui:define name="page-title">Gestión de Docentes</ui:define>
     <ui:define name="breadcrumb">Secretaría / Docentes</ui:define>
-    <ui:define name="user-avatar-letter">S</ui:define>
-    <ui:define name="user-name">Secretaría Académica</ui:define>
-    <ui:define name="user-role">Administrador del Sistema</ui:define>
+    <ui:define name="user-avatar-letter">#{empty sessionScope.usuarioSesion ? 'S' : sessionScope.usuarioSesion.nombre.substring(0,1)}</ui:define>
+    <ui:define name="user-name">#{empty sessionScope.usuarioSesion ? 'Secretaría Académica' : sessionScope.usuarioSesion.nombre.concat(' ').concat(sessionScope.usuarioSesion.apellido)}</ui:define>
+    <ui:define name="user-role">Secretaría Académica</ui:define>
 
     <ui:define name="sidebar-nav">
         <span class="nav-section-title">Principal</span>
         <a href="dashboard.xhtml" class="nav-item"><div class="nav-icon">🏠</div> Dashboard</a>
-        <span class="nav-section-title">Gestión</span>
+        <span class="nav-section-title">Gestión de Personas</span>
         <a href="estudiantes.xhtml" class="nav-item"><div class="nav-icon">👨‍🎓</div> Estudiantes</a>
-        <a href="docentes.xhtml"    class="nav-item active"><div class="nav-icon">👨‍🏫</div> Docentes</a>
-        <a href="cursos.xhtml"      class="nav-item"><div class="nav-icon">📚</div> Académico</a>
-        <a href="infraestructura.xhtml" class="nav-item"><div class="nav-icon">🏢</div> Infraestructura</a>
-        <a href="horarios.xhtml"    class="nav-item"><div class="nav-icon">📅</div> Horarios</a>
+        <a href="docentes.xhtml" class="nav-item active"><div class="nav-icon">👨‍🏫</div> Docentes</a>
+        <span class="nav-section-title">Estructura Académica</span>
+        <a href="cursos.xhtml" class="nav-item"><div class="nav-icon">📚</div> Facultades y Cursos</a>
+        <span class="nav-section-title">Espacios y Horarios</span>
+        <a href="infraestructura.xhtml" class="nav-item"><div class="nav-icon">🏢</div> Bloques y Aulas</a>
+        <a href="horarios.xhtml" class="nav-item"><div class="nav-icon">📅</div> Generar Horario</a>
+    </ui:define>
+
+    <ui:define name="head-extra">
+        <link rel="stylesheet" type="text/css" href="#{request.contextPath}/css/secretaria-personas.css" />
     </ui:define>
 
     <ui:define name="content">
-    <div id="docentes-page">
-
-        <!-- Mensajes globales -->
-        <h:panelGroup rendered="#{not empty personasBean.mensajeError}">
-            <div class="aurora-alert aurora-alert-error">⚠️ <h:outputText value="#{personasBean.mensajeError}"/></div>
-        </h:panelGroup>
-        <h:panelGroup rendered="#{not empty personasBean.mensajeOk}">
-            <div class="aurora-alert aurora-alert-ok">✅ <h:outputText value="#{personasBean.mensajeOk}"/></div>
-        </h:panelGroup>
-
-        <!-- ========== FORMULARIO CREAR DOCENTE =================== -->
-        <div class="nm-card" style="margin-bottom:24px;">
-            <div class="card-header-aurora">
-                <h2 class="card-title">➕ Registrar Nuevo Docente</h2>
+        <h:form id="formNuevoDocente" prependId="false">
+        <div class="page-header people-page-header">
+            <div>
+                <h1>Docentes 👨‍🏫</h1>
+                <p>Personal docente y asignaciones consultadas desde el sistema académico.</p>
             </div>
+            <h:commandButton value="＋ Nuevo docente" action="#{personasBean.mostrarFormularioDocente}"
+                             immediate="true" styleClass="btn btn-primary" />
+        </div>
+        </h:form>
 
-            <h:form id="formDocente" prependId="false">
-                <div class="form-grid-2">
+        <h:panelGroup rendered="#{not dashboardBean.academiaDisponible}" layout="block" styleClass="people-muted">
+            No fue posible consultar las asignaciones de grupos desde el backend.
+        </h:panelGroup>
 
-                    <div class="dark-form-group">
-                        <label class="dark-form-label" for="dId">Número de Identificación *</label>
-                        <div class="dark-input-wrapper">
-                            <span class="dark-input-icon">🪪</span>
-                            <h:inputText id="dId" value="#{personasBean.dId}"
-                                         styleClass="dark-input" placeholder="Ej: 1234567890" />
-                        </div>
-                    </div>
+        <h:messages id="messages" styleClass="people-messages"
+                    infoClass="people-message-success" errorClass="people-message-error"
+                    fatalClass="people-message-error" warnClass="people-message-warning" />
 
-                    <div class="dark-form-group">
-                        <label class="dark-form-label" for="dNombre">Nombre *</label>
-                        <div class="dark-input-wrapper">
-                            <span class="dark-input-icon">👤</span>
-                            <h:inputText id="dNombre" value="#{personasBean.dNombre}"
-                                         styleClass="dark-input" placeholder="Nombre" />
-                        </div>
-                    </div>
-
-                    <div class="dark-form-group">
-                        <label class="dark-form-label" for="dApellido">Apellido *</label>
-                        <div class="dark-input-wrapper">
-                            <span class="dark-input-icon">👤</span>
-                            <h:inputText id="dApellido" value="#{personasBean.dApellido}"
-                                         styleClass="dark-input" placeholder="Apellido" />
-                        </div>
-                    </div>
-
-                    <div class="dark-form-group">
-                        <label class="dark-form-label" for="dCorreo">Correo Institucional *</label>
-                        <div class="dark-input-wrapper">
-                            <span class="dark-input-icon">✉️</span>
-                            <h:inputText id="dCorreo" value="#{personasBean.dCorreo}"
-                                         styleClass="dark-input" placeholder="correo@unbosque.edu.co" />
-                        </div>
-                    </div>
-
-                    <div class="dark-form-group">
-                        <label class="dark-form-label" for="dPassword">Contraseña *</label>
-                        <div class="dark-input-wrapper">
-                            <span class="dark-input-icon">🔒</span>
-                            <h:inputSecret id="dPassword" value="#{personasBean.dPassword}"
-                                           styleClass="dark-input" placeholder="••••••••" redisplay="false" />
-                        </div>
-                    </div>
-
-                    <div class="dark-form-group">
-                        <label class="dark-form-label" for="dEscalafon">Escalafón *</label>
-                        <div class="dark-input-wrapper">
-                            <span class="dark-input-icon">🎓</span>
-                            <h:selectOneMenu id="dEscalafon" value="#{personasBean.dEscalafon}" styleClass="dark-input dark-select">
-                                <f:selectItem itemValue="INSTRUCTOR"     itemLabel="Instructor" />
-                                <f:selectItem itemValue="ASISTENTE"      itemLabel="Asistente" />
-                                <f:selectItem itemValue="ASOCIADO"       itemLabel="Asociado" />
-                                <f:selectItem itemValue="TITULAR"        itemLabel="Titular" />
-                                <f:selectItem itemValue="CATEDRA"        itemLabel="Cátedra" />
-                            </h:selectOneMenu>
-                        </div>
-                    </div>
-
-                    <div class="dark-form-group">
-                        <label class="dark-form-label" for="dVinculacion">Tipo de Vinculación *</label>
-                        <div class="dark-input-wrapper">
-                            <span class="dark-input-icon">📋</span>
-                            <h:selectOneMenu id="dVinculacion" value="#{personasBean.dTipoVinculacion}" styleClass="dark-input dark-select">
-                                <f:selectItem itemValue="PLANTA"         itemLabel="Planta" />
-                                <f:selectItem itemValue="CATEDRA"        itemLabel="Cátedra" />
-                                <f:selectItem itemValue="OCASIONAL"      itemLabel="Ocasional" />
-                            </h:selectOneMenu>
-                        </div>
-                    </div>
-
+        <h:form id="formEditarDocente" prependId="false">
+            <section id="teacherForm" class="nm-card people-form"
+                     style="#{personasBean.mostrarFormularioDocente ? 'display:block;' : 'display:none;'}">
+                <div class="people-form-heading">
+                    <h2>#{personasBean.editandoDocente ? 'Actualizar docente' : 'Registrar docente'}</h2>
+                    <h:commandButton value="×" title="Cerrar formulario" styleClass="people-icon-button"
+                                     action="#{personasBean.cancelarEdicionDocente}" immediate="true" />
                 </div>
+                <div class="people-form-grid">
+                    <div class="people-form-field">
+                        <label for="teacherId">Identificación *</label>
+                        <h:inputText id="teacherId" value="#{personasBean.docenteForm.id}" required="true"
+                                     readonly="#{personasBean.editandoDocente}" requiredMessage="Ingresa la identificación." />
+                    </div>
+                    <div class="people-form-field">
+                        <label for="teacherName">Nombre *</label>
+                        <h:inputText id="teacherName" value="#{personasBean.docenteForm.nombre}" required="true" requiredMessage="Ingresa el nombre." />
+                    </div>
+                    <div class="people-form-field">
+                        <label for="teacherLastName">Apellido *</label>
+                        <h:inputText id="teacherLastName" value="#{personasBean.docenteForm.apellido}" required="true" requiredMessage="Ingresa el apellido." />
+                    </div>
+                    <div class="people-form-field">
+                        <label for="teacherEmail">Correo institucional *</label>
+                        <h:inputText id="teacherEmail" value="#{personasBean.docenteForm.correo}" required="true" requiredMessage="Ingresa el correo." />
+                    </div>
+                    <div class="people-form-field">
+                        <label for="teacherPassword">#{personasBean.editandoDocente ? 'Contraseña (opcional; déjala vacía para conservarla)' : 'Contraseña *'}</label>
+                        <div class="people-password-control">
+                            <h:inputSecret id="teacherPassword" value="#{personasBean.docenteForm.password}"
+                                           required="#{not personasBean.editandoDocente}"
+                                           requiredMessage="Ingresa la contraseña para el nuevo docente." />
+                            <button type="button" class="people-password-toggle"
+                                    aria-label="Mostrar contraseña" aria-pressed="false"
+                                    onclick="togglePasswordVisibility('teacherPassword', this)">Mostrar</button>
+                        </div>
+                    </div>
+                    <div class="people-form-field">
+                        <label for="teacherRank">Escalafón *</label>
+                        <h:selectOneMenu id="teacherRank" value="#{personasBean.docenteForm.escalafon}" required="true" requiredMessage="Selecciona el escalafón.">
+                            <f:selectItem itemValue="" itemLabel="Selecciona un escalafón" noSelectionOption="true" />
+                            <f:selectItem itemValue="INSTRUCTOR_ASISTENTE" itemLabel="Instructor asistente" />
+                            <f:selectItem itemValue="INSTRUCTOR_ASOCIADO" itemLabel="Instructor asociado" />
+                            <f:selectItem itemValue="PROFESOR_ASISTENTE" itemLabel="Profesor asistente" />
+                            <f:selectItem itemValue="PROFESOR_ASOCIADO" itemLabel="Profesor asociado" />
+                            <f:selectItem itemValue="PROFESOR_TITULAR" itemLabel="Profesor titular" />
+                        </h:selectOneMenu>
+                    </div>
+                    <div class="people-form-field">
+                        <label for="teacherStatus">Estado *</label>
+                        <h:selectOneMenu id="teacherStatus" value="#{personasBean.docenteForm.estadoDocente}" required="true" requiredMessage="Selecciona el estado.">
+                            <f:selectItem itemValue="" itemLabel="Selecciona un estado" noSelectionOption="true" />
+                            <f:selectItem itemValue="ACTIVO" itemLabel="Activo" />
+                            <f:selectItem itemValue="INCAPACITADO" itemLabel="Incapacitado" />
+                            <f:selectItem itemValue="VACACIONES" itemLabel="Vacaciones" />
+                            <f:selectItem itemValue="INACTIVO" itemLabel="Inactivo" />
+                        </h:selectOneMenu>
+                    </div>
+                    <div class="people-form-field">
+                        <label for="teacherLinkage">Vinculación *</label>
+                        <h:selectOneMenu id="teacherLinkage" value="#{personasBean.docenteForm.tipoVinculacion}" required="true" requiredMessage="Selecciona el tipo de vinculación.">
+                            <f:selectItem itemValue="" itemLabel="Selecciona una vinculación" noSelectionOption="true" />
+                            <f:selectItem itemValue="TC" itemLabel="Tiempo completo" />
+                            <f:selectItem itemValue="MTO" itemLabel="Medio tiempo" />
+                            <f:selectItem itemValue="HC" itemLabel="Hora cátedra" />
+                        </h:selectOneMenu>
+                    </div>
+                </div>
+                <div class="people-form-actions">
+                    <h:commandButton value="#{personasBean.editandoDocente ? 'Guardar cambios' : 'Registrar docente'}"
+                                     action="#{personasBean.guardarDocente}" styleClass="btn btn-primary" />
+                    <h:commandButton value="Cancelar" action="#{personasBean.cancelarEdicionDocente}"
+                                     styleClass="btn btn-nm" immediate="true" />
+                </div>
+            </section>
+        </h:form>
 
-                <h:commandButton id="btnCrearDocente"
-                                 value="✅ Registrar Docente"
-                                 action="#{personasBean.crearDocente}"
-                                 styleClass="aurora-btn"
-                                 style="margin-top:12px;" />
-            </h:form>
+        <div class="people-tabs" role="tablist" aria-label="Vistas de docentes">
+            <button type="button" class="people-tab active" data-teacher-mode="list" onclick="showTeacherMode('list')">▤ Lista de docentes</button>
+            <button type="button" class="people-tab" data-teacher-mode="rank" onclick="showTeacherMode('rank')">♙ Escalafón</button>
+            <button type="button" class="people-tab" data-teacher-mode="availability" onclick="showTeacherMode('availability')">▦ Disponibilidad</button>
         </div>
 
-        <!-- ========== TABLA DE DOCENTES ========================= -->
-        <div class="nm-card">
-            <div class="card-header-aurora">
-                <h2 class="card-title">👨‍🏫 Docentes Registrados</h2>
-                <h:form id="formRecargarDoc" prependId="false">
-                    <h:commandButton value="🔄 Recargar"
-                                     action="#{personasBean.cargarDocentes}"
-                                     styleClass="aurora-btn-ghost aurora-btn-sm" />
-                </h:form>
-            </div>
+        <h:form id="formDocentes" prependId="false">
+            <section class="people-view" data-teacher-view="list">
+                <div class="people-toolbar">
+                    <label class="people-search">
+                        <span class="people-search-icon" aria-hidden="true">⌕</span>
+                        <input id="teacherSearch" type="search" placeholder="Buscar docente por nombre, correo o ID..." oninput="filterPeopleTable('teachersTable')" />
+                    </label>
+                    <div class="people-filters">
+                        <select id="teacherStatusFilter" class="people-filter" aria-label="Filtrar por estado" onchange="filterPeopleTable('teachersTable')">
+                            <option value="">Todos los estados</option>
+                            <option value="ACTIVO">Activo</option>
+                            <option value="VACACIONES">Vacaciones</option>
+                            <option value="INCAPACITADO">Incapacitado</option>
+                            <option value="INACTIVO">Inactivo</option>
+                        </select>
+                        <select id="teacherLinkageFilter" class="people-filter" aria-label="Filtrar por vinculación" onchange="filterPeopleTable('teachersTable')">
+                            <option value="">Todos los tipos</option>
+                            <option value="TC">Tiempo completo</option>
+                            <option value="MTO">Medio tiempo</option>
+                            <option value="HC">Hora cátedra</option>
+                        </select>
+                        <h:commandButton value="↻ Recargar" action="#{personasBean.recargarDocentes}"
+                                         styleClass="btn btn-nm" immediate="true" />
+                    </div>
+                </div>
 
-            <div id="tabla-docentes-wrapper">
-                <!-- La tabla se renderiza desde JS usando el JSON del bean -->
-                <div class="table-container">
-                    <table class="aurora-table" id="tabla-docentes">
+                <div class="people-table-wrap">
+                    <table id="teachersTable" class="people-table"
+                           data-search-input="teacherSearch"
+                           data-status-filter="teacherStatusFilter"
+                           data-linkage-filter="teacherLinkageFilter"
+                           data-count-label="teacherCount"
+                           data-page-label="teacherPage"
+                           data-previous-button="teacherPrevious"
+                           data-next-button="teacherNext">
                         <thead>
                             <tr>
+                                <th>Docente</th>
                                 <th>ID</th>
-                                <th>Nombre</th>
-                                <th>Apellido</th>
-                                <th>Correo</th>
                                 <th>Escalafón</th>
                                 <th>Vinculación</th>
+                                <th>Grupos asignados</th>
+                                <th>Estado</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
-                        <tbody id="tbody-docentes">
-                            <tr><td colspan="7" style="text-align:center;color:rgba(255,255,255,0.4);">Cargando datos del backend…</td></tr>
+                        <tbody>
+                            <ui:repeat value="#{personasBean.docentes}" var="docente">
+                                <tr data-record="true" data-status="#{docente.estadoDocente}" data-linkage="#{docente.tipoVinculacion}">
+                                    <td>
+                                        <div class="people-identity">
+                                            <span class="people-avatar"><h:outputText value="#{docente.nombre.substring(0,1)}#{docente.apellido.substring(0,1)}" /></span>
+                                            <span>
+                                                <span class="people-name"><h:outputText value="#{docente.nombre} #{docente.apellido}" /></span><br />
+                                                <span class="people-email"><h:outputText value="#{docente.correo}" /></span>
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td><span class="people-code"><h:outputText value="#{docente.id}" /></span></td>
+                                    <td><span class="people-badge people-badge-purple"><h:outputText value="#{personasBean.formatearEtiqueta(docente.escalafon)}" /></span></td>
+                                    <td>
+                                        <span class="people-badge people-badge-cyan">
+                                            <h:outputText value="#{docente.tipoVinculacion == 'TC' ? 'TC' : (docente.tipoVinculacion == 'MTO' ? 'MTO' : 'HC')}" />
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="people-name">
+                                            <h:outputText value="#{dashboardBean.gruposAsignados(docente.id)}" rendered="#{dashboardBean.academiaDisponible}" />
+                                            <h:outputText value="—" rendered="#{not dashboardBean.academiaDisponible}" />
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="#{docente.estadoDocente == 'ACTIVO' ? 'people-badge people-badge-active' : (docente.estadoDocente == 'VACACIONES' ? 'people-badge people-badge-warning' : (docente.estadoDocente == 'INCAPACITADO' ? 'people-badge people-badge-danger' : 'people-badge people-badge-neutral'))}">
+                                            <h:outputText value="#{personasBean.formatearEtiqueta(docente.estadoDocente)}" />
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="people-actions">
+                                            <button type="button" class="people-icon-button" title="Ver disponibilidad" aria-label="Ver disponibilidad" onclick="showTeacherMode('availability')">◷</button>
+                                            <h:commandButton value="✎" title="Editar docente" styleClass="people-icon-button people-edit-button"
+                                                             action="#{personasBean.editarDocente(docente)}" immediate="true" />
+                                            <h:commandButton value="−" title="Eliminar docente" styleClass="people-icon-button"
+                                                             action="#{personasBean.eliminarDocente(docente)}"
+                                                             immediate="true"
+                                                             onclick="return confirm('¿Eliminar este docente?');" />
+                                        </div>
+                                    </td>
+                                </tr>
+                            </ui:repeat>
+                            <tr data-empty="true">
+                                <td colspan="7" class="people-table-empty">
+                                    <h:outputText value="#{empty personasBean.docentes ? 'No hay docentes registrados.' : 'No se encontraron docentes con esos filtros.'}" />
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
-            </div>
-
-            <!-- JSON oculto del bean → lo usa JS para poblar la tabla -->
-            <h:outputText id="docentesData"
-                          value="#{personasBean.docentesJson}"
-                          style="display:none;" escape="false" />
-        </div>
-
-        <!-- Form oculto para eliminar (acción con POST) -->
-        <h:form id="formEliminarDoc" prependId="false">
-            <h:inputHidden id="eliminarDocId" value="#{personasBean.dId}" />
-            <h:commandButton id="btnEliminarDoc" value="eliminar"
-                             style="display:none;"
-                             action="#{personasBean.eliminarDocente(personasBean.dId)}" />
+                <div class="people-table-footer">
+                    <span id="teacherCount">Mostrando 0 de #{personasBean.docentes.size()}</span>
+                    <div class="people-pagination">
+                        <button id="teacherPrevious" type="button" class="people-page-button" aria-label="Página anterior" onclick="changePeoplePage('teachersTable',-1)">‹</button>
+                        <span id="teacherPage">1 / 1</span>
+                        <button id="teacherNext" type="button" class="people-page-button" aria-label="Página siguiente" onclick="changePeoplePage('teachersTable',1)">›</button>
+                    </div>
+                </div>
+            </section>
         </h:form>
 
-    </div>
+        <section class="people-view" data-teacher-view="rank" hidden="hidden">
+                <div class="people-escalafon-grid">
+                    <ui:repeat value="#{personasBean.escalafonesDisponibles}" var="nivel">
+                        <article class="nm-card people-escalafon-card">
+                            <h3><h:outputText value="#{personasBean.formatearEtiqueta(nivel)}" /></h3>
+                            <div class="people-escalafon-count"><h:outputText value="#{personasBean.docentesPorEscalafon(nivel).size()}" /></div>
+                            <div class="people-escalafon-names">
+                                <ui:repeat value="#{personasBean.docentesPorEscalafon(nivel)}" var="docenteNivel">
+                                    <div><h:outputText value="#{docenteNivel.nombre} #{docenteNivel.apellido}" /></div>
+                                </ui:repeat>
+                            </div>
+                        </article>
+                    </ui:repeat>
+                    <ui:fragment rendered="#{empty personasBean.docentes}">
+                        <div class="nm-card people-table-empty">No hay docentes para mostrar.</div>
+                    </ui:fragment>
+                </div>
+        </section>
 
-    <script type="text/javascript">
-    //<![CDATA[
-    (function() {
-        function renderDocentes() {
-            var rawEl = document.getElementById('docentesData');
-            if (!rawEl) return;
-            var raw = rawEl.textContent || rawEl.innerText || '[]';
-            var data;
-            try { data = JSON.parse(raw); } catch(e) { data = []; }
-
-            var tbody = document.getElementById('tbody-docentes');
-            if (!tbody) return;
-
-            if (!data || data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:rgba(255,255,255,0.4);">No hay docentes registrados aún.</td></tr>';
-                return;
-            }
-
-            var html = '';
-            for (var i = 0; i < data.length; i++) {
-                var d = data[i];
-                html += '<tr>'
-                    + '<td><span class="badge badge-info">' + escHtml(d.id || '') + '</span></td>'
-                    + '<td>' + escHtml(d.nombre   || '') + '</td>'
-                    + '<td>' + escHtml(d.apellido || '') + '</td>'
-                    + '<td>' + escHtml(d.correo   || '') + '</td>'
-                    + '<td><span class="badge badge-purple">' + escHtml(d.escalafon || '') + '</span></td>'
-                    + '<td><span class="badge badge-teal">'   + escHtml(d.tipoVinculacion || '') + '</span></td>'
-                    + '<td><button class="aurora-btn-danger aurora-btn-sm" '
-                    +     'onclick="confirmarEliminarDocente(\'' + escAttr(d.id || '') + '\')">'
-                    +     '🗑 Eliminar</button></td>'
-                    + '</tr>';
-            }
-            tbody.innerHTML = html;
-        }
-
-        function confirmarEliminarDocente(id) {
-            if (!confirm('¿Eliminar al docente con ID: ' + id + '? Esta acción no se puede deshacer.')) return;
-            document.getElementById('eliminarDocId').value = id;
-            document.getElementById('btnEliminarDoc').click();
-        }
-
-        function escHtml(s) {
-            return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-        }
-        function escAttr(s) { return String(s).replace(/'/g,"\\'"); }
-
-        window.confirmarEliminarDocente = confirmarEliminarDocente;
-        document.addEventListener('DOMContentLoaded', renderDocentes);
-    })();
-    //]]>
-    </script>
-
+        <section class="people-view" data-teacher-view="availability" hidden="hidden">
+                <div class="people-availability-list">
+                    <ui:repeat value="#{personasBean.docentes}" var="docenteDisp">
+                        <article class="nm-card people-availability-card">
+                            <div>
+                                <div class="people-name"><h:outputText value="#{docenteDisp.nombre} #{docenteDisp.apellido}" /></div>
+                                <div class="people-email"><h:outputText value="#{docenteDisp.correo}" /></div>
+                            </div>
+                            <div class="people-availability-slots">
+                                <ui:repeat value="#{docenteDisp.disponibilidad}" var="franja">
+                                    <span class="people-slot">
+                                        <h:outputText value="#{personasBean.formatearEtiqueta(franja.diaSemana)} #{franja.horaInicio}–#{franja.horaFin}" />
+                                    </span>
+                                </ui:repeat>
+                                <h:outputText value="Sin disponibilidad registrada" rendered="#{empty docenteDisp.disponibilidad}" styleClass="people-muted" />
+                            </div>
+                        </article>
+                    </ui:repeat>
+                </div>
+        </section>
     </ui:define>
 
+    <ui:define name="scripts">
+        <script type="text/javascript" src="#{request.contextPath}/js/secretaria-personas.js"></script>
+    </ui:define>
 </ui:composition>
 </html>

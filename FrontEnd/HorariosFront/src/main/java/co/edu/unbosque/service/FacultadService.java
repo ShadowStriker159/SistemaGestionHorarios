@@ -1,113 +1,135 @@
 package co.edu.unbosque.service;
 
+import co.edu.unbosque.model.AreaDTO;
+import co.edu.unbosque.model.CarreraDTO;
+import co.edu.unbosque.model.CursoDTO;
+import co.edu.unbosque.model.FacultadDTO;
+import co.edu.unbosque.model.GrupoDTO;
+import co.edu.unbosque.model.PlanEstudiosDTO;
+import co.edu.unbosque.model.TipoAula;
 import co.edu.unbosque.service.ApiClient.ApiResponse;
-import java.util.ArrayList;
-import java.util.List;
+import com.google.gson.reflect.TypeToken;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
-/**
- * FacultadService
- * Conecta con:
- *   GET    /api/horarios/facultades
- *   POST   /api/horarios/facultades          body: { nombre }
- *   DELETE /api/horarios/facultades/{id}
- *   GET    /api/horarios/facultades/{id}/areas
- *   POST   /api/horarios/facultades/{id}/areas  body: { nombre }
- *   GET    /api/horarios/facultades/{id}/carreras
- *   POST   /api/horarios/facultades/{id}/carreras body: { nombre }
- */
+import java.lang.reflect.Type;
+import java.util.List;
+import java.util.Objects;
+
+@ApplicationScoped
 public class FacultadService {
 
-    private static final String BASE = "/facultades";
+	private static final String BASE = "/facultades";
 
-    // ---- Facultades ----
+	@Inject
+	private ApiClient api;
 
-    public String listarFacultades() {
-        return ApiClient.get(BASE);
-    }
+	// Facultades
 
-    public ApiResponse crearFacultad(String nombre) {
-        String body = "{\"nombre\":\"" + ApiClient.esc(nombre) + "\"}";
-        return ApiClient.post(BASE, body);
-    }
+	public String listarFacultades() {
+		return api.get(BASE);
+	}
 
-    public ApiResponse eliminarFacultad(int id) {
-        return ApiClient.delete(BASE + "/" + id);
-    }
+	public ApiResponse crearFacultad(String nombre) {
+		FacultadDTO dto = new FacultadDTO();
+		dto.setNombreFacultad(nombre);
+		return api.post(BASE, ApiClient.gson().toJson(dto));
+	}
 
-    // ---- Áreas de una facultad ----
+	public ApiResponse eliminarFacultad(int id) {
+		return api.delete(BASE + "/" + id);
+	}
 
-    public String listarAreas(int idFacultad) {
-        return ApiClient.get(BASE + "/" + idFacultad + "/areas");
-    }
+	// Áreas de una facultad
 
-    public ApiResponse crearArea(int idFacultad, String nombre) {
-        String body = "{\"nombre\":\"" + ApiClient.esc(nombre) + "\"}";
-        return ApiClient.post(BASE + "/" + idFacultad + "/areas", body);
-    }
+	public String listarAreas(int idFacultad) {
+		return api.get(BASE + "/" + idFacultad + "/areas");
+	}
 
-    // ---- Carreras de una facultad ----
+	public ApiResponse crearArea(int idFacultad, String nombre) {
+		AreaDTO dto = new AreaDTO();
+		dto.setNombreArea(nombre);
+		return api.post(BASE + "/" + idFacultad + "/areas", ApiClient.gson().toJson(dto));
+	}
 
-    public String listarCarreras(int idFacultad) {
-        return ApiClient.get(BASE + "/" + idFacultad + "/carreras");
-    }
+	// Carreras de una facultad
 
-    public ApiResponse crearCarrera(int idFacultad, String nombre) {
-        String body = "{\"nombre\":\"" + ApiClient.esc(nombre) + "\"}";
-        return ApiClient.post(BASE + "/" + idFacultad + "/carreras", body);
-    }
+	public String listarCarreras(int idFacultad) {
+		return api.get(BASE + "/" + idFacultad + "/carreras");
+	}
 
-    // ---- Planes de estudio de una carrera ----
+	public List<CarreraDTO> listarTodasLasCarreras() {
+		Type tipo = new TypeToken<List<CarreraDTO>>() {
+		}.getType();
+		return Objects.requireNonNull(ApiClient.gson().fromJson(api.get("/carreras"), tipo),
+				"El backend devolvió una lista de carreras nula");
+	}
 
-    public String listarPlanes(int idCarrera) {
-        return ApiClient.get("/carreras/" + idCarrera + "/planes");
-    }
+	public ApiResponse crearCarrera(int idFacultad, String nombre) {
+		CarreraDTO dto = new CarreraDTO();
+		dto.setNombreCarrera(nombre);
+		return api.post(BASE + "/" + idFacultad + "/carreras", ApiClient.gson().toJson(dto));
+	}
 
-    public ApiResponse crearPlan(int idCarrera, String nombre, String anio) {
-        String body = "{\"nombre\":\"" + ApiClient.esc(nombre) + "\","
-                    + "\"anio\":\"" + ApiClient.esc(anio) + "\"}";
-        return ApiClient.post("/carreras/" + idCarrera + "/planes", body);
-    }
+	// Planes de estudio de una carrera 
 
-    public ApiResponse eliminarCarrera(int id) {
-        return ApiClient.delete("/carreras/" + id);
-    }
+	public String listarPlanes(int idCarrera) {
+		return api.get("/carreras/" + idCarrera + "/planes");
+	}
 
-    public ApiResponse eliminarArea(int id) {
-        return ApiClient.delete("/areas/" + id);
-    }
+	public ApiResponse crearPlan(int idCarrera, String nombre) {
+		PlanEstudiosDTO dto = new PlanEstudiosDTO();
+		dto.setNombrePlanEstudios(nombre);
+		return api.post("/carreras/" + idCarrera + "/planes", ApiClient.gson().toJson(dto));
+	}
 
-    public ApiResponse eliminarPlan(int id) {
-        return ApiClient.delete("/planes/" + id);
-    }
+	public ApiResponse eliminarCarrera(int id) {
+		return api.delete("/carreras/" + id);
+	}
 
-    // ---- Cursos de un plan ----
+	public ApiResponse eliminarArea(int id) {
+		return api.delete("/areas/" + id);
+	}
 
-    public String listarCursosPorPlan(int idPlan) {
-        return ApiClient.get("/planes/" + idPlan + "/cursos");
-    }
+	public ApiResponse eliminarPlan(int id) {
+		return api.delete("/planes/" + id);
+	}
 
-    public ApiResponse crearCurso(int idPlan, String nombre, String creditos) {
-        String body = "{\"nombre\":\"" + ApiClient.esc(nombre) + "\","
-                    + "\"creditos\":" + (creditos.isEmpty() ? "0" : ApiClient.esc(creditos)) + "}";
-        return ApiClient.post("/planes/" + idPlan + "/cursos", body);
-    }
+	// ---- Cursos de un plan ----
 
-    public ApiResponse eliminarCurso(int id) {
-        return ApiClient.delete("/cursos/" + id);
-    }
+	public String listarCursosPorPlan(int idPlan) {
+		return api.get("/planes/" + idPlan + "/cursos");
+	}
 
-    // ---- Grupos de un curso ----
+	public ApiResponse crearCurso(int idPlan, String nombre, int creditos, int intensidadHoraria, int semestre,
+			String aulaRequerida) {
+		CursoDTO dto = new CursoDTO();
+		dto.setNombreCurso(nombre);
+		dto.setCreditos(creditos);
+		dto.setIntensidadHoraria(intensidadHoraria);
+		dto.setSemestre(semestre);
+		dto.setAulaRequerida(TipoAula.valueOf(aulaRequerida));
+		return api.post("/planes/" + idPlan + "/cursos", ApiClient.gson().toJson(dto));
+	}
 
-    public String listarGruposPorCurso(int idCurso) {
-        return ApiClient.get("/cursos/" + idCurso + "/grupos");
-    }
+	public ApiResponse eliminarCurso(int id) {
+		return api.delete("/cursos/" + id);
+	}
 
-    public ApiResponse crearGrupo(int idCurso, String idDocente, String nombre) {
-        String body = "{\"nombre\":\"" + ApiClient.esc(nombre) + "\"}";
-        return ApiClient.post("/cursos/" + idCurso + "/grupos?idDocente=" + ApiClient.esc(idDocente), body);
-    }
+	//  Grupos de un curso 
+	public String listarGruposPorCurso(int idCurso) {
+		return api.get("/cursos/" + idCurso + "/grupos");
+	}
 
-    public ApiResponse eliminarGrupo(int id) {
-        return ApiClient.delete("/grupos/" + id);
-    }
+	public ApiResponse crearGrupo(int idCurso, String idDocente, int cupoMinimo, int cupoMaximo) {
+		GrupoDTO dto = new GrupoDTO();
+		dto.setCupoMinimo(cupoMinimo);
+		dto.setCupoMaximo(cupoMaximo);
+		String queryId = java.net.URLEncoder.encode(idDocente, java.nio.charset.StandardCharsets.UTF_8);
+		return api.post("/cursos/" + idCurso + "/grupos?idDocente=" + queryId, ApiClient.gson().toJson(dto));
+	}
+
+	public ApiResponse eliminarGrupo(int id) {
+		return api.delete("/grupos/" + id);
+	}
 }

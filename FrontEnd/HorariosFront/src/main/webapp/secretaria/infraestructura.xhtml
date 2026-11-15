@@ -17,12 +17,18 @@
     <ui:define name="sidebar-nav">
         <span class="nav-section-title">Principal</span>
         <a href="dashboard.xhtml"       class="nav-item"><div class="nav-icon">🏠</div> Dashboard</a>
-        <span class="nav-section-title">Gestión</span>
+        <span class="nav-section-title">Gestión de Personas</span>
         <a href="estudiantes.xhtml"     class="nav-item"><div class="nav-icon">👨‍🎓</div> Estudiantes</a>
         <a href="docentes.xhtml"        class="nav-item"><div class="nav-icon">👨‍🏫</div> Docentes</a>
-        <a href="cursos.xhtml"          class="nav-item"><div class="nav-icon">📚</div> Académico</a>
-        <a href="infraestructura.xhtml" class="nav-item active"><div class="nav-icon">🏢</div> Infraestructura</a>
-        <a href="horarios.xhtml"        class="nav-item"><div class="nav-icon">📅</div> Horarios</a>
+        <span class="nav-section-title">Estructura Académica</span>
+        <a href="cursos.xhtml"          class="nav-item"><div class="nav-icon">📚</div> Facultades y Cursos</a>
+        <span class="nav-section-title">Espacios y Horarios</span>
+        <a href="infraestructura.xhtml" class="nav-item active"><div class="nav-icon">🏢</div> Bloques y Aulas</a>
+        <a href="horarios.xhtml"        class="nav-item"><div class="nav-icon">📅</div> Generar Horario</a>
+    </ui:define>
+
+    <ui:define name="head-extra">
+        <link rel="stylesheet" type="text/css" href="#{request.contextPath}/css/secretaria-infraestructura.css" />
     </ui:define>
 
     <ui:define name="content">
@@ -49,18 +55,21 @@
                         <h2 class="card-title">🏢 Bloques</h2>
                     </div>
 
-                    <h:form id="formBloque" prependId="false">
-                        <div class="inline-form">
-                            <div class="dark-input-wrapper" style="flex:1;">
+                    <h:form id="formBloque" prependId="false" styleClass="infra-block-form">
+                        <div class="dark-form-group">
+                            <label class="dark-form-label" for="bNombre">Nombre del bloque *</label>
+                            <div class="dark-input-wrapper">
                                 <span class="dark-input-icon">🏢</span>
                                 <h:inputText id="bNombre" value="#{infraBean.bNombre}"
-                                             styleClass="dark-input" placeholder="Nombre del bloque (Ej: Bloque A)" />
+                                             styleClass="dark-input" placeholder="Ej.: Bloque A" />
                             </div>
-                            <h:commandButton value="➕ Agregar" action="#{infraBean.crearBloque}"
-                                             styleClass="aurora-btn aurora-btn-sm" />
                         </div>
+                        <p class="infra-hint">Escribe el nombre que conoces, por ejemplo, <strong>Bloque A</strong>. La etiqueta se toma de ese nombre y la ubicación se registra como “Universidad”.</p>
+                        <h:commandButton value="➕ Agregar bloque" action="#{infraBean.crearBloque}"
+                                         styleClass="aurora-btn aurora-btn-sm" />
                     </h:form>
 
+                    <p class="infra-hint">Selecciona un bloque para consultar sus aulas o agregar una nueva.</p>
                     <div class="chip-list" id="lista-bloques">
                         <span style="color:rgba(255,255,255,0.4);">Cargando bloques…</span>
                     </div>
@@ -68,29 +77,33 @@
 
                     <h:form id="formAccBloque" prependId="false">
                         <h:inputHidden id="bloqueIdSel" value="#{infraBean.idBloqueSel}" />
-                        <h:commandButton id="btnSelBloque" style="display:none;" action="#{infraBean.seleccionarBloque(infraBean.idBloqueSel)}" />
-                        <h:commandButton id="btnDelBloque" style="display:none;" action="#{infraBean.eliminarBloque(infraBean.idBloqueSel)}" />
+                        <h:inputHidden id="bloqueNombreSel" value="#{infraBean.bloqueSeleccionado}" />
+                        <h:inputHidden id="bloqueIdDel" value="#{infraBean.idBloqueEliminarSel}" />
+                        <h:commandButton id="btnSelBloque" style="display:none;" action="#{infraBean.seleccionarBloque(infraBean.idBloqueSel, infraBean.bloqueSeleccionado)}" />
+                        <h:commandButton id="btnDelBloque" style="display:none;" action="#{infraBean.eliminarBloque(infraBean.idBloqueEliminarSel)}" />
                     </h:form>
                 </div>
 
                 <!-- Aulas del bloque seleccionado -->
-                <div class="nm-card" id="sec-aulas">
+                <div class="nm-card" id="sec-aulas" data-selected="#{infraBean.idBloqueSel gt 0}"
+                     data-block-id="#{infraBean.idBloqueSel}" style="display:none;">
                     <div class="card-header-aurora">
                         <h3 class="card-title">🚪 Aulas del Bloque</h3>
                     </div>
+                    <p class="infra-context">Estás consultando o agregando aulas para: <strong><h:outputText value="#{infraBean.bloqueSeleccionado}" /></strong></p>
 
                     <h:form id="formAula" prependId="false">
                         <div class="form-grid-2" style="margin-bottom:10px;">
                             <div class="dark-form-group">
-                                <label class="dark-form-label">Nombre / Número *</label>
+                                <label class="dark-form-label" for="auNumeroAula">Nombre o número del aula *</label>
                                 <div class="dark-input-wrapper">
                                     <span class="dark-input-icon">🚪</span>
-                                    <h:inputText id="auNombre" value="#{infraBean.auNombre}"
-                                                 styleClass="dark-input" placeholder="Ej: 101, Lab-01" />
+                                    <h:inputText id="auNumeroAula" value="#{infraBean.auNumeroAula}"
+                                                 styleClass="dark-input" maxlength="10" placeholder="Ej.: A-101" />
                                 </div>
                             </div>
                             <div class="dark-form-group">
-                                <label class="dark-form-label">Capacidad</label>
+                                <label class="dark-form-label">Capacidad *</label>
                                 <div class="dark-input-wrapper">
                                     <span class="dark-input-icon">👥</span>
                                     <h:inputText id="auCapacidad" value="#{infraBean.auCapacidad}"
@@ -102,11 +115,12 @@
                                 <div class="dark-input-wrapper">
                                     <span class="dark-input-icon">🏷</span>
                                     <h:selectOneMenu id="auTipo" value="#{infraBean.auTipo}" styleClass="dark-input dark-select">
-                                        <f:selectItem itemValue="SALON_ESTANDAR"  itemLabel="Salón Estándar" />
-                                        <f:selectItem itemValue="LABORATORIO"     itemLabel="Laboratorio" />
-                                        <f:selectItem itemValue="SALA_COMPUTO"    itemLabel="Sala de Cómputo" />
-                                        <f:selectItem itemValue="AUDITORIO"       itemLabel="Auditorio" />
-                                        <f:selectItem itemValue="SALA_ESTUDIO"    itemLabel="Sala de Estudio" />
+                                        <f:selectItem itemValue="GRUPAL"     itemLabel="Grupal" />
+                                        <f:selectItem itemValue="INDIVIDUAL" itemLabel="Individual" />
+                                        <f:selectItem itemValue="SISTEMAS"   itemLabel="Sistemas" />
+                                        <f:selectItem itemValue="ARTES"      itemLabel="Artes" />
+                                        <f:selectItem itemValue="MEDICINA"   itemLabel="Medicina" />
+                                        <f:selectItem itemValue="DERECHO"    itemLabel="Derecho" />
                                     </h:selectOneMenu>
                                 </div>
                             </div>
@@ -117,7 +131,7 @@
 
                     <div class="table-container" style="margin-top:14px;">
                         <table class="aurora-table">
-                            <thead><tr><th>Nombre</th><th>Capacidad</th><th>Tipo</th><th>Acción</th></tr></thead>
+                            <thead><tr><th>Aula</th><th>Capacidad</th><th>Tipo</th><th>Acción</th></tr></thead>
                             <tbody id="tbody-aulas">
                                 <tr><td colspan="4" style="text-align:center;color:rgba(255,255,255,0.4);">Selecciona un bloque para ver sus aulas.</td></tr>
                             </tbody>
@@ -126,8 +140,8 @@
                     <h:outputText id="aulasData" value="#{infraBean.aulasJson}" style="display:none;" escape="false"/>
 
                     <h:form id="formDelAula" prependId="false">
-                        <h:inputHidden id="aulaIdDel" value="#{infraBean.idBloqueSel}" />
-                        <h:commandButton id="btnDelAula" style="display:none;" action="#{infraBean.eliminarAula(infraBean.idBloqueSel)}" />
+                        <h:inputHidden id="aulaNumeroDel" value="#{infraBean.numeroAulaSel}" />
+                        <h:commandButton id="btnDelAula" style="display:none;" action="#{infraBean.eliminarAula(infraBean.numeroAulaSel)}" />
                     </h:form>
                 </div>
 
@@ -157,13 +171,25 @@
                         </div>
                     </div>
 
+                    <div class="dark-form-group">
+                        <label class="dark-form-label" for="frCategoria">Categoría *</label>
+                        <div class="dark-input-wrapper">
+                            <span class="dark-input-icon">🏷</span>
+                            <h:selectOneMenu id="frCategoria" value="#{infraBean.frCategoria}" styleClass="dark-input dark-select">
+                                <f:selectItem itemValue="DIA" itemLabel="Día" />
+                                <f:selectItem itemValue="TARDE" itemLabel="Tarde" />
+                                <f:selectItem itemValue="NOCHE" itemLabel="Noche" />
+                            </h:selectOneMenu>
+                        </div>
+                    </div>
+
                     <div class="form-grid-2">
                         <div class="dark-form-group">
                             <label class="dark-form-label" for="frInicio">Hora Inicio *</label>
                             <div class="dark-input-wrapper">
                                 <span class="dark-input-icon">🕐</span>
                                 <h:inputText id="frInicio" value="#{infraBean.frHoraInicio}"
-                                             styleClass="dark-input" placeholder="HH:mm (Ej: 07:00)" />
+                                             styleClass="dark-input" placeholder="H:mm o HH:mm (Ej.: 7:00)" />
                             </div>
                         </div>
                         <div class="dark-form-group">
@@ -171,7 +197,7 @@
                             <div class="dark-input-wrapper">
                                 <span class="dark-input-icon">🕔</span>
                                 <h:inputText id="frFin" value="#{infraBean.frHoraFin}"
-                                             styleClass="dark-input" placeholder="HH:mm (Ej: 09:00)" />
+                                             styleClass="dark-input" placeholder="H:mm o HH:mm (Ej.: 9:00)" />
                             </div>
                         </div>
                     </div>
@@ -192,8 +218,8 @@
                 <h:outputText id="franjasData" value="#{infraBean.franjasJson}" style="display:none;" escape="false"/>
 
                 <h:form id="formDelFranja" prependId="false">
-                    <h:inputHidden id="franjaIdDel" value="#{infraBean.idBloqueSel}" />
-                    <h:commandButton id="btnDelFranja" style="display:none;" action="#{infraBean.eliminarFranja(infraBean.idBloqueSel)}" />
+                    <h:inputHidden id="franjaIdDel" value="#{infraBean.idFranjaSel}" />
+                    <h:commandButton id="btnDelFranja" style="display:none;" action="#{infraBean.eliminarFranja(infraBean.idFranjaSel)}" />
                 </h:form>
 
                 <h:form id="formRecargarFranjas" prependId="false" style="margin-top:10px;">
@@ -214,17 +240,27 @@
     function parseJSON(id) {
         var el = document.getElementById(id);
         if (!el) return [];
-        try { return JSON.parse(el.textContent || el.innerText || '[]'); } catch(e) { return []; }
+        try { return JSON.parse(el.textContent || el.innerText || '[]'); }
+        catch(e) { console.error('No se pudo interpretar el JSON de ' + id, e); return []; }
     }
 
     /* --- Bloques --- */
     function selBloque(id) {
         document.getElementById('bloqueIdSel').value = id;
+        var bloques = parseJSON('bloquesData');
+        var seleccionado = '';
+        for (var i = 0; i < bloques.length; i++) {
+            if (String(bloques[i].idBloque) === String(id)) {
+                seleccionado = bloques[i].nombreBloque || '';
+                break;
+            }
+        }
+        document.getElementById('bloqueNombreSel').value = seleccionado;
         document.getElementById('btnSelBloque').click();
     }
     function delBloque(id) {
         if (!confirm('¿Eliminar bloque ID ' + id + '? Esto eliminará sus aulas.')) return;
-        document.getElementById('bloqueIdSel').value = id;
+        document.getElementById('bloqueIdDel').value = id;
         document.getElementById('btnDelBloque').click();
     }
 
@@ -236,9 +272,10 @@
         var html = '';
         for (var i = 0; i < data.length; i++) {
             var b = data[i];
-            html += '<div class="academ-chip chip-azul">'
-                +   '<span class="chip-label" onclick="selBloque(' + b.id + ')" title="Ver aulas" style="cursor:pointer;">🏢 ' + esc(b.nombre||'') + '</span>'
-                +   '<button class="chip-del" onclick="delBloque(' + b.id + ')">✕</button>'
+            var selected = String(b.idBloque) === document.getElementById('sec-aulas').dataset.blockId;
+            html += '<div class="academ-chip chip-azul' + (selected ? ' is-selected' : '') + '">'
+                +   '<span class="chip-label" onclick="selBloque(' + b.idBloque + ')" title="Ver aulas" style="cursor:pointer;">🏢 ' + esc(b.nombreBloque||'') + '</span>'
+                +   '<button class="chip-del" onclick="delBloque(' + b.idBloque + ')">✕</button>'
                 + '</div>';
         }
         el.innerHTML = html;
@@ -246,8 +283,8 @@
 
     /* --- Aulas --- */
     function delAula(id) {
-        if (!confirm('¿Eliminar aula ID ' + id + '?')) return;
-        document.getElementById('aulaIdDel').value = id;
+        if (!confirm('¿Eliminar el aula ' + id + '?')) return;
+        document.getElementById('aulaNumeroDel').value = id;
         document.getElementById('btnDelAula').click();
     }
 
@@ -256,16 +293,16 @@
         var tbody = document.getElementById('tbody-aulas');
         if (!tbody) return;
         if (!data || data.length === 0) { tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:rgba(255,255,255,0.4);">Sin aulas en este bloque.</td></tr>'; return; }
-        var tipoClass = { 'LABORATORIO':'badge-teal','SALA_COMPUTO':'badge-purple','AUDITORIO':'badge-gold','SALON_ESTANDAR':'badge-info','SALA_ESTUDIO':'badge-info' };
+        var tipoClass = { 'SISTEMAS':'badge-purple','ARTES':'badge-gold','GRUPAL':'badge-info','INDIVIDUAL':'badge-teal','MEDICINA':'badge-green','DERECHO':'badge-info' };
         var html = '';
         for (var i = 0; i < data.length; i++) {
             var a   = data[i];
             var cls = tipoClass[a.tipoAula] || 'badge-info';
             html += '<tr>'
-                + '<td>' + esc(a.nombre||'') + '</td>'
+                + '<td>' + esc(a.numeroAula||'') + '</td>'
                 + '<td>' + esc(a.capacidad||'—') + '</td>'
                 + '<td><span class="badge ' + cls + '">' + esc(a.tipoAula||'') + '</span></td>'
-                + '<td><button class="aurora-btn-danger aurora-btn-sm" onclick="delAula(' + a.id + ')">🗑</button></td>'
+                + '<td><button class="aurora-btn-danger aurora-btn-sm" data-room="' + esc(a.numeroAula||'') + '" onclick="delAula(this.dataset.room)">🗑</button></td>'
                 + '</tr>';
         }
         tbody.innerHTML = html;
@@ -287,18 +324,20 @@
         var html = '';
         for (var i = 0; i < data.length; i++) {
             var f   = data[i];
-            var dia = diaLabel[f.dia] || esc(f.dia||'');
+            var dia = diaLabel[f.diaSemana] || esc(f.diaSemana||'');
             html += '<tr>'
                 + '<td><span class="badge badge-purple">' + dia + '</span></td>'
                 + '<td>' + esc(f.horaInicio||'') + '</td>'
                 + '<td>' + esc(f.horaFin||'') + '</td>'
-                + '<td><button class="aurora-btn-danger aurora-btn-sm" onclick="delFranja(' + f.id + ')">🗑</button></td>'
+                + '<td><button class="aurora-btn-danger aurora-btn-sm" onclick="delFranja(' + f.idFranja + ')">🗑</button></td>'
                 + '</tr>';
         }
         tbody.innerHTML = html;
     }
 
     document.addEventListener('DOMContentLoaded', function() {
+        var aulasSection = document.getElementById('sec-aulas');
+        if (aulasSection.dataset.selected === 'true') aulasSection.style.display = 'block';
         renderBloques();
         renderAulas();
         renderFranjas();
